@@ -1,0 +1,164 @@
+# Root .gitignore for Sea Cliff Project
+
+# ============================================
+# Laravel Application
+# ============================================
+laravel-app/.env
+laravel-app/node_modules/
+laravel-app/public/hot
+laravel-app/public/storage
+laravel-app/storage/*.key
+laravel-app/storage/logs/
+laravel-app/storage/framework/cache/
+laravel-app/storage/framework/sessions/
+laravel-app/storage/framework/testing/
+laravel-app/storage/framework/views/
+laravel-app/vendor/
+laravel-app/.phpunit.result.cache
+laravel-app/Homestead.json
+laravel-app/Homestead.yaml
+laravel-app/npm-debug.log
+laravel-app/yarn-error.log
+laravel-app/.DS_Store
+laravel-app/.idea
+laravel-app/.vscode
+laravel-app/*.swp
+laravel-app/*.swo
+laravel-app/*~
+laravel-app/.php_cs.cache
+laravel-app/.php-cs-fixer.cache
+
+# ============================================
+# Android POS
+# ============================================
+android-pos/local.properties
+android-pos/.gradle/
+android-pos/.idea/
+android-pos/build/
+android-pos/app/build/
+android-pos/captures/
+android-pos/.externalNativeBuild/
+android-pos/.cxx/
+android-pos/*.iml
+android-pos/*.apk
+android-pos/*.ap_
+android-pos/*.aab
+android-pos/output.json
+android-pos/.DS_Store
+android-pos/app/release/
+android-pos/app/debug/
+
+# Android keystore (NEVER commit)
+android-pos/*.jks
+android-pos/*.keystore
+android-pos/keystore.properties
+
+# ============================================
+# Infrastructure
+# ============================================
+infrastructure/docker/.env
+infrastructure/kubernetes/secrets/
+infrastructure/terraform/.terraform/
+infrastructure/terraform/*.tfstate
+infrastructure/terraform/*.tfstate.backup
+infrastructure/terraform/.terraform.lock.hcl
+infrastructure/ansible/vault_password.txt
+
+# ============================================
+# Database
+# ============================================
+database/backups/*.sql
+database/backups/*.dump
+*.sqlite
+*.sqlite3
+
+# ============================================
+# Documentation
+# ============================================
+docs/**/*.tmp
+docs/**/*.bak
+
+# ============================================
+# IDE & Editors
+# ============================================
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+
+# ============================================
+# Logs
+# ============================================
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ============================================
+# OS Files
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*~
+
+# ============================================
+# Temporary Files
+# ============================================
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+
+# ============================================
+# Environment & Secrets
+# ============================================
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+*.p12
+secrets.yml
+credentials.json
+
+# ============================================
+# Build Artifacts
+# ============================================
+dist/
+build/
+out/
+target/
+
+# ============================================
+# Dependencies
+# ============================================
+node_modules/
+vendor/
+bower_components/
+
+# ============================================
+# Testing
+# ============================================
+coverage/
+.nyc_output/
+.phpunit.result.cache
+phpunit.xml
+
+# ============================================
+# Package Manager Lock Files (optional)
+# Uncomment if you want to ignore lock files
+# ============================================
+# composer.lock
+# package-lock.json
+# yarn.lock
