@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Colors -->
+    <color name="primary">#1976D2</color>
+    <color name="primary_dark">#1565C0</color>
+    <color name="primary_light">#BBDEFB</color>
+    <color name="accent">#FF9800</color>
+
+    <!-- Status Colors -->
+    <color name="status_available">#4CAF50</color>
+    <color name="status_occupied">#F44336</color>
+    <color name="status_reserved">#FF9800</color>
+
+    <color name="status_pending">#FFC107</color>
+    <color name="status_confirmed">#2196F3</color>
+    <color name="status_preparing">#FF9800</color>
+    <color name="status_ready">#8BC34A</color>
+    <color name="status_served">#4CAF50</color>
+    <color name="status_completed">#009688</color>
+    <color name="status_cancelled">#F44336</color>
+
+    <!-- Common Colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="gray">#9E9E9E</color>
+    <color name="gray_light">#F5F5F5</color>
+    <color name="gray_dark">#424242</color>
+
+    <!-- Background -->
+    <color name="background">#FAFAFA</color>
+    <color name="card_background">#FFFFFF</color>
+
+    <!-- Text -->
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="text_hint">#BDBDBD</color>
+</resources>
