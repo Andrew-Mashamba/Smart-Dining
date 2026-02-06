@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
 use App\Models\Order;
 use App\Observers\OrderObserver;
 
@@ -13,7 +14,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Force HTTPS in production environment
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
     }
 
     /**

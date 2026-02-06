@@ -48,6 +48,20 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (Throwable $e, $request) {
             // Handle API requests with JSON responses
             if ($request->is('api/*') || $request->expectsJson()) {
+                // Handle authentication exceptions
+                if ($e instanceof \Illuminate\Auth\AuthenticationException) {
+                    return response()->json([
+                        'message' => 'Unauthenticated.',
+                    ], 401);
+                }
+
+                // Handle authorization exceptions
+                if ($e instanceof \Illuminate\Auth\Access\AuthorizationException) {
+                    return response()->json([
+                        'message' => $e->getMessage() ?: 'This action is unauthorized.',
+                    ], 403);
+                }
+
                 return response()->json([
                     'status' => 'error',
                     'message' => $e->getMessage() ?: 'An error occurred',
