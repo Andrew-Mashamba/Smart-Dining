@@ -6,6 +6,8 @@ use App\Http\Controllers\Web\ManagerController;
 use App\Http\Controllers\Web\KitchenController;
 use App\Http\Controllers\Web\BarController;
 use App\Livewire\Dashboard;
+use App\Livewire\Reports;
+use App\Livewire\Users;
 
 // Root route: Redirect guests to login, authenticated users to dashboard
 Route::get('/', function () {
@@ -25,6 +27,12 @@ Route::middleware(['auth:web'])->group(function () {
 
     // Dashboard Livewire component route
     Route::get('/dashboard', Dashboard::class)->middleware('auth')->name('dashboard');
+
+    // Users Livewire component route
+    Route::get('/users', Users::class)->middleware('auth')->name('users');
+
+    // Reports Livewire component route
+    Route::get('/reports', Reports::class)->middleware('auth')->name('reports');
 
     // Manager Portal (admin and manager access)
     Route::middleware(['role:admin,manager'])->prefix('manager')->name('manager.')->group(function () {

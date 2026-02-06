@@ -20,7 +20,6 @@ class Staff extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'password',
         'role',
         'phone_number',
         'status',
@@ -43,6 +42,8 @@ class Staff extends Authenticatable
      */
     protected $casts = [
         'password' => 'hashed',
+        'role' => 'string',
+        'status' => 'string',
     ];
 
     /**

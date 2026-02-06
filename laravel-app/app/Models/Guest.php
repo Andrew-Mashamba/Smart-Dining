@@ -19,8 +19,6 @@ class Guest extends Model
     protected $fillable = [
         'phone_number',
         'name',
-        'first_visit_at',
-        'last_visit_at',
         'loyalty_points',
         'preferences',
     ];
@@ -31,9 +29,8 @@ class Guest extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'first_visit_at' => 'datetime',
-        'last_visit_at' => 'datetime',
         'preferences' => 'array',
+        'loyalty_points' => 'integer',
     ];
 
     /**
@@ -45,7 +42,15 @@ class Guest extends Model
     }
 
     /**
-     * Get all sessions for the guest.
+     * Get all guest sessions for the guest.
+     */
+    public function guest_sessions(): HasMany
+    {
+        return $this->hasMany(GuestSession::class);
+    }
+
+    /**
+     * Get all sessions for the guest (alias).
      */
     public function sessions(): HasMany
     {
