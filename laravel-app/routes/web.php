@@ -5,6 +5,7 @@ use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\ManagerController;
 use App\Http\Controllers\Web\KitchenController;
 use App\Http\Controllers\Web\BarController;
+use App\Livewire\Dashboard;
 
 // Root route: Redirect guests to login, authenticated users to dashboard
 Route::get('/', function () {
