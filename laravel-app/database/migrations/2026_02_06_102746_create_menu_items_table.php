@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('menu_items', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('category_id')->constrained('menu_categories')->onDelete('cascade');
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->decimal('price', 8, 2);
+            $table->enum('prep_area', ['kitchen', 'bar', 'both']);
+            $table->integer('prep_time_minutes');
+            $table->enum('status', ['available', 'unavailable'])->default('available');
+            $table->integer('stock_quantity')->nullable();
+            $table->integer('low_stock_threshold')->nullable();
             $table->timestamps();
         });
     }
