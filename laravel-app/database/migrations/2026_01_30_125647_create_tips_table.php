@@ -14,16 +14,13 @@ return new class extends Migration
         Schema::create('tips', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
-            $table->foreignId('payment_id')->nullable()->constrained('payments')->onDelete('set null');
             $table->foreignId('waiter_id')->constrained('staff')->onDelete('cascade');
-            $table->decimal('amount', 10, 2);
-            $table->enum('method', ['cash', 'digital'])->default('cash');
+            $table->decimal('amount', 8, 2);
+            $table->enum('tip_method', ['cash', 'card']);
             $table->timestamps();
 
-            // Indexes
-            $table->index('order_id');
+            // Index on waiter_id for reporting
             $table->index('waiter_id');
-            $table->index('payment_id');
         });
     }
 
