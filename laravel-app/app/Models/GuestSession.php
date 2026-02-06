@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder;
 
 class GuestSession extends Model
 {
@@ -17,10 +19,9 @@ class GuestSession extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'guest_id',
         'table_id',
+        'guest_id',
         'session_token',
-        'status',
         'started_at',
         'ended_at',
     ];
@@ -34,6 +35,20 @@ class GuestSession extends Model
         'started_at' => 'datetime',
         'ended_at' => 'datetime',
     ];
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function ($guestSession) {
+            if (empty($guestSession->session_token)) {
+                $guestSession->session_token = Str::random(32);
+            }
+        });
+    }
 
     /**
      * Get the guest for this session.
