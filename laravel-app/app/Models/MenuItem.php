@@ -79,4 +79,23 @@ class MenuItem extends Model
     {
         return $query->where('prep_area', $prepArea);
     }
+
+    /**
+     * The "booted" method of the model.
+     * Clear menu cache when menu items are modified.
+     */
+    protected static function booted(): void
+    {
+        static::created(function () {
+            MenuCategory::clearMenuCache();
+        });
+
+        static::updated(function () {
+            MenuCategory::clearMenuCache();
+        });
+
+        static::deleted(function () {
+            MenuCategory::clearMenuCache();
+        });
+    }
 }

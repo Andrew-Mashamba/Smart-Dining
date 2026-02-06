@@ -69,8 +69,12 @@ class KitchenDisplay extends Component
      */
     protected function getKitchenOrders()
     {
-        // Get all order items for kitchen that are not ready yet
-        $orderItems = OrderItem::with(['order.table', 'menuItem'])
+        // Get all order items for kitchen that are not ready yet with optimized eager loading
+        $orderItems = OrderItem::with([
+                'order:id,order_number,table_id,created_at',
+                'order.table:id,name',
+                'menuItem:id,name,prep_time_minutes'
+            ])
             ->whereHas('menuItem', function ($query) {
                 $query->where('prep_area', 'kitchen');
             })

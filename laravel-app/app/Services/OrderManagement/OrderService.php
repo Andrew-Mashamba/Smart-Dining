@@ -8,6 +8,9 @@ use App\Models\Table;
 use App\Models\Staff;
 use App\Models\OrderItem;
 use App\Models\MenuItem;
+use App\Models\Setting;
+use App\Events\OrderCreated;
+use App\Events\OrderStatusUpdated;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 
@@ -30,11 +33,23 @@ class OrderService
                 'order_source' => $data['order_source'] ?? 'pos',
                 'status' => 'pending',
                 'notes' => $data['notes'] ?? null,
+                'special_instructions' => $data['special_instructions'] ?? null,
+                'subtotal' => 0,
+                'tax' => 0,
+                'total' => 0,
             ]);
 
             if (isset($data['items']) && is_array($data['items'])) {
                 $this->addItems($order, $data['items']);
             }
+
+            // Update table status to occupied
+            if ($order->table_id) {
+                Table::where('id', $order->table_id)->update(['status' => 'occupied']);
+            }
+
+            // Dispatch OrderCreated event
+            event(new OrderCreated($order->fresh()));
 
             return $order->fresh();
         });
@@ -68,7 +83,7 @@ class OrderService
                 'quantity' => $item['quantity'],
                 'unit_price' => $menuItem->price,
                 'subtotal' => $menuItem->price * $item['quantity'],
-                'status' => 'pending',
+                'prep_status' => 'pending',
                 'special_instructions' => $item['special_instructions'] ?? null,
             ]);
         }
@@ -86,7 +101,7 @@ class OrderService
     {
         $order = $orderItem->order;
 
-        if (in_array($orderItem->status, ['preparing', 'ready', 'served'])) {
+        if (in_array($orderItem->prep_status, ['preparing', 'ready', 'served'])) {
             throw new \Exception('Cannot remove item that is already being prepared or served');
         }
 
@@ -109,7 +124,11 @@ class OrderService
             throw new \Exception("Cannot transition from {$order->status} to {$status}");
         }
 
+        $oldStatus = $order->status;
         $order->update(['status' => $status]);
+
+        // Dispatch OrderStatusUpdated event
+        event(new OrderStatusUpdated($order, $oldStatus, $status));
     }
 
     /**
@@ -121,22 +140,22 @@ class OrderService
     public function calculateTotals(Order $order): array
     {
         $subtotal = $order->items()->sum('subtotal');
-        $tax = $subtotal * 0.18; // 18% VAT
-        $serviceCharge = $subtotal * 0.05; // 5% service charge
-        $total = $subtotal + $tax + $serviceCharge;
+
+        // Get tax rate from settings, default to 18% if not set
+        $taxRate = Setting::get('tax_rate', 18) / 100;
+        $tax = $subtotal * $taxRate;
+        $total = $subtotal + $tax;
 
         $order->update([
             'subtotal' => $subtotal,
             'tax' => $tax,
-            'service_charge' => $serviceCharge,
-            'total_amount' => $total,
+            'total' => $total,
         ]);
 
         return [
             'subtotal' => $subtotal,
             'tax' => $tax,
-            'service_charge' => $serviceCharge,
-            'total_amount' => $total,
+            'total' => $total,
         ];
     }
 
@@ -158,10 +177,9 @@ class OrderService
             'notes' => ($order->notes ?? '') . "\nCancellation reason: " . $reason,
         ]);
 
-        // Cancel all pending items
-        $order->items()
-            ->whereIn('status', ['pending', 'confirmed'])
-            ->update(['status' => 'cancelled']);
+        // Note: Items remain in their current prep_status as the migration
+        // doesn't support 'cancelled' status for order items
+        // Items can be identified as cancelled through the order's status
     }
 
     /**

@@ -18,6 +18,10 @@ return new class extends Migration
             $table->integer('display_order')->default(0);
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
+
+            // Indexes for performance
+            $table->index('status');
+            $table->index('display_order');
         });
     }
 

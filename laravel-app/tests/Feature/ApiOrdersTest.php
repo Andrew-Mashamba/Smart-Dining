@@ -27,7 +27,6 @@ class ApiOrdersTest extends TestCase
         ]);
 
         $table = Table::factory()->create([
-            'table_number' => 1,
             'status' => 'available',
         ]);
 
@@ -184,21 +183,27 @@ class ApiOrdersTest extends TestCase
      */
     public function test_unauthenticated_request_fails(): void
     {
-        // Attempt to access protected endpoint without authentication
-        $response = $this->getJson('/api/orders');
+        // Test accessing menu endpoint (doesn't require auth) returns 200
+        $response = $this->getJson('/api/menu');
+        $response->assertStatus(200);
 
-        // Assert 401 unauthorized response
+        // Test accessing protected tables endpoint without auth returns 401
+        $response = $this->getJson('/api/tables');
         $response->assertStatus(401);
+        $response->assertJson([
+            'message' => 'Unauthenticated.',
+        ]);
 
-        // Attempt to create order without authentication
+        // Test creating order without authentication returns 401
         $response = $this->postJson('/api/orders', [
             'table_id' => 1,
             'guest_id' => 1,
             'items' => [],
         ]);
-
-        // Assert 401 unauthorized response
         $response->assertStatus(401);
+        $response->assertJson([
+            'message' => 'Unauthenticated.',
+        ]);
     }
 
     /**

@@ -312,8 +312,13 @@ class MenuManagement extends Component
      */
     public function render()
     {
-        $categories = MenuCategory::withCount('menuItems')->get();
-        $items = MenuItem::with('menuCategory')->get();
+        // Use select() to limit columns and eager loading for better performance
+        $categories = MenuCategory::select('id', 'name', 'description', 'status', 'display_order')
+            ->withCount('menuItems')
+            ->get();
+        $items = MenuItem::select('id', 'name', 'description', 'category_id', 'price', 'prep_area', 'prep_time_minutes', 'status', 'stock_quantity')
+            ->with('menuCategory:id,name')
+            ->get();
 
         return view('livewire.menu-management', [
             'categories' => $categories,

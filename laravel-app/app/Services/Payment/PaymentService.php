@@ -43,12 +43,11 @@ class PaymentService
             'breakdown' => [
                 'subtotal' => $order->subtotal,
                 'tax' => $order->tax,
-                'service_charge' => $order->service_charge,
-                'total_amount' => $order->total_amount,
+                'total' => $order->total,
             ],
             'payment_info' => [
                 'total_paid' => $totalPaid,
-                'balance_due' => max(0, $order->total_amount - $totalPaid),
+                'balance_due' => max(0, $order->total - $totalPaid),
             ],
             'created_at' => $order->created_at,
         ];
@@ -165,6 +164,9 @@ class PaymentService
                 'change' => ($data['tendered'] ?? $data['amount']) - $data['amount'],
             ],
         ]);
+
+        // Check if order is fully paid and update status
+        $this->checkOrderPaymentStatus($payment->order);
     }
 
     /**
@@ -177,15 +179,7 @@ class PaymentService
     protected function processCardPayment(Payment $payment, array $data): void
     {
         // In a real implementation, this would integrate with a payment gateway
-        // For now, we'll simulate a successful card payment
-        $payment->update([
-            'status' => 'processing',
-            'payment_details' => [
-                'card_last_four' => $data['card_last_four'] ?? '****',
-                'card_type' => $data['card_type'] ?? 'unknown',
-            ],
-        ]);
-
+        // For now, we'll simulate a successful card payment by directly confirming
         // Auto-confirm for development (in production, wait for gateway callback)
         $this->confirmPayment($payment);
     }
@@ -200,9 +194,8 @@ class PaymentService
     protected function processMobileMoneyPayment(Payment $payment, array $data): void
     {
         // In a real implementation, this would integrate with M-Pesa/Tigopesa API
-        // For now, we'll mark as processing
+        // For now, we'll keep as pending until confirmed
         $payment->update([
-            'status' => 'processing',
             'payment_details' => [
                 'phone_number' => $data['phone_number'] ?? null,
                 'provider' => $data['provider'] ?? 'mpesa',
@@ -222,7 +215,7 @@ class PaymentService
             ->where('status', 'completed')
             ->sum('amount');
 
-        if ($totalPaid >= $order->total_amount && $order->status === 'served') {
+        if ($totalPaid >= $order->total && $order->status === 'served') {
             $order->update(['status' => 'completed']);
         }
     }
@@ -269,7 +262,7 @@ class PaymentService
     {
         $totalAmount = collect($payments)->sum('amount');
 
-        if ($totalAmount != $order->total_amount) {
+        if ($totalAmount != $order->total) {
             throw new \Exception('Split payment total must equal order total');
         }
 

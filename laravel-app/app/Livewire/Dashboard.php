@@ -21,9 +21,13 @@ class Dashboard extends Component
         $today = Carbon::today();
         $yesterday = Carbon::yesterday();
 
-        // Today's metrics
-        $todayOrders = Order::whereDate('created_at', $today)->get();
-        $yesterdayOrders = Order::whereDate('created_at', $yesterday)->get();
+        // Today's metrics - select only needed columns for performance
+        $todayOrders = Order::select('id', 'total', 'created_at')
+            ->whereDate('created_at', $today)
+            ->get();
+        $yesterdayOrders = Order::select('id', 'total', 'created_at')
+            ->whereDate('created_at', $yesterday)
+            ->get();
 
         $todayOrdersCount = $todayOrders->count();
         $yesterdayOrdersCount = $yesterdayOrders->count();
@@ -47,14 +51,16 @@ class Dashboard extends Component
         // Active orders count (pending, preparing, ready)
         $activeOrdersCount = Order::whereIn('status', ['pending', 'preparing', 'ready'])->count();
 
-        // Recent orders - last 10
-        $recentOrders = Order::with(['table', 'waiter'])
+        // Recent orders - last 10 with eager loading
+        $recentOrders = Order::select('id', 'order_number', 'table_id', 'waiter_id', 'status', 'total', 'created_at')
+            ->with(['table:id,name', 'waiter:id,name'])
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get();
 
-        // Low stock alerts - items below threshold
-        $lowStockItems = MenuItem::whereRaw('stock_quantity < low_stock_threshold')
+        // Low stock alerts - items below threshold with limited columns
+        $lowStockItems = MenuItem::select('id', 'name', 'stock_quantity', 'unit', 'low_stock_threshold')
+            ->whereRaw('stock_quantity < low_stock_threshold')
             ->orWhere('stock_quantity', '<=', 0)
             ->orderBy('stock_quantity', 'asc')
             ->get();
@@ -65,8 +71,10 @@ class Dashboard extends Component
         // Top selling items today
         $topSellingItems = $this->getTopSellingItemsToday();
 
-        // Staff on duty (active status)
-        $staffOnDuty = Staff::where('status', 'active')->get();
+        // Staff on duty (active status) with limited columns
+        $staffOnDuty = Staff::select('id', 'name', 'role', 'status')
+            ->where('status', 'active')
+            ->get();
 
         return view('livewire.dashboard', [
             // Today's metrics

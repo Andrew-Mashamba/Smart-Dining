@@ -155,7 +155,7 @@ class OrderWorkflowTest extends TestCase
         // Assert order totals were calculated correctly
         // Subtotal: 30000
         // Tax (18%): 5400
-        // Total: 35400
+        // Total: 35400 (no service charge in current implementation)
         $this->assertEquals(30000, $order->subtotal);
         $this->assertEquals(5400, $order->tax);
         $this->assertEquals(35400, $order->total);
@@ -225,7 +225,7 @@ class OrderWorkflowTest extends TestCase
             $this->orderService->updateOrderStatus($order2, 'served');
             $this->fail('Expected exception for invalid status transition');
         } catch (\Exception $e) {
-            $this->assertStringContainsString('Invalid status transition', $e->getMessage());
+            $this->assertStringContainsString('Cannot transition from', $e->getMessage());
         }
 
         // Test cancellation from pending
@@ -251,6 +251,9 @@ class OrderWorkflowTest extends TestCase
      */
     public function test_inventory_deduction_on_order(): void
     {
+        // Ensure queue is sync for this test to execute listeners immediately
+        Queue::fake();
+
         // Set initial stock
         $initialStock = 50;
         $this->menuItem->update(['stock_quantity' => $initialStock]);
@@ -272,9 +275,9 @@ class OrderWorkflowTest extends TestCase
         // Create order (this should trigger inventory deduction)
         $order = $this->orderService->createOrder($orderData);
 
-        // Manually trigger the listener since events are synchronous in tests
+        // Manually trigger the listener for testing since it's queued
         $listener = new \App\Listeners\DeductInventoryStock();
-        $listener->handle(new OrderCreated($order));
+        $listener->handle(new OrderCreated($order->fresh()));
 
         // Assert stock was deducted
         $this->menuItem->refresh();
@@ -307,6 +310,7 @@ class OrderWorkflowTest extends TestCase
     public function test_low_stock_notification(): void
     {
         Notification::fake();
+        Queue::fake();
 
         // Set stock just above threshold
         $lowThreshold = 10;
@@ -331,9 +335,9 @@ class OrderWorkflowTest extends TestCase
 
         $order = $this->orderService->createOrder($orderData);
 
-        // Manually trigger the listener
+        // Manually trigger the listener for testing since it's queued
         $listener = new \App\Listeners\DeductInventoryStock();
-        $listener->handle(new OrderCreated($order));
+        $listener->handle(new OrderCreated($order->fresh()));
 
         // Assert stock fell below threshold
         $this->menuItem->refresh();

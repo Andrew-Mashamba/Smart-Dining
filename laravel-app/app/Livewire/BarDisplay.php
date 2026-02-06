@@ -70,8 +70,12 @@ class BarDisplay extends Component
      */
     protected function getBarOrders()
     {
-        // Get all order items for bar that are not ready yet
-        $orderItems = OrderItem::with(['order.table', 'menuItem'])
+        // Get all order items for bar that are not ready yet with optimized eager loading
+        $orderItems = OrderItem::with([
+                'order:id,order_number,table_id,created_at',
+                'order.table:id,name',
+                'menuItem:id,name,prep_area'
+            ])
             ->whereHas('menuItem', function ($query) {
                 $query->whereIn('prep_area', ['bar', 'both']);
             })

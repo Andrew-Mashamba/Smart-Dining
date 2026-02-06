@@ -21,6 +21,10 @@ return new class extends Migration
             $table->text('special_instructions')->nullable();
             $table->enum('prep_status', ['pending', 'received', 'preparing', 'ready'])->default('pending');
             $table->timestamps();
+
+            // Indexes for performance
+            $table->index('prep_status');
+            $table->index('created_at');
         });
     }
 

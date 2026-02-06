@@ -5,8 +5,8 @@ namespace App\Listeners;
 use App\Events\OrderCreated;
 use App\Models\InventoryTransaction;
 use App\Models\MenuItem;
+use App\Models\Staff;
 use App\Notifications\LowStockAlert;
-use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\DB;
@@ -51,7 +51,7 @@ class DeductInventoryStock implements ShouldQueue
                 // Check if stock is low after deduction
                 if ($menuItem->stock_quantity < $menuItem->low_stock_threshold) {
                     // Send notification to all managers
-                    $managers = User::where('role', 'manager')
+                    $managers = Staff::where('role', 'manager')
                         ->where('status', 'active')
                         ->get();
 

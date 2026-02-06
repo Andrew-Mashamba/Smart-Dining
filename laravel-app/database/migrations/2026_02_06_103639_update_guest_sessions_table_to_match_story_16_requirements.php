@@ -11,16 +11,39 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('guest_sessions', function (Blueprint $table) {
-            // Drop existing foreign keys
-            $table->dropForeign(['guest_id']);
-            $table->dropForeign(['table_id']);
+        // Check if status column exists before attempting to drop it
+        $hasStatusColumn = Schema::hasColumn('guest_sessions', 'status');
 
-            // Drop status index first before dropping the column
-            $table->dropIndex(['status']);
+        // For SQLite, we need to drop index first if it exists
+        if (Schema::getConnection()->getDriverName() === 'sqlite' && $hasStatusColumn) {
+            // Drop index manually for SQLite before dropping column
+            try {
+                Schema::table('guest_sessions', function (Blueprint $table) {
+                    $table->dropIndex('guest_sessions_status_index');
+                });
+            } catch (\Exception $e) {
+                // Index might not exist, continue
+            }
+        }
 
-            // Drop status column as it's not in acceptance criteria
-            $table->dropColumn('status');
+        Schema::table('guest_sessions', function (Blueprint $table) use ($hasStatusColumn) {
+            // Drop existing foreign keys if they exist
+            try {
+                $table->dropForeign(['guest_id']);
+            } catch (\Exception $e) {
+                // Foreign key might not exist
+            }
+
+            try {
+                $table->dropForeign(['table_id']);
+            } catch (\Exception $e) {
+                // Foreign key might not exist
+            }
+
+            // Drop status column only if it exists
+            if ($hasStatusColumn) {
+                $table->dropColumn('status');
+            }
         });
 
         Schema::table('guest_sessions', function (Blueprint $table) {

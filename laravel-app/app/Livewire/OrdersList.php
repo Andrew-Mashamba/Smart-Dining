@@ -128,8 +128,8 @@ class OrdersList extends Component
      */
     public function render()
     {
-        // Build query with filters
-        $query = Order::with(['guest', 'table', 'waiter'])
+        // Build query with filters and eager loading
+        $query = Order::with(['orderItems.menuItem', 'table', 'waiter', 'guest'])
             ->when($this->search, function ($q) {
                 $q->where(function ($query) {
                     $query->where('order_number', 'like', '%' . $this->search . '%')
@@ -160,9 +160,14 @@ class OrdersList extends Component
 
         $orders = $query->paginate($this->perPage);
 
-        // Get filter options
-        $waiters = Staff::where('role', 'waiter')->orderBy('name')->get();
-        $tables = Table::orderBy('name')->get();
+        // Get filter options with limited columns
+        $waiters = Staff::select('id', 'name')
+            ->where('role', 'waiter')
+            ->orderBy('name')
+            ->get();
+        $tables = Table::select('id', 'name')
+            ->orderBy('name')
+            ->get();
         $statuses = ['pending', 'preparing', 'ready', 'delivered', 'paid', 'cancelled'];
         $sources = ['qr_code', 'waiter', 'phone', 'online'];
 

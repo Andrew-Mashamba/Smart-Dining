@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.2",
         "barryvdh/laravel-dompdf": "^3.1",
+        "intervention/image": "^3.0",
         "khanamiryan/qrcode-detector-decoder": "^2.0",
         "laravel/framework": "^11.0",
         "laravel/jetstream": "^5.4",
@@ -16,10 +17,12 @@
         "laravel/tinker": "^2.10.1",
         "livewire/livewire": "^3.6.4",
         "netflie/whatsapp-cloud-api": "^2.2",
+        "sentry/sentry-laravel": "^4.20",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "stripe/stripe-php": "^19.3"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^4.0",
         "fakerphp/faker": "^1.23",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.24",

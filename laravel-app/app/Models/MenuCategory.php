@@ -4,10 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class MenuCategory extends Model
 {
     use HasFactory;
+
+    /**
+     * Cache key for menu data
+     */
+    const CACHE_KEY = 'menu_categories_with_items';
     /**
      * The attributes that are mass assignable.
      *
@@ -46,6 +52,44 @@ class MenuCategory extends Model
         static::addGlobalScope('ordered', function ($query) {
             $query->orderBy('display_order');
         });
+
+        // Clear menu cache when categories are created, updated, or deleted
+        static::created(function () {
+            self::clearMenuCache();
+        });
+
+        static::updated(function () {
+            self::clearMenuCache();
+        });
+
+        static::deleted(function () {
+            self::clearMenuCache();
+        });
+    }
+
+    /**
+     * Get cached menu categories with their items.
+     * Cache for 1 hour (3600 seconds).
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getCachedMenu()
+    {
+        return Cache::remember(self::CACHE_KEY, 3600, function () {
+            return self::with(['menuItems' => function ($query) {
+                $query->where('status', 'available');
+            }])->where('status', 'active')->get();
+        });
+    }
+
+    /**
+     * Clear the menu cache.
+     *
+     * @return void
+     */
+    public static function clearMenuCache()
+    {
+        Cache::forget(self::CACHE_KEY);
     }
 
     /**
