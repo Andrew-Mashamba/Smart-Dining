@@ -1,0 +1,155 @@
+<!-- Sidebar for Desktop and Mobile -->
+<aside
+    class="fixed lg:static inset-y-0 left-0 z-40 w-64 bg-gray-50 border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0"
+    :class="{ '-translate-x-full': !sidebarOpen, 'translate-x-0': sidebarOpen }"
+>
+    <div class="flex flex-col h-full">
+        <!-- Mobile Header -->
+        <div class="lg:hidden flex items-center justify-between p-4 border-b border-gray-200">
+            <h2 class="text-lg font-bold text-gray-900">Menu</h2>
+            <button
+                @click="sidebarOpen = false"
+                class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                aria-label="Close menu"
+            >
+                <svg class="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 px-4 py-6 overflow-y-auto">
+            @auth
+                @php
+                    $role = auth()->user()->role;
+                    $currentRoute = request()->route()->getName();
+                @endphp
+
+                <!-- Manager/Admin Navigation -->
+                @if($role === 'admin' || $role === 'manager')
+                    <div class="space-y-1">
+                        <a
+                            href="{{ route('dashboard') }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all {{ request()->routeIs('dashboard') ? 'bg-white shadow-sm text-gray-900 font-bold' : 'text-gray-600 hover:bg-white hover:shadow-sm hover:text-gray-900' }}"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                            </svg>
+                            <span>Dashboard</span>
+                        </a>
+
+                        <a
+                            href="#"
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-gray-600 hover:bg-white hover:shadow-sm hover:text-gray-900"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            <span>Users</span>
+                        </a>
+
+                        <a
+                            href="#"
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-gray-600 hover:bg-white hover:shadow-sm hover:text-gray-900"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                            <span>Reports</span>
+                        </a>
+                    </div>
+                @endif
+
+                <!-- Chef Navigation -->
+                @if($role === 'chef')
+                    <div class="space-y-1">
+                        <a
+                            href="{{ route('kitchen.display') }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all {{ str_starts_with($currentRoute, 'kitchen.') ? 'bg-white shadow-sm text-gray-900 font-bold' : 'text-gray-600 hover:bg-white hover:shadow-sm hover:text-gray-900' }}"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                            <span>Kitchen Display</span>
+                        </a>
+
+                        <a
+                            href="#"
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-gray-600 hover:bg-white hover:shadow-sm hover:text-gray-900"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Order History</span>
+                        </a>
+                    </div>
+                @endif
+
+                <!-- Bartender Navigation -->
+                @if($role === 'bartender')
+                    <div class="space-y-1">
+                        <a
+                            href="{{ route('bar.display') }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all {{ str_starts_with($currentRoute, 'bar.') ? 'bg-white shadow-sm text-gray-900 font-bold' : 'text-gray-600 hover:bg-white hover:shadow-sm hover:text-gray-900' }}"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <span>Bar Display</span>
+                        </a>
+
+                        <a
+                            href="#"
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-gray-600 hover:bg-white hover:shadow-sm hover:text-gray-900"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Order History</span>
+                        </a>
+                    </div>
+                @endif
+
+                <!-- Waiter Navigation -->
+                @if($role === 'waiter')
+                    <div class="space-y-1">
+                        <a
+                            href="#"
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all bg-white shadow-sm text-gray-900 font-bold"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                            </svg>
+                            <span>Orders</span>
+                        </a>
+
+                        <a
+                            href="#"
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-gray-600 hover:bg-white hover:shadow-sm hover:text-gray-900"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z"></path>
+                            </svg>
+                            <span>Tables</span>
+                        </a>
+                    </div>
+                @endif
+            @endauth
+        </nav>
+    </div>
+</aside>
+
+<!-- Mobile Overlay -->
+<div
+    x-show="sidebarOpen"
+    @click="sidebarOpen = false"
+    class="fixed inset-0 bg-gray-900 bg-opacity-50 z-30 lg:hidden"
+    x-transition:enter="transition-opacity ease-linear duration-300"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition-opacity ease-linear duration-300"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    style="display: none;"
+></div>

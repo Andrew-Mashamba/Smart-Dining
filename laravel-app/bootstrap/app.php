@@ -10,11 +10,20 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
+        // Set HOME route for authenticated users
+        then: function () {
+            // This sets the default home route after login
+            config(['app.home' => '/dashboard']);
+        }
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);
+
+        // Redirect authenticated users trying to access guest routes to /dashboard
+        $middleware->redirectGuestsTo('/login');
+        $middleware->redirectUsersTo('/dashboard');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

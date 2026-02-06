@@ -6,10 +6,13 @@ use App\Http\Controllers\Web\ManagerController;
 use App\Http\Controllers\Web\KitchenController;
 use App\Http\Controllers\Web\BarController;
 
-// Redirect root to login
+// Root route: Redirect guests to login, authenticated users to dashboard
 Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect('/dashboard');
+    }
     return redirect()->route('login');
-});
+})->name('home');
 
 // Authentication routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -18,6 +21,23 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Protected routes
 Route::middleware(['auth:web'])->group(function () {
+
+    // Common dashboard route - redirects to role-specific dashboard
+    Route::get('/dashboard', function () {
+        $user = auth()->user();
+
+        // Redirect based on user role
+        if ($user->hasRole('admin') || $user->hasRole('manager')) {
+            return redirect()->route('manager.dashboard');
+        } elseif ($user->hasRole('chef')) {
+            return redirect()->route('kitchen.display');
+        } elseif ($user->hasRole('bartender')) {
+            return redirect()->route('bar.display');
+        }
+
+        // Default fallback
+        return redirect()->route('login');
+    })->name('dashboard');
 
     // Manager Portal (admin and manager access)
     Route::middleware(['role:admin,manager'])->prefix('manager')->name('manager.')->group(function () {
