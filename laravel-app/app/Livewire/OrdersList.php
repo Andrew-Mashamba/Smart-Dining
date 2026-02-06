@@ -82,13 +82,7 @@ class OrdersList extends Component
      */
     public function viewOrder($orderId)
     {
-        // Redirect to order details page or emit event to show modal
-        // For now, we'll just flash a message
-        session()->flash('message', 'View order details for Order ID: ' . $orderId);
-
-        // In a real implementation, you would:
-        // return redirect()->route('orders.show', $orderId);
-        // or emit an event to show a modal with order details
+        return redirect()->route('orders.show', $orderId);
     }
 
     /**

@@ -11,18 +11,22 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class OrderCreated implements ShouldBroadcast
+class OrderStatusUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public Order $order;
+    public string $oldStatus;
+    public string $newStatus;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(Order $order)
+    public function __construct(Order $order, string $oldStatus, string $newStatus)
     {
         $this->order = $order;
+        $this->oldStatus = $oldStatus;
+        $this->newStatus = $newStatus;
     }
 
     /**
@@ -50,8 +54,9 @@ class OrderCreated implements ShouldBroadcast
         return [
             'order_id' => $this->order->id,
             'table' => $this->order->table->name,
-            'status' => $this->order->status,
-            'items_count' => $this->order->items->count(),
+            'old_status' => $this->oldStatus,
+            'new_status' => $this->newStatus,
+            'updated_at' => $this->order->updated_at->toISOString(),
         ];
     }
 }
