@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\MenuItem;
 use App\Models\Table;
+use App\Models\Guest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -35,6 +36,7 @@ class RoleBasedApiAccessTest extends TestCase
     protected Staff $manager;
     protected Staff $admin;
     protected Table $table;
+    protected Guest $guest;
     protected MenuItem $kitchenItem;
     protected MenuItem $barItem;
 
@@ -52,6 +54,9 @@ class RoleBasedApiAccessTest extends TestCase
         // Create test table
         $this->table = Table::factory()->create();
 
+        // Create test guest
+        $this->guest = Guest::factory()->create();
+
         // Create test menu items
         $this->kitchenItem = MenuItem::factory()->create(['prep_area' => 'kitchen']);
         $this->barItem = MenuItem::factory()->create(['prep_area' => 'bar']);
@@ -63,8 +68,8 @@ class RoleBasedApiAccessTest extends TestCase
         $response = $this->actingAs($this->waiter, 'sanctum')
             ->postJson('/api/orders', [
                 'table_id' => $this->table->id,
-                'guest_name' => 'Test Guest',
-                'guest_phone' => '+1234567890',
+                'guest_id' => $this->guest->id,
+                'waiter_id' => $this->waiter->id,
                 'items' => [
                     [
                         'menu_item_id' => $this->kitchenItem->id,
@@ -180,7 +185,8 @@ class RoleBasedApiAccessTest extends TestCase
         $response = $this->actingAs($this->chef, 'sanctum')
             ->postJson('/api/orders', [
                 'table_id' => $this->table->id,
-                'guest_name' => 'Test Guest',
+                'guest_id' => $this->guest->id,
+                'waiter_id' => $this->chef->id,
                 'items' => [
                     ['menu_item_id' => $this->kitchenItem->id, 'quantity' => 1]
                 ]
@@ -254,8 +260,8 @@ class RoleBasedApiAccessTest extends TestCase
         $response = $this->actingAs($this->manager, 'sanctum')
             ->postJson('/api/orders', [
                 'table_id' => $this->table->id,
-                'guest_name' => 'Test Guest',
-                'guest_phone' => '+1234567890',
+                'guest_id' => $this->guest->id,
+                'waiter_id' => $this->manager->id,
                 'items' => [
                     ['menu_item_id' => $this->kitchenItem->id, 'quantity' => 1]
                 ]
@@ -299,7 +305,7 @@ class RoleBasedApiAccessTest extends TestCase
                 'reason' => 'Test cancellation'
             ]);
 
-        $response->assertStatus(200);
+        $response->assertSuccessful();
     }
 
     /** @test */
@@ -307,7 +313,7 @@ class RoleBasedApiAccessTest extends TestCase
     {
         $response = $this->actingAs($this->manager, 'sanctum')
             ->putJson("/api/menu/{$this->kitchenItem->id}/availability", [
-                'status' => 'unavailable'
+                'available' => false
             ]);
 
         $response->assertStatus(200);
@@ -320,7 +326,8 @@ class RoleBasedApiAccessTest extends TestCase
         $response = $this->actingAs($this->admin, 'sanctum')
             ->postJson('/api/orders', [
                 'table_id' => $this->table->id,
-                'guest_name' => 'Test Guest',
+                'guest_id' => $this->guest->id,
+                'waiter_id' => $this->admin->id,
                 'items' => [
                     ['menu_item_id' => $this->kitchenItem->id, 'quantity' => 1]
                 ]
@@ -337,7 +344,7 @@ class RoleBasedApiAccessTest extends TestCase
         // Test menu management
         $response = $this->actingAs($this->admin, 'sanctum')
             ->putJson("/api/menu/{$this->kitchenItem->id}/availability", [
-                'status' => 'available'
+                'available' => true
             ]);
 
         $response->assertStatus(200);
@@ -348,7 +355,8 @@ class RoleBasedApiAccessTest extends TestCase
     {
         $response = $this->getJson('/api/orders');
 
-        $response->assertStatus(401);
+        // Should return 401 Unauthenticated (Sanctum middleware)
+        $response->assertUnauthorized();
     }
 
     /** @test */
@@ -357,7 +365,8 @@ class RoleBasedApiAccessTest extends TestCase
         $response = $this->actingAs($this->chef, 'sanctum')
             ->postJson('/api/orders', [
                 'table_id' => $this->table->id,
-                'guest_name' => 'Test Guest',
+                'guest_id' => $this->guest->id,
+                'waiter_id' => $this->chef->id,
                 'items' => []
             ]);
 

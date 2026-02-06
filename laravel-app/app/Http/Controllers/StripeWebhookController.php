@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\StripePaymentService;
+use App\Services\Payment\StripePaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Stripe\Webhook;
@@ -11,11 +11,11 @@ use Exception;
 
 class StripeWebhookController extends Controller
 {
-    protected $stripeService;
+    protected StripePaymentService $stripePaymentService;
 
-    public function __construct(StripePaymentService $stripeService)
+    public function __construct(StripePaymentService $stripePaymentService)
     {
-        $this->stripeService = $stripeService;
+        $this->stripePaymentService = $stripePaymentService;
     }
 
     /**
@@ -96,21 +96,34 @@ class StripeWebhookController extends Controller
      */
     protected function handlePaymentIntentSucceeded($paymentIntent)
     {
-        Log::info('Stripe payment succeeded', [
-            'payment_intent_id' => $paymentIntent->id,
-            'amount' => $paymentIntent->amount,
-        ]);
+        try {
+            $payment = $this->stripePaymentService->confirmPayment($paymentIntent->id);
 
-        $this->stripeService->confirmPayment(
-            $paymentIntent->id,
-            [
-                'status' => $paymentIntent->status,
-                'amount' => $paymentIntent->amount,
-                'currency' => $paymentIntent->currency,
-                'payment_method' => $paymentIntent->payment_method,
-                'charges' => $paymentIntent->charges->data ?? [],
-            ]
-        );
+            Log::info('Payment intent succeeded and payment confirmed', [
+                'payment_intent_id' => $paymentIntent->id,
+                'payment_id' => $payment->id,
+                'order_id' => $payment->order_id,
+                'amount' => $payment->amount,
+            ]);
+
+            // Update payment status to completed
+            $payment->update(['status' => 'completed']);
+
+            // Check if order is fully paid
+            $order = $payment->order;
+            $totalPaid = $order->payments()
+                ->where('status', 'completed')
+                ->sum('amount');
+
+            if ($totalPaid >= $order->total_amount && $order->status === 'served') {
+                $order->update(['status' => 'completed']);
+            }
+        } catch (Exception $e) {
+            Log::error('Error handling successful payment intent', [
+                'payment_intent_id' => $paymentIntent->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
@@ -121,18 +134,28 @@ class StripeWebhookController extends Controller
      */
     protected function handlePaymentIntentFailed($paymentIntent)
     {
-        Log::warning('Stripe payment failed', [
-            'payment_intent_id' => $paymentIntent->id,
-            'error' => $paymentIntent->last_payment_error->message ?? 'Unknown error',
-        ]);
+        try {
+            $errorMessage = $paymentIntent->last_payment_error->message ?? 'Payment failed';
 
-        $this->stripeService->failPayment(
-            $paymentIntent->id,
-            [
-                'status' => $paymentIntent->status,
-                'error' => $paymentIntent->last_payment_error ?? null,
-            ]
-        );
+            $payment = $this->stripePaymentService->handleFailedPayment(
+                $paymentIntent->id,
+                $errorMessage
+            );
+
+            if ($payment) {
+                Log::info('Payment intent failed and payment marked as failed', [
+                    'payment_intent_id' => $paymentIntent->id,
+                    'payment_id' => $payment->id,
+                    'order_id' => $payment->order_id,
+                    'error' => $errorMessage,
+                ]);
+            }
+        } catch (Exception $e) {
+            Log::error('Error handling failed payment intent', [
+                'payment_intent_id' => $paymentIntent->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
@@ -159,17 +182,26 @@ class StripeWebhookController extends Controller
      */
     protected function handlePaymentIntentCanceled($paymentIntent)
     {
-        Log::info('Stripe payment canceled', [
-            'payment_intent_id' => $paymentIntent->id,
-        ]);
+        try {
+            $payment = $this->stripePaymentService->handleFailedPayment(
+                $paymentIntent->id,
+                'Payment was canceled'
+            );
 
-        // Mark payment as canceled
-        $this->stripeService->failPayment(
-            $paymentIntent->id,
-            [
-                'status' => 'canceled',
-                'canceled_at' => now()->toIso8601String(),
-            ]
-        );
+            if ($payment) {
+                $payment->update(['status' => 'canceled']);
+
+                Log::info('Payment intent canceled', [
+                    'payment_intent_id' => $paymentIntent->id,
+                    'payment_id' => $payment->id,
+                    'order_id' => $payment->order_id,
+                ]);
+            }
+        } catch (Exception $e) {
+            Log::error('Error handling canceled payment intent', [
+                'payment_intent_id' => $paymentIntent->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 }

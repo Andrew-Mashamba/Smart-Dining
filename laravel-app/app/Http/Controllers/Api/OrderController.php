@@ -34,7 +34,7 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $staff = $request->user();
-        $query = Order::with(['items.menuItem', 'guest', 'table', 'waiter']);
+        $query = Order::with(['orderItems.menuItem', 'guest', 'table', 'waiter']);
 
         // Waiters can only see their own orders
         if ($staff->role === 'waiter') {
@@ -101,7 +101,7 @@ class OrderController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $order = Order::with(['items.menuItem', 'guest', 'table', 'waiter', 'payments'])->findOrFail($id);
+        $order = Order::with(['orderItems.menuItem', 'guest', 'table', 'waiter', 'payments'])->findOrFail($id);
         $staff = $request->user();
 
         // Waiters can only view their own orders

@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\StripePaymentService;
+use App\Services\Payment\StripePaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class StripePaymentController extends Controller
 {
-    protected $stripeService;
+    protected StripePaymentService $stripeService;
 
     public function __construct(StripePaymentService $stripeService)
     {
@@ -45,8 +45,7 @@ class StripePaymentController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $this->stripeService->getErrorMessage($e->getCode()),
-                'error' => $e->getMessage(),
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -78,14 +77,7 @@ class StripePaymentController extends Controller
 
             // If succeeded, confirm the payment
             if ($paymentIntent->status === 'succeeded') {
-                $payment = $this->stripeService->confirmPayment(
-                    $paymentIntent->id,
-                    [
-                        'status' => $paymentIntent->status,
-                        'amount' => $paymentIntent->amount,
-                        'currency' => $paymentIntent->currency,
-                    ]
-                );
+                $payment = $this->stripeService->confirmPayment($paymentIntent->id);
 
                 return response()->json([
                     'success' => true,

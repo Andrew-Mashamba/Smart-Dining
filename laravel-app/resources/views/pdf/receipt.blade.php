@@ -185,10 +185,10 @@
     <div class="receipt-container">
         <!-- Header with Logo -->
         <div class="header">
-            <h1>SeaCliff POS</h1>
+            <h1>{{ \App\Models\Setting::get('business_name', 'SeaCliff POS') }}</h1>
             <p>Restaurant Management System</p>
-            <p style="margin-top: 5px; font-size: 10px;">123 Ocean Drive, Coastal City | Phone: (555) 123-4567</p>
-            <p style="font-size: 10px;">Email: info@seacliffpos.com | www.seacliffpos.com</p>
+            <p style="margin-top: 5px; font-size: 10px;">{{ \App\Models\Setting::get('business_address', '123 Ocean Drive, Coastal City') }} | Phone: {{ \App\Models\Setting::get('business_phone', '(555) 123-4567') }}</p>
+            <p style="font-size: 10px;">Email: {{ \App\Models\Setting::get('business_email', 'info@seacliffpos.com') }}</p>
             <p style="margin-top: 10px; font-weight: bold;">OFFICIAL RECEIPT</p>
         </div>
 
@@ -260,7 +260,7 @@
                 <span class="value">${{ number_format($order->subtotal, 2) }}</span>
             </div>
             <div class="summary-row">
-                <span class="label">Tax (18%):</span>
+                <span class="label">Tax ({{ \App\Models\Setting::get('tax_rate', 18) }}%):</span>
                 <span class="value">${{ number_format($order->tax, 2) }}</span>
             </div>
             <div class="summary-row total">

@@ -23,6 +23,7 @@ use App\Livewire\BarDisplay;
 use App\Livewire\GuestManagement;
 use App\Livewire\InventoryManagement;
 use App\Livewire\GuestOrder;
+use App\Livewire\SettingsManagement;
 use App\Http\Controllers\WhatsAppController;
 
 // Guest ordering route (public access via QR code)
@@ -88,6 +89,9 @@ Route::middleware(['auth:web'])->group(function () {
 
     // Guest Management Livewire component route (admin and manager only)
     Route::get('/guests', GuestManagement::class)->middleware(['auth', 'role:manager,admin'])->name('guests');
+
+    // Settings Management Livewire component route (admin and manager only)
+    Route::get('/settings', SettingsManagement::class)->middleware(['auth', 'role:admin,manager'])->name('settings');
 
     // Orders List Livewire component route (authenticated users)
     Route::get('/orders', OrdersList::class)->middleware(['auth'])->name('orders');

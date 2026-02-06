@@ -200,12 +200,11 @@
 <body>
     {{-- Receipt Header with Business Information --}}
     <div class="receipt-header">
-        <div class="business-name">{{ config('app.name', 'SeaCliff Dining') }}</div>
+        <div class="business-name">{{ \App\Models\Setting::get('business_name', config('app.name', 'SeaCliff Dining')) }}</div>
         <div class="business-info">
-            123 Ocean View Drive<br>
-            Cape Town, South Africa 8001<br>
-            Tel: +27 21 123 4567<br>
-            Email: info@seacliff-dining.co.za
+            {{ \App\Models\Setting::get('business_address', '123 Ocean View Drive, Cape Town, South Africa 8001') }}<br>
+            Tel: {{ \App\Models\Setting::get('business_phone', '+27 21 123 4567') }}<br>
+            Email: {{ \App\Models\Setting::get('business_email', 'info@seacliff-dining.co.za') }}
         </div>
     </div>
 
@@ -271,7 +270,7 @@
             <span class="total-amount">R{{ number_format($order->subtotal, 2) }}</span>
         </div>
         <div class="total-row">
-            <span class="total-label">Tax (18% VAT):</span>
+            <span class="total-label">Tax ({{ \App\Models\Setting::get('tax_rate', 18) }}% VAT):</span>
             <span class="total-amount">R{{ number_format($order->tax, 2) }}</span>
         </div>
         @if($order->tip)

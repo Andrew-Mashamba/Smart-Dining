@@ -21,6 +21,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
             'api.role' => \App\Http\Middleware\ApiCheckRole::class,
+            'log.api' => \App\Http\Middleware\LogApiRequests::class,
+        ]);
+
+        // Log all API requests
+        $middleware->api(append: [
+            \App\Http\Middleware\LogApiRequests::class,
         ]);
 
         // Redirect authenticated users trying to access guest routes to /dashboard

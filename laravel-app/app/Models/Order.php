@@ -88,6 +88,14 @@ class Order extends Model
     }
 
     /**
+     * Alias for orderItems() for backwards compatibility.
+     */
+    public function items(): HasMany
+    {
+        return $this->orderItems();
+    }
+
+    /**
      * Get all payments for this order.
      */
     public function payments(): HasMany
@@ -109,7 +117,10 @@ class Order extends Model
     public function calculateTotals(): void
     {
         $subtotal = $this->orderItems()->sum('subtotal');
-        $tax = $subtotal * 0.18; // 18% VAT
+
+        // Get tax rate from settings, default to 18% if not set
+        $taxRate = Setting::get('tax_rate', 18) / 100;
+        $tax = $subtotal * $taxRate;
         $total = $subtotal + $tax;
 
         $this->update([

@@ -106,5 +106,5 @@ Route::prefix('webhooks')->group(function () {
     Route::post('whatsapp', [App\Http\Controllers\WhatsApp\WebhookController::class, 'handle']);
 
     // Stripe webhook (signature verification handled in controller)
-    Route::post('stripe', [App\Http\Controllers\Api\StripeWebhookController::class, 'handle']);
+    Route::post('stripe', [App\Http\Controllers\StripeWebhookController::class, 'handle']);
 });

@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use App\Services\StripePaymentService;
+use App\Services\Payment\StripePaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class StripePaymentWebController extends Controller
 {
-    protected $stripeService;
+    protected StripePaymentService $stripeService;
 
     public function __construct(StripePaymentService $stripeService)
     {
