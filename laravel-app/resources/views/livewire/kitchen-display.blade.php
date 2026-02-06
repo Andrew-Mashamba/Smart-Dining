@@ -169,9 +169,8 @@
             <span>Updating...</span>
         </div>
     </div>
-</div>
 
-<style>
+    <style>
     /* Ensure large text for visibility */
     .kitchen-display h3 {
         font-size: 1.5rem;
@@ -192,4 +191,5 @@
             page-break-inside: avoid;
         }
     }
-</style>
+    </style>
+</div>

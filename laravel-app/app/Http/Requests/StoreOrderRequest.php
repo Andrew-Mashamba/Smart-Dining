@@ -15,6 +15,26 @@ class StoreOrderRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('items')) {
+            $items = $this->input('items', []);
+            foreach ($items as $index => $item) {
+                if (isset($item['special_instructions'])) {
+                    $items[$index]['special_instructions'] = strip_tags($item['special_instructions']);
+                }
+            }
+            $this->merge(['items' => $items]);
+        }
+
+        if ($this->has('notes')) {
+            $this->merge(['notes' => strip_tags($this->input('notes'))]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
@@ -24,7 +44,7 @@ class StoreOrderRequest extends FormRequest
         return [
             'guest_id' => 'required|exists:guests,id',
             'table_id' => 'required|exists:tables,id',
-            'waiter_id' => 'required|exists:staff,id',
+            'waiter_id' => 'nullable|exists:staff,id',
             'session_id' => 'nullable|exists:guest_sessions,id',
             'order_source' => 'nullable|in:whatsapp,pos,web',
             'notes' => 'nullable|string|max:500',

@@ -64,10 +64,23 @@
                         <div class="text-sm font-medium text-gray-900">{{ auth()->user()->name }}</div>
                         <div class="text-xs text-gray-600">{{ auth()->user()->email }}</div>
                     </div>
+                    <a href="{{ route('help.index') }}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Help & Documentation</span>
+                        </div>
+                    </a>
                     <form method="POST" action="{{ route('logout') }}" class="mt-1">
                         @csrf
                         <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-900 hover:bg-gray-50 transition-colors">
-                            Logout
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                                </svg>
+                                <span>Logout</span>
+                            </div>
                         </button>
                     </form>
                 </div>

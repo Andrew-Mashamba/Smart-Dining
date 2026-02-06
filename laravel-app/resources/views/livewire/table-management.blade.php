@@ -55,9 +55,12 @@
 
                 <!-- Capacity -->
                 <div>
-                    <label for="capacity" class="block text-sm font-medium text-gray-700 mb-1">
-                        Capacity
-                    </label>
+                    <div class="flex items-center gap-2 mb-1">
+                        <label for="capacity" class="block text-sm font-medium text-gray-700">
+                            Capacity
+                        </label>
+                        <x-help-tooltip text="Maximum number of guests this table can accommodate. Helps staff assign appropriate tables to parties." position="right" />
+                    </div>
                     <input
                         type="number"
                         id="capacity"

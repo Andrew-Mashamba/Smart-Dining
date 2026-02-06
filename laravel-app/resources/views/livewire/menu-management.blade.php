@@ -286,9 +286,12 @@
 
                         <!-- Prep Area -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-900 mb-1">
-                                Prep Area <span class="text-red-600">*</span>
-                            </label>
+                            <div class="flex items-center gap-2 mb-1">
+                                <label class="block text-sm font-medium text-gray-900">
+                                    Prep Area <span class="text-red-600">*</span>
+                                </label>
+                                <x-help-tooltip text="Kitchen items appear on Kitchen Display. Bar items appear on Bar Display. This determines which staff prepares the item." position="right" />
+                            </div>
                             <select
                                 wire:model="itemPrepArea"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
@@ -334,7 +337,10 @@
 
                         <!-- Stock -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-900 mb-1">Stock Quantity</label>
+                            <div class="flex items-center gap-2 mb-1">
+                                <label class="block text-sm font-medium text-gray-900">Stock Quantity</label>
+                                <x-help-tooltip text="Track inventory for this item. Leave blank for unlimited stock. Item becomes unavailable when stock reaches zero." position="right" />
+                            </div>
                             <input
                                 type="number"
                                 wire:model="itemStock"

@@ -76,8 +76,8 @@ class OrderController extends Controller
         $validated = $request->validated();
         $staff = $request->user();
 
-        // If the user is a waiter, automatically assign them as the waiter
-        if ($staff->role === 'waiter' && !isset($validated['waiter_id'])) {
+        // Ensure waiter_id is set
+        if (!isset($validated['waiter_id'])) {
             $validated['waiter_id'] = $staff->id;
         }
 

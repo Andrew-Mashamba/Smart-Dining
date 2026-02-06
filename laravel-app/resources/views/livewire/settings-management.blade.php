@@ -66,12 +66,18 @@
 
                     <!-- Tax & Pricing -->
                     <div class="mb-8">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Tax & Pricing</h3>
+                        <div class="flex items-center gap-2 mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Tax & Pricing</h3>
+                            <x-help-tooltip text="Tax rate is automatically applied to all orders. Changes affect new orders immediately." position="right" />
+                        </div>
                         <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                             <div class="mb-0">
-                                <label for="tax_rate" class="block text-sm font-medium text-gray-900 mb-2">
-                                    Tax Rate (%) *
-                                </label>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <label for="tax_rate" class="block text-sm font-medium text-gray-900">
+                                        Tax Rate (%) *
+                                    </label>
+                                    <x-help-tooltip text="Enter the tax rate as a decimal percentage (e.g., 8.5 for 8.5%). This will be applied to all menu items." position="right" />
+                                </div>
                                 <input type="number" id="tax_rate" wire:model="tax_rate" step="0.01" min="0" max="100"
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-900">
                                 @error('tax_rate')
@@ -84,7 +90,10 @@
 
                     <!-- Operations -->
                     <div class="mb-8">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Operations</h3>
+                        <div class="flex items-center gap-2 mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Operations</h3>
+                            <x-help-tooltip text="Set your restaurant's operating hours. These times are displayed to guests and used for reporting." position="right" />
+                        </div>
                         <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>

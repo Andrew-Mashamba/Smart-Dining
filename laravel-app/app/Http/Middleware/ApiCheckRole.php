@@ -44,7 +44,8 @@ class ApiCheckRole extends CheckRole
         // Check Sanctum token abilities for additional granular control
         // This allows tokens to be issued with specific scopes even if the user has the role
         // Only check abilities if token abilities are explicitly set
-        if ($user->currentAccessToken() && count($user->currentAccessToken()->abilities) > 0 && !in_array('*', $user->currentAccessToken()->abilities)) {
+        $token = $user->currentAccessToken();
+        if ($token && $token->abilities !== null && is_array($token->abilities) && count($token->abilities) > 0 && !in_array('*', $token->abilities)) {
             $requiredAbility = $this->mapRoleToAbility($user->role);
 
             if ($requiredAbility && !$user->tokenCan($requiredAbility)) {

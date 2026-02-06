@@ -2,11 +2,13 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
+use App\Models\Staff;
 use App\Models\Table;
 use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\Guest;
+use App\Models\MenuCategory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -15,33 +17,35 @@ class SecurityAuditTest extends TestCase
 {
     use RefreshDatabase;
 
-    private User $user;
-    private User $admin;
+    private Staff $user;
+    private Staff $admin;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->user = User::factory()->create([
+        $this->user = Staff::factory()->create([
             'role' => 'waiter',
             'email' => 'waiter@test.com',
             'password' => Hash::make('password'),
+            'status' => 'active',
         ]);
 
-        $this->admin = User::factory()->create([
+        $this->admin = Staff::factory()->create([
             'role' => 'admin',
             'email' => 'admin@test.com',
             'password' => Hash::make('password'),
+            'status' => 'active',
         ]);
     }
 
     /** @test */
     public function api_endpoints_require_authentication()
     {
+        // Only test protected endpoints (menu is public)
         $endpoints = [
             ['method' => 'get', 'url' => '/api/orders'],
             ['method' => 'post', 'url' => '/api/orders'],
-            ['method' => 'get', 'url' => '/api/menu'],
             ['method' => 'get', 'url' => '/api/tables'],
             ['method' => 'post', 'url' => '/api/payments'],
         ];
@@ -71,12 +75,21 @@ class SecurityAuditTest extends TestCase
     public function xss_attempts_are_sanitized_in_special_instructions()
     {
         $table = Table::factory()->create();
-        $menuItem = MenuItem::factory()->create(['status' => 'available', 'stock_quantity' => 10]);
+        $guest = Guest::factory()->create();
+        $category = MenuCategory::factory()->create();
+        $menuItem = MenuItem::factory()->create([
+            'category_id' => $category->id,
+            'status' => 'available',
+            'stock_quantity' => 10
+        ]);
 
         // Attempt XSS in special instructions
         $response = $this->actingAs($this->user, 'sanctum')
             ->postJson('/api/orders', [
                 'table_id' => $table->id,
+                'guest_id' => $guest->id,
+                'waiter_id' => $this->user->id,
+                'order_source' => 'pos',
                 'items' => [
                     [
                         'menu_item_id' => $menuItem->id,
@@ -110,13 +123,15 @@ class SecurityAuditTest extends TestCase
     /** @test */
     public function users_cannot_access_unauthorized_orders()
     {
-        $waiter1 = User::factory()->create(['role' => 'waiter']);
-        $waiter2 = User::factory()->create(['role' => 'waiter']);
+        $waiter1 = Staff::factory()->create(['role' => 'waiter', 'status' => 'active']);
+        $waiter2 = Staff::factory()->create(['role' => 'waiter', 'status' => 'active']);
 
         $table = Table::factory()->create();
+        $guest = Guest::factory()->create();
         $order = Order::factory()->create([
             'waiter_id' => $waiter1->id,
             'table_id' => $table->id,
+            'guest_id' => $guest->id,
             'status' => 'pending',
         ]);
 
@@ -131,8 +146,8 @@ class SecurityAuditTest extends TestCase
     /** @test */
     public function role_based_access_control_prevents_unauthorized_actions()
     {
-        $waiter = User::factory()->create(['role' => 'waiter']);
-        $chef = User::factory()->create(['role' => 'chef']);
+        $waiter = Staff::factory()->create(['role' => 'waiter', 'status' => 'active']);
+        $chef = Staff::factory()->create(['role' => 'chef', 'status' => 'active']);
 
         // Waiter should not be able to access chef-only endpoints
         $response = $this->actingAs($waiter, 'sanctum')
@@ -142,8 +157,11 @@ class SecurityAuditTest extends TestCase
 
         // Chef should not be able to process payments
         $table = Table::factory()->create();
+        $guest = Guest::factory()->create();
         $order = Order::factory()->create([
             'table_id' => $table->id,
+            'guest_id' => $guest->id,
+            'waiter_id' => $waiter->id,
             'status' => 'delivered',
             'total' => 100.00,
         ]);
@@ -162,7 +180,7 @@ class SecurityAuditTest extends TestCase
     public function sensitive_data_is_not_exposed_in_api_responses()
     {
         $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/user');
+            ->getJson('/api/auth/me');
 
         $response->assertStatus(200);
         $data = $response->json();
@@ -176,7 +194,10 @@ class SecurityAuditTest extends TestCase
     public function payment_amounts_cannot_be_manipulated()
     {
         $table = Table::factory()->create();
+        $guest = Guest::factory()->create();
+        $category = MenuCategory::factory()->create();
         $menuItem = MenuItem::factory()->create([
+            'category_id' => $category->id,
             'price' => 100.00,
             'status' => 'available',
             'stock_quantity' => 10,
@@ -186,6 +207,9 @@ class SecurityAuditTest extends TestCase
         $orderResponse = $this->actingAs($this->user, 'sanctum')
             ->postJson('/api/orders', [
                 'table_id' => $table->id,
+                'guest_id' => $guest->id,
+                'waiter_id' => $this->user->id,
+                'order_source' => 'pos',
                 'items' => [
                     [
                         'menu_item_id' => $menuItem->id,
@@ -194,7 +218,9 @@ class SecurityAuditTest extends TestCase
                 ],
             ]);
 
-        $order = Order::find($orderResponse->json('order.id'));
+        $orderResponse->assertStatus(201);
+        $order = Order::find($orderResponse->json('order.order_id'));
+        $this->assertNotNull($order, 'Order was not created');
 
         // Try to pay less than the order total
         $response = $this->actingAs($this->user, 'sanctum')
@@ -212,12 +238,21 @@ class SecurityAuditTest extends TestCase
     public function mass_assignment_vulnerabilities_are_prevented()
     {
         $table = Table::factory()->create();
-        $menuItem = MenuItem::factory()->create(['status' => 'available', 'stock_quantity' => 10]);
+        $guest = Guest::factory()->create();
+        $category = MenuCategory::factory()->create();
+        $menuItem = MenuItem::factory()->create([
+            'category_id' => $category->id,
+            'status' => 'available',
+            'stock_quantity' => 10
+        ]);
 
         // Attempt to set unauthorized fields via mass assignment
         $response = $this->actingAs($this->user, 'sanctum')
             ->postJson('/api/orders', [
                 'table_id' => $table->id,
+                'guest_id' => $guest->id,
+                'waiter_id' => $this->user->id,
+                'order_source' => 'pos',
                 'items' => [
                     [
                         'menu_item_id' => $menuItem->id,
@@ -228,11 +263,12 @@ class SecurityAuditTest extends TestCase
                 'total_amount' => 1.00, // Try to override calculated total
             ]);
 
-        if ($response->status() === 201) {
-            $order = Order::find($response->json('order.id'));
-            $this->assertNotEquals('paid', $order->status);
-            $this->assertNotEquals(1.00, $order->total);
-        }
+        // Order creation should succeed (status 201), but unauthorized fields should be ignored
+        $response->assertStatus(201);
+        $order = Order::find($response->json('order.order_id'));
+        $this->assertNotNull($order, 'Order was not created');
+        $this->assertNotEquals('paid', $order->status);
+        $this->assertNotEquals(1.00, $order->total);
     }
 
     /** @test */
@@ -257,7 +293,7 @@ class SecurityAuditTest extends TestCase
         $token = $this->user->createToken('test-token', ['*'], now()->subHour());
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $token->plainTextToken)
-            ->getJson('/api/user');
+            ->getJson('/api/auth/me');
 
         // Should return unauthorized due to expired token (401) or not found (404)
         // Laravel Sanctum may return 404 if route is not found before auth check
@@ -288,11 +324,20 @@ class SecurityAuditTest extends TestCase
     public function input_validation_prevents_negative_quantities()
     {
         $table = Table::factory()->create();
-        $menuItem = MenuItem::factory()->create(['status' => 'available', 'stock_quantity' => 10]);
+        $guest = Guest::factory()->create();
+        $category = MenuCategory::factory()->create();
+        $menuItem = MenuItem::factory()->create([
+            'category_id' => $category->id,
+            'status' => 'available',
+            'stock_quantity' => 10
+        ]);
 
         $response = $this->actingAs($this->user, 'sanctum')
             ->postJson('/api/orders', [
                 'table_id' => $table->id,
+                'guest_id' => $guest->id,
+                'waiter_id' => $this->user->id,
+                'order_source' => 'pos',
                 'items' => [
                     [
                         'menu_item_id' => $menuItem->id,
@@ -308,7 +353,10 @@ class SecurityAuditTest extends TestCase
     public function input_validation_prevents_excessive_quantities()
     {
         $table = Table::factory()->create();
+        $guest = Guest::factory()->create();
+        $category = MenuCategory::factory()->create();
         $menuItem = MenuItem::factory()->create([
+            'category_id' => $category->id,
             'status' => 'available',
             'stock_quantity' => 5,
         ]);
@@ -316,6 +364,9 @@ class SecurityAuditTest extends TestCase
         $response = $this->actingAs($this->user, 'sanctum')
             ->postJson('/api/orders', [
                 'table_id' => $table->id,
+                'guest_id' => $guest->id,
+                'waiter_id' => $this->user->id,
+                'order_source' => 'pos',
                 'items' => [
                     [
                         'menu_item_id' => $menuItem->id,

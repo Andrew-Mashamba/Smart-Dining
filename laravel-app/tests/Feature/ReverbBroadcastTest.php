@@ -6,7 +6,7 @@ use App\Events\OrderCreated;
 use App\Events\OrderStatusUpdated;
 use App\Models\Order;
 use App\Models\Table;
-use App\Models\User;
+use App\Models\Staff;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
@@ -23,7 +23,7 @@ class ReverbBroadcastTest extends TestCase
         Event::fake([OrderCreated::class]);
 
         // Create necessary relationships
-        $waiter = User::factory()->create(['role' => 'waiter']);
+        $waiter = Staff::factory()->create(['role' => 'waiter', 'status' => 'active']);
         $table = Table::create([
             'name' => 'Table 1',
             'location' => 'Main Dining',
@@ -57,7 +57,7 @@ class ReverbBroadcastTest extends TestCase
      */
     public function test_order_created_broadcasts_on_correct_channels(): void
     {
-        $waiter = User::factory()->create(['role' => 'waiter']);
+        $waiter = Staff::factory()->create(['role' => 'waiter', 'status' => 'active']);
         $table = Table::create([
             'name' => 'Table 1',
             'location' => 'Main Dining',
@@ -92,7 +92,7 @@ class ReverbBroadcastTest extends TestCase
     {
         Event::fake([OrderStatusUpdated::class]);
 
-        $waiter = User::factory()->create(['role' => 'waiter']);
+        $waiter = Staff::factory()->create(['role' => 'waiter', 'status' => 'active']);
         $table = Table::create([
             'name' => 'Table 1',
             'location' => 'Main Dining',
@@ -126,7 +126,7 @@ class ReverbBroadcastTest extends TestCase
      */
     public function test_order_status_updated_broadcasts_on_correct_channels(): void
     {
-        $waiter = User::factory()->create(['role' => 'waiter']);
+        $waiter = Staff::factory()->create(['role' => 'waiter', 'status' => 'active']);
         $table = Table::create([
             'name' => 'Table 1',
             'location' => 'Main Dining',

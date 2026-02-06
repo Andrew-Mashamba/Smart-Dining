@@ -139,6 +139,16 @@
                             </svg>
                             <span>Settings</span>
                         </a>
+
+                        <a
+                            href="{{ route('help.index') }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all {{ request()->routeIs('help.*') ? 'bg-white shadow-sm text-gray-900 font-bold' : 'text-gray-600 hover:bg-white hover:shadow-sm hover:text-gray-900' }}"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Help & Docs</span>
+                        </a>
                     </div>
                 @endif
 
@@ -164,6 +174,16 @@
                             </svg>
                             <span>Order History</span>
                         </a>
+
+                        <a
+                            href="{{ route('help.index') }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all {{ request()->routeIs('help.*') ? 'bg-white shadow-sm text-gray-900 font-bold' : 'text-gray-600 hover:bg-white hover:shadow-sm hover:text-gray-900' }}"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Help & Docs</span>
+                        </a>
                     </div>
                 @endif
 
@@ -188,6 +208,16 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                             <span>Order History</span>
+                        </a>
+
+                        <a
+                            href="{{ route('help.index') }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all {{ request()->routeIs('help.*') ? 'bg-white shadow-sm text-gray-900 font-bold' : 'text-gray-600 hover:bg-white hover:shadow-sm hover:text-gray-900' }}"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Help & Docs</span>
                         </a>
                     </div>
                 @endif
@@ -223,6 +253,16 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z"></path>
                             </svg>
                             <span>Tables</span>
+                        </a>
+
+                        <a
+                            href="{{ route('help.index') }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all {{ request()->routeIs('help.*') ? 'bg-white shadow-sm text-gray-900 font-bold' : 'text-gray-600 hover:bg-white hover:shadow-sm hover:text-gray-900' }}"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Help & Docs</span>
                         </a>
                     </div>
                 @endif

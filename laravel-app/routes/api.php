@@ -52,16 +52,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('guests', [GuestController::class, 'store']);
     });
 
-    // Chef routes: can view kitchen orders, update item prep_status (kitchen items only)
-    Route::middleware(['api.role:chef,manager,admin'])->group(function () {
-        Route::get('order-items/pending', [OrderItemController::class, 'pending']);
-        Route::post('order-items/{id}/received', [OrderItemController::class, 'markReceived']);
-        Route::post('order-items/{id}/done', [OrderItemController::class, 'markDone']);
-    });
-
-    // Bartender routes: can view bar orders, update item prep_status (bar items only)
-    // (shares same endpoints as chef, validation happens in controller)
-    Route::middleware(['api.role:bartender,manager,admin'])->group(function () {
+    // Chef and Bartender routes: can view kitchen/bar orders, update item prep_status
+    // (validation for kitchen vs bar items happens in controller)
+    Route::middleware(['api.role:chef,bartender,manager,admin'])->group(function () {
         Route::get('order-items/pending', [OrderItemController::class, 'pending']);
         Route::post('order-items/{id}/received', [OrderItemController::class, 'markReceived']);
         Route::post('order-items/{id}/done', [OrderItemController::class, 'markDone']);

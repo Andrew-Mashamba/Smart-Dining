@@ -100,7 +100,7 @@ class ReceiptPdfGenerationTest extends TestCase
             'unit_price' => 250.00,
             'subtotal' => 250.00,
             'special_instructions' => 'Well done please',
-            'prep_status' => 'done',
+            'prep_status' => 'ready',
         ]);
 
         OrderItem::create([
@@ -110,7 +110,7 @@ class ReceiptPdfGenerationTest extends TestCase
             'unit_price' => 85.00,
             'subtotal' => 170.00,
             'special_instructions' => null,
-            'prep_status' => 'done',
+            'prep_status' => 'ready',
         ]);
 
         // Create payment

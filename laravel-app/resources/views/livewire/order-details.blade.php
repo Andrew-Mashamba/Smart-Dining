@@ -2,9 +2,12 @@
     <!-- Page Header -->
     <div class="mb-6">
         <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900">Order Details</h1>
-                <p class="text-sm text-gray-600 mt-1">View and manage order information</p>
+            <div class="flex items-center gap-2">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Order Details</h1>
+                    <p class="text-sm text-gray-600 mt-1">View and manage order information</p>
+                </div>
+                <x-help-tooltip text="View complete order information, update status, process payments, and manage order items. Status changes are tracked and logged." position="right" />
             </div>
             <a href="{{ route('orders') }}" class="px-4 py-2 bg-white border border-gray-300 text-gray-900 rounded-lg hover:bg-gray-50 transition-colors">
                 Back to Orders
