@@ -12,6 +12,7 @@ use App\Livewire\MenuManagement;
 use App\Livewire\TableManagement;
 use App\Livewire\CreateOrder;
 use App\Livewire\OrdersList;
+use App\Livewire\OrderDetails;
 
 // Root route: Redirect guests to login, authenticated users to dashboard
 Route::get('/', function () {
@@ -49,6 +50,9 @@ Route::middleware(['auth:web'])->group(function () {
 
     // Create Order Livewire component route (waiter, manager, and admin access)
     Route::get('/orders/create', CreateOrder::class)->middleware(['auth', 'role:waiter,manager,admin'])->name('orders.create');
+
+    // Order Details Livewire component route (authenticated users)
+    Route::get('/orders/{order}', OrderDetails::class)->middleware(['auth'])->name('orders.show');
 
     // Manager Portal (admin and manager access)
     Route::middleware(['role:admin,manager'])->prefix('manager')->name('manager.')->group(function () {
