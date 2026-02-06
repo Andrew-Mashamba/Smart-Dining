@@ -115,7 +115,7 @@ class StripeWebhookController extends Controller
                 ->where('status', 'completed')
                 ->sum('amount');
 
-            if ($totalPaid >= $order->total_amount && $order->status === 'served') {
+            if ($totalPaid >= $order->total && $order->status === 'served') {
                 $order->update(['status' => 'completed']);
             }
         } catch (Exception $e) {

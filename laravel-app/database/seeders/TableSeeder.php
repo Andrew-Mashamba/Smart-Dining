@@ -9,12 +9,13 @@ class TableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     * Creates 20 tables across indoor, outdoor, and bar sections
      */
     public function run(): void
     {
         $tables = [];
 
-        // Indoor Tables (1-10)
+        // Indoor Tables (10 tables)
         for ($i = 1; $i <= 10; $i++) {
             $tables[] = [
                 'name' => "Table $i",
@@ -24,8 +25,8 @@ class TableSeeder extends Seeder
             ];
         }
 
-        // Outdoor Tables (11-15)
-        for ($i = 11; $i <= 15; $i++) {
+        // Outdoor Tables (6 tables)
+        for ($i = 11; $i <= 16; $i++) {
             $tables[] = [
                 'name' => "Table $i (Outdoor)",
                 'location' => 'outdoor',
@@ -34,12 +35,12 @@ class TableSeeder extends Seeder
             ];
         }
 
-        // Bar Seats (1-8)
-        for ($i = 1; $i <= 8; $i++) {
+        // Bar Seats (4 tables/seats)
+        for ($i = 1; $i <= 4; $i++) {
             $tables[] = [
                 'name' => "Bar Seat $i",
                 'location' => 'bar',
-                'capacity' => 1,
+                'capacity' => 2,
                 'status' => 'available',
             ];
         }
@@ -48,7 +49,10 @@ class TableSeeder extends Seeder
             Table::create($table);
         }
 
-        $this->command->info('Tables seeded successfully!');
-        $this->command->info('Created: 10 indoor tables, 5 outdoor tables, 8 bar seats');
+        $this->command->info('✓ Tables seeded successfully!');
+        $this->command->info('  - 10 indoor tables');
+        $this->command->info('  - 6 outdoor tables');
+        $this->command->info('  - 4 bar seats');
+        $this->command->info('  - Total: 20 tables');
     }
 }

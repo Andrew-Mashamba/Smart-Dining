@@ -103,18 +103,22 @@ class AuthController extends Controller
      *
      * Token abilities provide granular permission control for Sanctum API tokens.
      * These can be checked using $user->tokenCan('ability') in controllers.
+     *
+     * Each role gets a base access ability (e.g., 'waiter:access') that the
+     * ApiCheckRole middleware validates, plus specific action abilities.
      */
     protected function getAbilitiesByRole(string $role): array
     {
         $abilities = [
             // Admin: Full access including staff management
-            'admin' => ['*'],
+            'admin' => ['*', 'admin:access'],
 
             // Manager: Full access to all operational endpoints
-            'manager' => ['*'],
+            'manager' => ['*', 'manager:access'],
 
             // Waiter: Can create orders, view own orders, process payments
             'waiter' => [
+                'waiter:access',
                 'orders:create',
                 'orders:view',
                 'orders:view-own',
@@ -130,6 +134,7 @@ class AuthController extends Controller
 
             // Chef: Can view kitchen orders and update prep status for kitchen items only
             'chef' => [
+                'chef:access',
                 'orders:view',
                 'order-items:view',
                 'order-items:update-kitchen',
@@ -138,6 +143,7 @@ class AuthController extends Controller
 
             // Bartender: Can view bar orders and update prep status for bar items only
             'bartender' => [
+                'bartender:access',
                 'orders:view',
                 'order-items:view',
                 'order-items:update-bar',

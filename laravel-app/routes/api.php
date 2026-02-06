@@ -108,3 +108,52 @@ Route::prefix('webhooks')->group(function () {
     // Stripe webhook (signature verification handled in controller)
     Route::post('stripe', [App\Http\Controllers\StripeWebhookController::class, 'handle']);
 });
+
+// Test error handling routes for API (development only - should be removed in production)
+if (config('app.env') !== 'production') {
+    Route::prefix('test-errors')->group(function () {
+        // Test 404 error
+        Route::get('404', function () {
+            abort(404, 'Resource not found');
+        });
+
+        // Test 500 error
+        Route::get('500', function () {
+            throw new \Exception('Test 500 error for API');
+        });
+
+        // Test validation error (422)
+        Route::post('validation', function () {
+            request()->validate([
+                'email' => 'required|email',
+                'name' => 'required|min:3',
+                'age' => 'required|integer|min:18',
+            ]);
+        });
+
+        // Test unauthorized error (403)
+        Route::get('unauthorized', function () {
+            abort(403, 'Unauthorized API access');
+        });
+
+        // Test unauthenticated error (401)
+        Route::middleware('auth:sanctum')->get('unauthenticated', function () {
+            return response()->json(['message' => 'Authenticated']);
+        });
+
+        // Test OrderWorkflowException
+        Route::get('order-workflow', function () {
+            throw \App\Exceptions\OrderWorkflowException::invalidTransition('pending', 'completed');
+        });
+
+        // Test PaymentException
+        Route::get('payment', function () {
+            throw new \App\Exceptions\PaymentException('Payment processing failed');
+        });
+
+        // Test InventoryException
+        Route::get('inventory', function () {
+            throw new \App\Exceptions\InventoryException('Insufficient stock');
+        });
+    });
+}

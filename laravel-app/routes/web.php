@@ -41,6 +41,55 @@ Route::get('/test-broadcast', function () {
     return view('test-broadcasting');
 })->middleware(['auth:web'])->name('test.broadcast');
 
+// Test error handling routes (development only - should be removed in production)
+if (config('app.env') !== 'production') {
+    Route::prefix('test-errors')->group(function () {
+        // Test 404 error
+        Route::get('/404', function () {
+            abort(404);
+        });
+
+        // Test 500 error
+        Route::get('/500', function () {
+            throw new \Exception('Test 500 error');
+        });
+
+        // Test validation error
+        Route::post('/validation', function () {
+            request()->validate([
+                'email' => 'required|email',
+                'name' => 'required|min:3',
+            ]);
+        });
+
+        // Test unauthorized error
+        Route::get('/unauthorized', function () {
+            abort(403, 'Unauthorized access');
+        });
+
+        // Test OrderWorkflowException
+        Route::get('/order-workflow', function () {
+            throw \App\Exceptions\OrderWorkflowException::invalidTransition('pending', 'completed');
+        });
+
+        // Test PaymentException
+        Route::get('/payment', function () {
+            throw new \App\Exceptions\PaymentException('Payment processing failed');
+        });
+
+        // Test InventoryException
+        Route::get('/inventory', function () {
+            throw new \App\Exceptions\InventoryException('Insufficient stock');
+        });
+
+        // View error logs
+        Route::get('/logs', function () {
+            $logs = \App\Models\ErrorLog::orderBy('created_at', 'desc')->limit(50)->get();
+            return response()->json($logs);
+        });
+    });
+}
+
 // Root route: Redirect guests to login, authenticated users to dashboard
 Route::get('/', function () {
     if (auth()->check()) {
