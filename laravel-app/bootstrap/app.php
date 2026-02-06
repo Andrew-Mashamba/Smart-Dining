@@ -25,6 +25,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // Redirect authenticated users trying to access guest routes to /dashboard
         $middleware->redirectGuestsTo('/login');
         $middleware->redirectUsersTo('/dashboard');
+
+        // Exempt WhatsApp webhook from CSRF protection
+        $middleware->validateCsrfTokens(except: [
+            'webhooks/whatsapp',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

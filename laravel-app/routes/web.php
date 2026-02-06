@@ -7,6 +7,7 @@ use App\Http\Controllers\Web\KitchenController;
 use App\Http\Controllers\Web\BarController;
 use App\Livewire\Dashboard;
 use App\Livewire\Reports;
+use App\Livewire\SalesReports;
 use App\Livewire\Users;
 use App\Livewire\StaffManagement;
 use App\Livewire\MenuManagement;
@@ -20,9 +21,14 @@ use App\Livewire\BarDisplay;
 use App\Livewire\GuestManagement;
 use App\Livewire\InventoryManagement;
 use App\Livewire\GuestOrder;
+use App\Http\Controllers\WhatsAppController;
 
 // Guest ordering route (public access via QR code)
 Route::get('/guest/order', GuestOrder::class)->name('guest.order');
+
+// WhatsApp webhook routes (public access for WhatsApp API)
+Route::get('/webhooks/whatsapp', [WhatsAppController::class, 'verify'])->name('whatsapp.verify');
+Route::post('/webhooks/whatsapp', [WhatsAppController::class, 'webhook'])->name('whatsapp.webhook');
 
 // Root route: Redirect guests to login, authenticated users to dashboard
 Route::get('/', function () {
@@ -51,6 +57,9 @@ Route::middleware(['auth:web'])->group(function () {
 
     // Reports Livewire component route (admin and manager only)
     Route::get('/reports', Reports::class)->middleware(['role:admin,manager'])->name('reports');
+
+    // Sales Reports Livewire component route (admin and manager only)
+    Route::get('/reports/sales', SalesReports::class)->middleware(['auth', 'role:manager,admin'])->name('reports.sales');
 
     // Menu Management Livewire component route
     Route::get('/menu', MenuManagement::class)->middleware(['auth', 'role:admin,manager'])->name('menu');

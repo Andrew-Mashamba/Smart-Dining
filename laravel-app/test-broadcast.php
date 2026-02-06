@@ -44,7 +44,7 @@ echo "Reverb Key: " . substr($reverbKey, 0, 10) . "...\n\n";
 // Try to find a test order or create one
 echo "Looking for a test order...\n";
 
-$order = Order::with(['table', 'items'])->first();
+$order = Order::with(['table', 'orderItems'])->first();
 
 if (!$order) {
     echo "❌ No orders found in database. Please create an order first.\n";
@@ -55,7 +55,7 @@ if (!$order) {
 echo "✓ Found Order ID: {$order->id}\n";
 echo "  Table: {$order->table->name}\n";
 echo "  Status: {$order->status}\n";
-echo "  Items: {$order->items->count()}\n\n";
+echo "  Items: {$order->orderItems->count()}\n\n";
 
 // Dispatch the OrderCreated event
 echo "Dispatching OrderCreated event...\n";
