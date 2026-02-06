@@ -9,6 +9,7 @@ use App\Livewire\Dashboard;
 use App\Livewire\Reports;
 use App\Livewire\Users;
 use App\Livewire\MenuManagement;
+use App\Livewire\TableManagement;
 
 // Root route: Redirect guests to login, authenticated users to dashboard
 Route::get('/', function () {
@@ -37,6 +38,9 @@ Route::middleware(['auth:web'])->group(function () {
 
     // Menu Management Livewire component route
     Route::get('/menu', MenuManagement::class)->middleware(['auth', 'role:admin,manager'])->name('menu');
+
+    // Table Management Livewire component route (admin and manager only)
+    Route::get('/tables', TableManagement::class)->middleware(['auth', 'role:admin,manager'])->name('tables');
 
     // Manager Portal (admin and manager access)
     Route::middleware(['role:admin,manager'])->prefix('manager')->name('manager.')->group(function () {
