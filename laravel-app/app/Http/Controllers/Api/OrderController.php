@@ -67,10 +67,19 @@ class OrderController extends Controller
 
     /**
      * Create a new order
+     *
+     * Waiters automatically get assigned as the order's waiter.
+     * Managers and admins can specify a different waiter_id if needed.
      */
     public function store(StoreOrderRequest $request)
     {
         $validated = $request->validated();
+        $staff = $request->user();
+
+        // If the user is a waiter, automatically assign them as the waiter
+        if ($staff->role === 'waiter' && !isset($validated['waiter_id'])) {
+            $validated['waiter_id'] = $staff->id;
+        }
 
         $order = $this->orderService->createOrder($validated);
 

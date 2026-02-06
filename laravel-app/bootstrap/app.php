@@ -38,5 +38,53 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->throttleApi('60,1');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Custom exception handling for API and web requests
+        $exceptions->render(function (Throwable $e, $request) {
+            // Handle API requests with JSON responses
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $e->getMessage() ?: 'An error occurred',
+                    'errors' => $e instanceof \Illuminate\Validation\ValidationException
+                        ? $e->errors()
+                        : null,
+                ], $e instanceof \Illuminate\Validation\ValidationException
+                    ? 422
+                    : ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException
+                        ? $e->getStatusCode()
+                        : 500)
+                );
+            }
+
+            // Let Laravel handle web requests (will use custom error views)
+            return null;
+        });
+
+        // Report critical exceptions to specific log channel
+        $exceptions->report(function (\App\Exceptions\OrderWorkflowException $e) {
+            \Log::channel('critical')->critical($e->getMessage(), [
+                'exception' => get_class($e),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+        });
+
+        $exceptions->report(function (\App\Exceptions\PaymentException $e) {
+            \Log::channel('critical')->critical($e->getMessage(), [
+                'exception' => get_class($e),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+        });
+
+        $exceptions->report(function (\App\Exceptions\InventoryException $e) {
+            \Log::channel('critical')->critical($e->getMessage(), [
+                'exception' => get_class($e),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+        });
     })->create();
