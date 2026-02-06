@@ -8,6 +8,7 @@ use App\Http\Controllers\Web\BarController;
 use App\Livewire\Dashboard;
 use App\Livewire\Reports;
 use App\Livewire\Users;
+use App\Livewire\StaffManagement;
 use App\Livewire\MenuManagement;
 use App\Livewire\TableManagement;
 use App\Livewire\CreateOrder;
@@ -16,6 +17,7 @@ use App\Livewire\OrderDetails;
 use App\Livewire\KitchenDisplay;
 use App\Livewire\BarDisplay;
 use App\Livewire\GuestManagement;
+use App\Livewire\InventoryManagement;
 
 // Root route: Redirect guests to login, authenticated users to dashboard
 Route::get('/', function () {
@@ -39,11 +41,17 @@ Route::middleware(['auth:web'])->group(function () {
     // Users Livewire component route (admin and manager only)
     Route::get('/users', Users::class)->middleware(['role:admin,manager'])->name('users');
 
+    // Staff Management Livewire component route (admin and manager only)
+    Route::get('/staff', StaffManagement::class)->middleware(['auth', 'role:admin,manager'])->name('staff');
+
     // Reports Livewire component route (admin and manager only)
     Route::get('/reports', Reports::class)->middleware(['role:admin,manager'])->name('reports');
 
     // Menu Management Livewire component route
     Route::get('/menu', MenuManagement::class)->middleware(['auth', 'role:admin,manager'])->name('menu');
+
+    // Inventory Management Livewire component route (admin and manager only)
+    Route::get('/inventory', InventoryManagement::class)->middleware(['auth', 'role:manager,admin'])->name('inventory');
 
     // Table Management Livewire component route (admin and manager only)
     Route::get('/tables', TableManagement::class)->middleware(['auth', 'role:admin,manager'])->name('tables');
