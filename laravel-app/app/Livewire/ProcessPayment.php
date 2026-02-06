@@ -91,6 +91,11 @@ class ProcessPayment extends Component
             'amount.min' => 'Amount must be at least $0.01',
         ]);
 
+        // If gateway payment, redirect to Stripe payment page
+        if ($this->payment_method === 'gateway') {
+            return redirect()->route('payments.stripe.form', $this->order->id);
+        }
+
         try {
             DB::beginTransaction();
 

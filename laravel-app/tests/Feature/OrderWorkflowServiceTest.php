@@ -9,6 +9,7 @@ use App\Models\Guest;
 use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\OrderStatusLog;
 use App\Models\Payment;
 use App\Models\Staff;
 use App\Models\Table;
@@ -155,6 +156,7 @@ class OrderWorkflowServiceTest extends TestCase
 
         $this->service->updateStatus($order->id, 'preparing');
 
+        // Check general audit log
         $this->assertDatabaseHas('audit_logs', [
             'auditable_type' => Order::class,
             'auditable_id' => $order->id,
@@ -165,6 +167,14 @@ class OrderWorkflowServiceTest extends TestCase
         $auditLog = AuditLog::where('auditable_id', $order->id)->first();
         $this->assertEquals(['status' => 'pending'], $auditLog->old_values);
         $this->assertEquals(['status' => 'preparing'], $auditLog->new_values);
+
+        // Check order status log
+        $this->assertDatabaseHas('order_status_logs', [
+            'order_id' => $order->id,
+            'old_status' => 'pending',
+            'new_status' => 'preparing',
+            'user_id' => $this->user->id,
+        ]);
     }
 
     /** @test */

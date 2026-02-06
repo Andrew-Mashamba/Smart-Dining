@@ -6,6 +6,7 @@ use App\Events\OrderStatusUpdated;
 use App\Exceptions\OrderWorkflowException;
 use App\Models\AuditLog;
 use App\Models\Order;
+use App\Models\OrderStatusLog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -161,6 +162,15 @@ class OrderWorkflowService
      */
     protected function createAuditLog(Order $order, string $oldStatus, string $newStatus): void
     {
+        // Create OrderStatusLog entry for status change tracking
+        OrderStatusLog::create([
+            'order_id' => $order->id,
+            'old_status' => $oldStatus,
+            'new_status' => $newStatus,
+            'user_id' => Auth::id(),
+        ]);
+
+        // Also create general audit log entry
         AuditLog::create([
             'auditable_type' => Order::class,
             'auditable_id' => $order->id,

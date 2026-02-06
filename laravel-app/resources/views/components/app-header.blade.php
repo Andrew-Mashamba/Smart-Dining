@@ -23,9 +23,14 @@
                 </div>
             </div>
 
-            <!-- User Menu -->
+            <!-- Notifications & User Menu -->
             @auth
-            <div class="relative" x-data="{ dropdownOpen: false }">
+            <div class="flex items-center gap-4">
+                <!-- Notifications Bell -->
+                @livewire('notification-bell')
+
+                <!-- User Menu -->
+                <div class="relative" x-data="{ dropdownOpen: false }">
                 <button
                     @click="dropdownOpen = !dropdownOpen"
                     @click.away="dropdownOpen = false"
@@ -66,6 +71,7 @@
                         </button>
                     </form>
                 </div>
+            </div>
             </div>
             @endauth
 
