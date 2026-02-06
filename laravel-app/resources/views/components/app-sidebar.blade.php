@@ -68,6 +68,16 @@
                             </svg>
                             <span>Menu</span>
                         </a>
+
+                        <a
+                            href="{{ route('tables') }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all {{ request()->routeIs('tables') ? 'bg-white shadow-sm text-gray-900 font-bold' : 'text-gray-600 hover:bg-white hover:shadow-sm hover:text-gray-900' }}"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z"></path>
+                            </svg>
+                            <span>Tables</span>
+                        </a>
                     </div>
                 @endif
 

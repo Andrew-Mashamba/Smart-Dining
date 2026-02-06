@@ -11,37 +11,58 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
-            // Drop old columns
-            $table->dropColumn(['session_id', 'service_charge', 'total_amount', 'notes']);
+        if (Schema::hasTable('orders')) {
+            Schema::table('orders', function (Blueprint $table) {
+                // Check and drop old columns if they exist
+                if (Schema::hasColumn('orders', 'session_id')) {
+                    $table->dropColumn('session_id');
+                }
+                if (Schema::hasColumn('orders', 'service_charge')) {
+                    $table->dropColumn('service_charge');
+                }
+                if (Schema::hasColumn('orders', 'total_amount')) {
+                    $table->dropColumn('total_amount');
+                }
+                if (Schema::hasColumn('orders', 'notes')) {
+                    $table->dropColumn('notes');
+                }
+            });
 
-            // Add new columns
-            $table->string('order_number')->unique()->after('id');
-            $table->decimal('total', 10, 2)->after('tax');
-            $table->text('special_instructions')->nullable()->after('total');
+            Schema::table('orders', function (Blueprint $table) {
+                // Add new columns if they don't exist
+                if (!Schema::hasColumn('orders', 'order_number')) {
+                    $table->string('order_number')->unique()->after('id');
+                }
+                if (!Schema::hasColumn('orders', 'total')) {
+                    $table->decimal('total', 10, 2)->after('tax');
+                }
+                if (!Schema::hasColumn('orders', 'special_instructions')) {
+                    $table->text('special_instructions')->nullable()->after('total');
+                }
 
-            // Modify existing columns to be nullable
-            $table->foreignId('table_id')->nullable()->change();
-            $table->foreignId('guest_id')->nullable()->change();
+                // Modify existing columns to be nullable
+                $table->foreignId('table_id')->nullable()->change();
+                $table->foreignId('guest_id')->nullable()->change();
+            });
 
             // Update status enum values
-            $table->dropColumn('status');
-        });
+            if (Schema::hasColumn('orders', 'status')) {
+                Schema::table('orders', function (Blueprint $table) {
+                    $table->dropColumn('status');
+                });
+            }
 
-        Schema::table('orders', function (Blueprint $table) {
-            $table->enum('status', ['pending', 'preparing', 'ready', 'delivered', 'paid', 'cancelled'])->default('pending')->after('order_source');
-        });
-
-        // Drop old indexes
-        Schema::table('orders', function (Blueprint $table) {
-            $table->dropIndex(['guest_id']);
-            $table->dropIndex(['table_id']);
-            $table->dropIndex(['waiter_id']);
-            $table->dropIndex(['order_source']);
+            Schema::table('orders', function (Blueprint $table) {
+                $table->enum('status', ['pending', 'preparing', 'ready', 'delivered', 'paid', 'cancelled'])->default('pending')->after('order_source');
+            });
 
             // Add new index
-            $table->index('order_number');
-        });
+            Schema::table('orders', function (Blueprint $table) {
+                if (!Schema::hasColumn('orders', 'order_number')) {
+                    $table->index('order_number');
+                }
+            });
+        }
     }
 
     /**

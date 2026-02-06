@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('location')->comment('Table location in restaurant');
             $table->integer('capacity')->comment('Number of seats');
             $table->enum('status', ['available', 'occupied', 'reserved'])->default('available');
-            $table->string('qr_code')->nullable()->comment('QR code for table self-service');
+            $table->text('qr_code')->nullable()->comment('QR code SVG for table self-service');
             $table->timestamps();
 
             // Indexes
