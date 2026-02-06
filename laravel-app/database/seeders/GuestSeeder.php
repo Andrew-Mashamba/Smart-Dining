@@ -10,116 +10,113 @@ class GuestSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     * Creates 50 sample guests with varying loyalty points and visit history
      */
     public function run(): void
     {
-        $guests = [
-            [
-                'phone_number' => '+255712000001',
-                'name' => 'Andrew Mashamba',
-                'first_visit_at' => Carbon::now()->subMonths(6),
-                'last_visit_at' => Carbon::now()->subDays(2),
-                'loyalty_points' => 150,
-                'preferences' => json_encode([
-                    'dietary' => ['no_pork'],
-                    'favorite_table' => 'Table 5',
-                    'favorite_items' => ['Grilled Tilapia', 'Mojito'],
-                ]),
-            ],
-            [
-                'phone_number' => '+255713000002',
-                'name' => 'Sarah Johnson',
-                'first_visit_at' => Carbon::now()->subMonths(3),
-                'last_visit_at' => Carbon::now()->subDays(7),
-                'loyalty_points' => 75,
-                'preferences' => json_encode([
-                    'dietary' => ['vegetarian'],
-                    'favorite_items' => ['Vegetable Pasta', 'Fresh Orange Juice'],
-                ]),
-            ],
-            [
-                'phone_number' => '+255714000003',
-                'name' => 'John Doe',
-                'first_visit_at' => Carbon::now()->subMonths(1),
-                'last_visit_at' => Carbon::now()->subDays(14),
-                'loyalty_points' => 25,
-                'preferences' => null,
-            ],
-            [
-                'phone_number' => '+255715000004',
-                'name' => 'Mary Smith',
-                'first_visit_at' => Carbon::now()->subMonths(8),
-                'last_visit_at' => Carbon::now()->subDays(1),
-                'loyalty_points' => 200,
-                'preferences' => json_encode([
-                    'dietary' => ['gluten_free'],
-                    'favorite_table' => 'Outdoor',
-                    'favorite_items' => ['Grilled Chicken', 'Fruit Salad'],
-                ]),
-            ],
-            [
-                'phone_number' => '+255716000005',
-                'name' => 'Peter Brown',
-                'first_visit_at' => Carbon::now()->subWeeks(2),
-                'last_visit_at' => Carbon::now()->subDays(5),
-                'loyalty_points' => 30,
-                'preferences' => null,
-            ],
-            [
-                'phone_number' => '+255717000006',
-                'name' => 'Grace Mwangi',
-                'first_visit_at' => Carbon::now()->subMonths(4),
-                'last_visit_at' => Carbon::now()->subDays(3),
-                'loyalty_points' => 90,
-                'preferences' => json_encode([
-                    'favorite_items' => ['Seafood Platter', 'White Wine (Glass)'],
-                ]),
-            ],
-            [
-                'phone_number' => '+255718000007',
-                'name' => 'David Kamau',
-                'first_visit_at' => Carbon::now()->subMonths(2),
-                'last_visit_at' => Carbon::now()->subDays(10),
-                'loyalty_points' => 45,
-                'preferences' => null,
-            ],
-            [
-                'phone_number' => '+255719000008',
-                'name' => 'Emma Wilson',
-                'first_visit_at' => Carbon::now()->subMonths(5),
-                'last_visit_at' => Carbon::now()->subDays(4),
-                'loyalty_points' => 120,
-                'preferences' => json_encode([
-                    'favorite_table' => 'Bar Seat 3',
-                    'favorite_items' => ['Chicken Wings', 'Local Beer'],
-                ]),
-            ],
-            [
-                'phone_number' => '+255720000009',
-                'name' => 'James Ochieng',
-                'first_visit_at' => Carbon::now()->subWeeks(3),
-                'last_visit_at' => Carbon::now()->subDays(6),
-                'loyalty_points' => 35,
-                'preferences' => null,
-            ],
-            [
-                'phone_number' => '+255721000010',
-                'name' => 'Linda Kimani',
-                'first_visit_at' => Carbon::now()->subMonths(7),
-                'last_visit_at' => Carbon::now()->subHours(12),
-                'loyalty_points' => 175,
-                'preferences' => json_encode([
-                    'dietary' => ['pescatarian'],
-                    'favorite_items' => ['Fish & Chips', 'Calamari', 'Passion Juice'],
-                ]),
-            ],
+        $firstNames = [
+            'Andrew', 'Sarah', 'John', 'Mary', 'Peter', 'Grace', 'David', 'Emma',
+            'James', 'Linda', 'Michael', 'Patricia', 'Robert', 'Jennifer', 'William',
+            'Elizabeth', 'Richard', 'Susan', 'Joseph', 'Jessica', 'Thomas', 'Karen',
+            'Christopher', 'Nancy', 'Daniel', 'Lisa', 'Matthew', 'Betty', 'Anthony',
+            'Margaret', 'Mark', 'Sandra', 'Donald', 'Ashley', 'Steven', 'Dorothy',
+            'Paul', 'Kimberly', 'Joshua', 'Emily', 'Kenneth', 'Donna', 'Kevin',
+            'Michelle', 'Brian', 'Carol', 'George', 'Amanda', 'Edward', 'Melissa'
         ];
+
+        $lastNames = [
+            'Mashamba', 'Johnson', 'Doe', 'Smith', 'Brown', 'Mwangi', 'Kamau', 'Wilson',
+            'Ochieng', 'Kimani', 'Anderson', 'Taylor', 'Thomas', 'Moore', 'Jackson',
+            'Martin', 'Lee', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark',
+            'Ramirez', 'Lewis', 'Robinson', 'Walker', 'Young', 'Allen', 'King',
+            'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores', 'Green',
+            'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell', 'Mitchell',
+            'Carter', 'Roberts', 'Gomez', 'Phillips', 'Evans', 'Turner', 'Diaz'
+        ];
+
+        $dietaryOptions = [
+            ['no_pork'],
+            ['vegetarian'],
+            ['vegan'],
+            ['gluten_free'],
+            ['pescatarian'],
+            ['no_shellfish'],
+            ['dairy_free'],
+            ['nut_allergy'],
+        ];
+
+        $guests = [];
+
+        for ($i = 0; $i < 50; $i++) {
+            $firstName = $firstNames[$i];
+            $lastName = $lastNames[$i];
+            $name = "$firstName $lastName";
+
+            // Generate phone number
+            $phoneNumber = '+25571' . str_pad(2000001 + $i, 7, '0', STR_PAD_LEFT);
+
+            // Varying visit history and loyalty points
+            $monthsAgo = rand(1, 12);
+            $daysAgo = rand(1, 30);
+            $loyaltyPoints = rand(0, 300);
+
+            // Some guests have preferences, some don't
+            $hasPreferences = rand(0, 10) > 3; // 70% have preferences
+            $preferences = null;
+
+            if ($hasPreferences) {
+                $prefData = [];
+
+                // Random dietary restrictions (40% chance)
+                if (rand(0, 10) > 6) {
+                    $prefData['dietary'] = $dietaryOptions[array_rand($dietaryOptions)];
+                }
+
+                // Random favorite table (30% chance)
+                if (rand(0, 10) > 7) {
+                    $tableOptions = ['Table 1', 'Table 5', 'Table 10', 'Outdoor', 'Bar Seat 1'];
+                    $prefData['favorite_table'] = $tableOptions[array_rand($tableOptions)];
+                }
+
+                // Random favorite items (50% chance)
+                if (rand(0, 10) > 5) {
+                    $itemOptions = [
+                        ['Grilled Tilapia', 'Mojito'],
+                        ['Vegetable Pasta', 'Fresh Orange Juice'],
+                        ['Beef Steak', 'Red Wine (Glass)'],
+                        ['Grilled Chicken', 'Fruit Salad'],
+                        ['Seafood Platter', 'White Wine (Glass)'],
+                        ['Chicken Wings', 'Local Beer'],
+                        ['Fish & Chips', 'Calamari', 'Passion Juice'],
+                        ['Pilau Rice with Beef', 'Mango Smoothie'],
+                        ['Lamb Chops', 'Piña Colada'],
+                        ['Butter Chicken', 'Cappuccino'],
+                    ];
+                    $prefData['favorite_items'] = $itemOptions[array_rand($itemOptions)];
+                }
+
+                if (!empty($prefData)) {
+                    $preferences = json_encode($prefData);
+                }
+            }
+
+            $guests[] = [
+                'phone_number' => $phoneNumber,
+                'name' => $name,
+                'first_visit_at' => Carbon::now()->subMonths($monthsAgo),
+                'last_visit_at' => Carbon::now()->subDays($daysAgo),
+                'loyalty_points' => $loyaltyPoints,
+                'preferences' => $preferences,
+            ];
+        }
 
         foreach ($guests as $guest) {
             Guest::create($guest);
         }
 
-        $this->command->info('Guest records seeded successfully!');
-        $this->command->info('Created 10 guests with varying visit history and loyalty points');
+        $this->command->info('✓ Guest records seeded successfully!');
+        $this->command->info('  - 50 guests created with varying visit history');
+        $this->command->info('  - Loyalty points range: 0-300');
+        $this->command->info('  - Includes dietary preferences and favorites');
     }
 }
