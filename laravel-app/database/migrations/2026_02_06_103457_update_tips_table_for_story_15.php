@@ -12,19 +12,33 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tips', function (Blueprint $table) {
-            // Drop the old columns and indexes
-            $table->dropForeign(['payment_id']);
-            $table->dropIndex(['payment_id']);
-            $table->dropIndex(['order_id']);
-            $table->dropColumn(['payment_id']);
+            // Drop the foreign key first
+            if (Schema::hasColumn('tips', 'payment_id')) {
+                $table->dropForeign(['payment_id']);
+            }
 
-            // Rename method to tip_method and update enum values
-            $table->dropColumn('method');
+            // Drop indexes if they exist
+            if (Schema::hasIndex('tips', 'tips_payment_id_index')) {
+                $table->dropIndex('tips_payment_id_index');
+            }
+            if (Schema::hasIndex('tips', 'tips_order_id_index')) {
+                $table->dropIndex('tips_order_id_index');
+            }
+
+            // Drop columns if they exist
+            if (Schema::hasColumn('tips', 'payment_id')) {
+                $table->dropColumn('payment_id');
+            }
+            if (Schema::hasColumn('tips', 'method')) {
+                $table->dropColumn('method');
+            }
         });
 
         Schema::table('tips', function (Blueprint $table) {
-            // Add tip_method column with correct enum values
-            $table->enum('tip_method', ['cash', 'card'])->after('amount');
+            // Add tip_method column with correct enum values if it doesn't exist
+            if (!Schema::hasColumn('tips', 'tip_method')) {
+                $table->enum('tip_method', ['cash', 'card'])->after('amount');
+            }
 
             // Update amount precision from 10,2 to 8,2
             $table->decimal('amount', 8, 2)->change();

@@ -48,6 +48,10 @@ return new class extends Migration
             // Update status enum values
             if (Schema::hasColumn('orders', 'status')) {
                 Schema::table('orders', function (Blueprint $table) {
+                    // Drop index first if it exists
+                    if (Schema::hasIndex('orders', 'orders_status_index')) {
+                        $table->dropIndex('orders_status_index');
+                    }
                     $table->dropColumn('status');
                 });
             }
