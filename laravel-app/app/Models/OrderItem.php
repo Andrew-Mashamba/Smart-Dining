@@ -21,10 +21,8 @@ class OrderItem extends Model
         'quantity',
         'unit_price',
         'subtotal',
-        'status',
-        'notes',
-        'prepared_by',
-        'prepared_at',
+        'special_instructions',
+        'prep_status',
     ];
 
     /**
@@ -33,10 +31,9 @@ class OrderItem extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'quantity' => 'integer',
         'unit_price' => 'decimal:2',
         'subtotal' => 'decimal:2',
-        'quantity' => 'integer',
-        'prepared_at' => 'datetime',
     ];
 
     /**
@@ -56,42 +53,13 @@ class OrderItem extends Model
     }
 
     /**
-     * Get the staff who prepared this item.
+     * Boot the model and register event listeners.
      */
-    public function preparedBy(): BelongsTo
+    protected static function booted(): void
     {
-        return $this->belongsTo(Staff::class, 'prepared_by');
-    }
-
-    /**
-     * Mark item as received by kitchen/bar.
-     */
-    public function markAsReceived(Staff $staff): void
-    {
-        $this->update([
-            'status' => 'received',
-            'prepared_by' => $staff->id,
-        ]);
-    }
-
-    /**
-     * Mark item as done.
-     */
-    public function markAsDone(): void
-    {
-        $this->update([
-            'status' => 'done',
-            'prepared_at' => now(),
-        ]);
-    }
-
-    /**
-     * Calculate subtotal based on quantity and unit price.
-     */
-    public function calculateSubtotal(): void
-    {
-        $this->update([
-            'subtotal' => $this->quantity * $this->unit_price,
-        ]);
+        // Calculate subtotal before saving
+        static::saving(function (OrderItem $orderItem) {
+            $orderItem->subtotal = $orderItem->quantity * $orderItem->unit_price;
+        });
     }
 }

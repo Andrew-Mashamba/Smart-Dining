@@ -13,27 +13,17 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
+            $table->foreignId('order_id')->constrained()->onDelete('cascade');
+            $table->enum('payment_method', ['cash', 'card', 'mobile', 'gateway']);
             $table->decimal('amount', 10, 2);
-            $table->enum('method', ['cash', 'card', 'mpesa', 'pesapal', 'bank_transfer'])->default('cash');
-            $table->enum('status', [
-                'pending',
-                'processing',
-                'completed',
-                'failed',
-                'cancelled',
-                'refunded'
-            ])->default('pending');
-            $table->string('transaction_id')->nullable()->comment('External payment gateway transaction ID');
-            $table->json('gateway_response')->nullable()->comment('Full response from payment gateway');
-            $table->timestamp('paid_at')->nullable();
+            $table->enum('status', ['pending', 'completed', 'failed', 'refunded'])->default('pending');
+            $table->string('transaction_id')->nullable();
+            $table->json('gateway_response')->nullable();
             $table->timestamps();
 
             // Indexes
             $table->index('order_id');
-            $table->index('status');
             $table->index('transaction_id');
-            $table->index('method');
         });
     }
 

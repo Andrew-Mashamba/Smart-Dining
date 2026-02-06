@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Order extends Model
 {
@@ -17,17 +18,16 @@ class Order extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'guest_id',
+        'order_number',
         'table_id',
+        'guest_id',
         'waiter_id',
-        'session_id',
-        'status',
         'order_source',
+        'status',
         'subtotal',
         'tax',
-        'service_charge',
-        'total_amount',
-        'notes',
+        'total',
+        'special_instructions',
     ];
 
     /**
@@ -38,9 +38,22 @@ class Order extends Model
     protected $casts = [
         'subtotal' => 'decimal:2',
         'tax' => 'decimal:2',
-        'service_charge' => 'decimal:2',
-        'total_amount' => 'decimal:2',
+        'total' => 'decimal:2',
     ];
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($order) {
+            // Generate order_number after the order is created and has an ID
+            $order->order_number = 'ORD-' . date('Ymd') . '-' . str_pad($order->id, 4, '0', STR_PAD_LEFT);
+            $order->save();
+        });
+    }
 
     /**
      * Get the guest for this order.
@@ -67,17 +80,9 @@ class Order extends Model
     }
 
     /**
-     * Get the session for this order.
-     */
-    public function session(): BelongsTo
-    {
-        return $this->belongsTo(GuestSession::class, 'session_id');
-    }
-
-    /**
      * Get all items in this order.
      */
-    public function items(): HasMany
+    public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);
     }
@@ -91,11 +96,11 @@ class Order extends Model
     }
 
     /**
-     * Get all tips for this order.
+     * Get the tip for this order.
      */
-    public function tips(): HasMany
+    public function tip(): HasOne
     {
-        return $this->hasMany(Tip::class);
+        return $this->hasOne(Tip::class);
     }
 
     /**
@@ -103,16 +108,14 @@ class Order extends Model
      */
     public function calculateTotals(): void
     {
-        $subtotal = $this->items()->sum('subtotal');
+        $subtotal = $this->orderItems()->sum('subtotal');
         $tax = $subtotal * 0.18; // 18% VAT
-        $serviceCharge = $subtotal * 0.05; // 5% service charge
-        $total = $subtotal + $tax + $serviceCharge;
+        $total = $subtotal + $tax;
 
         $this->update([
             'subtotal' => $subtotal,
             'tax' => $tax,
-            'service_charge' => $serviceCharge,
-            'total_amount' => $total,
+            'total' => $total,
         ]);
     }
 
@@ -133,10 +136,18 @@ class Order extends Model
     }
 
     /**
-     * Check if order is completed.
+     * Check if order is paid.
      */
-    public function isCompleted(): bool
+    public function isPaid(): bool
     {
-        return $this->status === 'completed';
+        return $this->status === 'paid';
+    }
+
+    /**
+     * Check if order is cancelled.
+     */
+    public function isCancelled(): bool
+    {
+        return $this->status === 'cancelled';
     }
 }

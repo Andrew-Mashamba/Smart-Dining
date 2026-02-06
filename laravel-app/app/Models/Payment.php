@@ -17,12 +17,11 @@ class Payment extends Model
      */
     protected $fillable = [
         'order_id',
+        'payment_method',
         'amount',
-        'method',
         'status',
         'transaction_id',
         'gateway_response',
-        'paid_at',
     ];
 
     /**
@@ -33,7 +32,6 @@ class Payment extends Model
     protected $casts = [
         'amount' => 'decimal:2',
         'gateway_response' => 'array',
-        'paid_at' => 'datetime',
     ];
 
     /**
@@ -49,10 +47,7 @@ class Payment extends Model
      */
     public function markAsCompleted(): void
     {
-        $this->update([
-            'status' => 'completed',
-            'paid_at' => now(),
-        ]);
+        $this->update(['status' => 'completed']);
     }
 
     /**
