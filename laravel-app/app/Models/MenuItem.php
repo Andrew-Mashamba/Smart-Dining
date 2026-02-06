@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class MenuItem extends Model
@@ -16,14 +17,15 @@ class MenuItem extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'category_id',
         'name',
         'description',
-        'category',
         'price',
         'prep_area',
-        'image_url',
-        'is_available',
-        'preparation_time',
+        'prep_time_minutes',
+        'status',
+        'stock_quantity',
+        'low_stock_threshold',
     ];
 
     /**
@@ -33,9 +35,17 @@ class MenuItem extends Model
      */
     protected $casts = [
         'price' => 'decimal:2',
-        'is_available' => 'boolean',
-        'preparation_time' => 'integer',
+        'prep_time_minutes' => 'integer',
+        'stock_quantity' => 'integer',
     ];
+
+    /**
+     * Get the category that owns the menu item.
+     */
+    public function menuCategory(): BelongsTo
+    {
+        return $this->belongsTo(MenuCategory::class, 'category_id');
+    }
 
     /**
      * Get all order items for this menu item.
@@ -46,43 +56,11 @@ class MenuItem extends Model
     }
 
     /**
-     * Check if item is available.
-     */
-    public function isAvailable(): bool
-    {
-        return $this->is_available === true;
-    }
-
-    /**
-     * Mark item as unavailable.
-     */
-    public function markAsUnavailable(): void
-    {
-        $this->update(['is_available' => false]);
-    }
-
-    /**
-     * Mark item as available.
-     */
-    public function markAsAvailable(): void
-    {
-        $this->update(['is_available' => true]);
-    }
-
-    /**
      * Scope to get only available items.
      */
     public function scopeAvailable($query)
     {
-        return $query->where('is_available', true);
-    }
-
-    /**
-     * Scope to get items by category.
-     */
-    public function scopeCategory($query, string $category)
-    {
-        return $query->where('category', $category);
+        return $query->where('status', 'available');
     }
 
     /**
