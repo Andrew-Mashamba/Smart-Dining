@@ -9,8 +9,11 @@ class SettingsManagement extends Component
 {
     // Business Info
     public $business_name;
+
     public $business_address;
+
     public $business_phone;
+
     public $business_email;
 
     // Tax & Pricing
@@ -18,6 +21,7 @@ class SettingsManagement extends Component
 
     // Operations
     public $opening_hours;
+
     public $closing_hours;
 
     public function mount()

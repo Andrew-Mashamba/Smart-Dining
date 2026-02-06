@@ -26,12 +26,12 @@ class OrderObserver
             // Only send notifications for WhatsApp orders
             if ($order->order_source === 'whatsapp') {
                 $newStatus = $order->status;
-                
+
                 try {
                     $this->whatsappService->sendOrderStatusUpdate($order, $newStatus);
                     Log::info("WhatsApp status notification sent for order {$order->id}, status: {$newStatus}");
                 } catch (\Exception $e) {
-                    Log::error("Failed to send WhatsApp notification for order {$order->id}: " . $e->getMessage());
+                    Log::error("Failed to send WhatsApp notification for order {$order->id}: ".$e->getMessage());
                 }
             }
         }

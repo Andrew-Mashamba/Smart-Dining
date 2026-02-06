@@ -2,14 +2,14 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\ErrorLog;
+use App\Exceptions\InventoryException;
 use App\Exceptions\OrderWorkflowException;
 use App\Exceptions\PaymentException;
-use App\Exceptions\InventoryException;
+use App\Models\ErrorLog;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
+use Tests\TestCase;
 
 class ErrorHandlingTest extends TestCase
 {
@@ -293,7 +293,7 @@ class ErrorHandlingTest extends TestCase
      */
     public function test_error_log_model_configuration(): void
     {
-        $errorLog = new ErrorLog();
+        $errorLog = new ErrorLog;
 
         $this->assertContains('message', $errorLog->getFillable());
         $this->assertContains('level', $errorLog->getFillable());

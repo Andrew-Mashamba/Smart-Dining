@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\OrderCreated;
+use App\Events\OrderStatusChanged;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderStatusRequest;
 use App\Models\Order;
-use App\Services\OrderManagement\OrderService;
 use App\Services\OrderManagement\OrderDistributionService;
-use App\Events\OrderCreated;
-use App\Events\OrderStatusChanged;
-use Illuminate\Http\Request;
+use App\Services\OrderManagement\OrderService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
     protected OrderService $orderService;
+
     protected OrderDistributionService $distributionService;
 
     public function __construct(OrderService $orderService, OrderDistributionService $distributionService)
@@ -77,7 +78,7 @@ class OrderController extends Controller
         $staff = $request->user();
 
         // Ensure waiter_id is set
-        if (!isset($validated['waiter_id'])) {
+        if (! isset($validated['waiter_id'])) {
             $validated['waiter_id'] = $staff->id;
         }
 
@@ -148,7 +149,7 @@ class OrderController extends Controller
 
         $order = Order::findOrFail($id);
 
-        if (!in_array($order->status, ['pending', 'confirmed'])) {
+        if (! in_array($order->status, ['pending', 'confirmed'])) {
             return response()->json([
                 'message' => 'Cannot add items to an order that is already being prepared',
             ], 422);
@@ -215,7 +216,7 @@ class OrderController extends Controller
             'table',
             'waiter',
             'payments',
-            'tip'
+            'tip',
         ])->findOrFail($orderId);
 
         // Generate PDF from the receipt blade template
@@ -227,6 +228,6 @@ class OrderController extends Controller
         $pdf->setOption('isRemoteEnabled', true);
 
         // Return PDF download with filename based on order number
-        return $pdf->download('receipt-' . $order->order_number . '.pdf');
+        return $pdf->download('receipt-'.$order->order_number.'.pdf');
     }
 }

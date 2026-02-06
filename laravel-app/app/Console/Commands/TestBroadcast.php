@@ -33,8 +33,9 @@ class TestBroadcast extends Command
         // Get a test order (first order in database)
         $order = Order::with(['orderItems.menuItem', 'table', 'waiter'])->first();
 
-        if (!$order) {
+        if (! $order) {
             $this->error('No orders found in database. Please create an order first.');
+
             return 1;
         }
 

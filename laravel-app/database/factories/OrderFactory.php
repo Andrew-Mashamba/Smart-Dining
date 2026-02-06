@@ -21,7 +21,7 @@ class OrderFactory extends Factory
         $total = $subtotal + $tax;
 
         return [
-            'order_number' => 'ORD-' . date('Ymd') . '-' . fake()->unique()->numberBetween(1000, 9999),
+            'order_number' => 'ORD-'.date('Ymd').'-'.fake()->unique()->numberBetween(1000, 9999),
             'table_id' => \App\Models\Table::factory(),
             'guest_id' => \App\Models\Guest::factory(),
             'waiter_id' => \App\Models\Staff::factory(),

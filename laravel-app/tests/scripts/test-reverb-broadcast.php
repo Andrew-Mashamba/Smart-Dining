@@ -17,18 +17,16 @@ require __DIR__.'/vendor/autoload.php';
 $app = require_once __DIR__.'/bootstrap/app.php';
 $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
-use App\Models\Order;
-use App\Models\Table;
-use App\Models\User;
 use App\Events\OrderCreated;
 use App\Events\OrderStatusUpdated;
-use Illuminate\Support\Facades\DB;
+use App\Models\Order;
+use App\Models\Table;
 
 echo "=== Laravel Reverb Broadcasting Test ===\n\n";
 
 // 1. Verify Reverb Configuration
 echo "Step 1: Verifying Reverb Configuration\n";
-echo str_repeat("-", 50) . "\n";
+echo str_repeat('-', 50)."\n";
 
 $broadcastConnection = config('broadcasting.default');
 echo "✓ Broadcast Connection: {$broadcastConnection}\n";
@@ -40,11 +38,11 @@ if ($broadcastConnection !== 'reverb') {
 }
 
 $reverbConfig = config('broadcasting.connections.reverb');
-echo "✓ Reverb App ID: " . ($reverbConfig['app_id'] ?? 'NOT SET') . "\n";
-echo "✓ Reverb App Key: " . ($reverbConfig['key'] ?? 'NOT SET') . "\n";
-echo "✓ Reverb Host: " . ($reverbConfig['options']['host'] ?? 'NOT SET') . "\n";
-echo "✓ Reverb Port: " . ($reverbConfig['options']['port'] ?? 'NOT SET') . "\n";
-echo "✓ Reverb Scheme: " . ($reverbConfig['options']['scheme'] ?? 'NOT SET') . "\n";
+echo '✓ Reverb App ID: '.($reverbConfig['app_id'] ?? 'NOT SET')."\n";
+echo '✓ Reverb App Key: '.($reverbConfig['key'] ?? 'NOT SET')."\n";
+echo '✓ Reverb Host: '.($reverbConfig['options']['host'] ?? 'NOT SET')."\n";
+echo '✓ Reverb Port: '.($reverbConfig['options']['port'] ?? 'NOT SET')."\n";
+echo '✓ Reverb Scheme: '.($reverbConfig['options']['scheme'] ?? 'NOT SET')."\n";
 
 if (empty($reverbConfig['app_id']) || empty($reverbConfig['key']) || empty($reverbConfig['secret'])) {
     echo "✗ ERROR: Reverb credentials not configured\n";
@@ -56,7 +54,7 @@ echo "\n";
 
 // 2. Verify Events Exist
 echo "Step 2: Verifying Event Classes\n";
-echo str_repeat("-", 50) . "\n";
+echo str_repeat('-', 50)."\n";
 
 $events = [
     'OrderCreated' => App\Events\OrderCreated::class,
@@ -92,9 +90,9 @@ echo "\n";
 
 // 3. Verify Channel Authorization
 echo "Step 3: Verifying Channel Routes\n";
-echo str_repeat("-", 50) . "\n";
+echo str_repeat('-', 50)."\n";
 
-$channelsFile = __DIR__ . '/routes/channels.php';
+$channelsFile = __DIR__.'/routes/channels.php';
 if (file_exists($channelsFile)) {
     echo "✓ Channel routes file exists\n";
 
@@ -117,24 +115,24 @@ echo "\n";
 
 // 4. Test Broadcasting (Dry Run)
 echo "Step 4: Testing Event Broadcasting (Dry Run)\n";
-echo str_repeat("-", 50) . "\n";
+echo str_repeat('-', 50)."\n";
 
 try {
     // Check for existing order
     $order = Order::with(['table', 'items'])->first();
 
-    if (!$order) {
+    if (! $order) {
         echo "⚠ No orders in database, creating mock objects for testing...\n";
 
         // Create a mock order for testing (without saving to database)
-        $order = new Order();
+        $order = new Order;
         $order->id = 999;
         $order->waiter_id = 1;
         $order->table_id = 1;
         $order->status = 'pending';
 
         // Create mock relationships
-        $mockTable = new Table();
+        $mockTable = new Table;
         $mockTable->id = 1;
         $mockTable->name = 'Table 1';
         $order->setRelation('table', $mockTable);
@@ -151,7 +149,7 @@ try {
 
     $channels = $orderCreated->broadcastOn();
     echo "  ✓ Event created successfully\n";
-    echo "  ✓ Broadcasting to " . count($channels) . " channel(s):\n";
+    echo '  ✓ Broadcasting to '.count($channels)." channel(s):\n";
 
     foreach ($channels as $channel) {
         $channelName = method_exists($channel, 'name') ? $channel->name : get_class($channel);
@@ -160,7 +158,7 @@ try {
 
     if (method_exists($orderCreated, 'broadcastWith')) {
         $data = $orderCreated->broadcastWith();
-        echo "  ✓ Broadcast data: " . json_encode($data, JSON_PRETTY_PRINT) . "\n";
+        echo '  ✓ Broadcast data: '.json_encode($data, JSON_PRETTY_PRINT)."\n";
     }
 
     // Test OrderStatusUpdated event
@@ -169,7 +167,7 @@ try {
 
     $channels = $orderStatusUpdated->broadcastOn();
     echo "  ✓ Event created successfully\n";
-    echo "  ✓ Broadcasting to " . count($channels) . " channel(s):\n";
+    echo '  ✓ Broadcasting to '.count($channels)." channel(s):\n";
 
     foreach ($channels as $channel) {
         $channelName = method_exists($channel, 'name') ? $channel->name : get_class($channel);
@@ -178,21 +176,21 @@ try {
 
     if (method_exists($orderStatusUpdated, 'broadcastWith')) {
         $data = $orderStatusUpdated->broadcastWith();
-        echo "  ✓ Broadcast data: " . json_encode($data, JSON_PRETTY_PRINT) . "\n";
+        echo '  ✓ Broadcast data: '.json_encode($data, JSON_PRETTY_PRINT)."\n";
     }
 
 } catch (Exception $e) {
-    echo "✗ ERROR: " . $e->getMessage() . "\n";
-    echo "  Stack trace: " . $e->getTraceAsString() . "\n";
+    echo '✗ ERROR: '.$e->getMessage()."\n";
+    echo '  Stack trace: '.$e->getTraceAsString()."\n";
     exit(1);
 }
 
 echo "\n";
 
 // 5. Summary
-echo str_repeat("=", 50) . "\n";
+echo str_repeat('=', 50)."\n";
 echo "Summary:\n";
-echo str_repeat("=", 50) . "\n";
+echo str_repeat('=', 50)."\n";
 echo "✓ Reverb is properly configured\n";
 echo "✓ Events implement ShouldBroadcast\n";
 echo "✓ Channel routes are defined\n";

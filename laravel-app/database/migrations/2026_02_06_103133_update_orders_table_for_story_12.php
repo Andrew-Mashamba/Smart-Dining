@@ -30,13 +30,13 @@ return new class extends Migration
 
             Schema::table('orders', function (Blueprint $table) {
                 // Add new columns if they don't exist
-                if (!Schema::hasColumn('orders', 'order_number')) {
+                if (! Schema::hasColumn('orders', 'order_number')) {
                     $table->string('order_number')->unique()->after('id');
                 }
-                if (!Schema::hasColumn('orders', 'total')) {
+                if (! Schema::hasColumn('orders', 'total')) {
                     $table->decimal('total', 10, 2)->after('tax');
                 }
-                if (!Schema::hasColumn('orders', 'special_instructions')) {
+                if (! Schema::hasColumn('orders', 'special_instructions')) {
                     $table->text('special_instructions')->nullable()->after('total');
                 }
 
@@ -62,7 +62,7 @@ return new class extends Migration
 
             // Add new index
             Schema::table('orders', function (Blueprint $table) {
-                if (!Schema::hasColumn('orders', 'order_number')) {
+                if (! Schema::hasColumn('orders', 'order_number')) {
                     $table->index('order_number');
                 }
             });

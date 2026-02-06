@@ -2,15 +2,15 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Table;
-use App\Models\MenuItem;
+use App\Events\OrderStatusChanged;
+use App\Models\GuestSession;
 use App\Models\MenuCategory;
+use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
-use App\Models\GuestSession;
-use App\Events\OrderStatusChanged;
+use App\Models\Table;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
@@ -20,12 +20,19 @@ class CompleteOrderWorkflowTest extends TestCase
     use RefreshDatabase;
 
     private User $admin;
+
     private User $manager;
+
     private User $waiter;
+
     private User $chef;
+
     private User $bartender;
+
     private Table $table;
+
     private MenuItem $foodItem;
+
     private MenuItem $drinkItem;
 
     protected function setUp(): void
@@ -60,7 +67,7 @@ class CompleteOrderWorkflowTest extends TestCase
 
         // Create table
         $this->table = Table::factory()->create([
-            'table_number' => '5',
+            'name' => 'Table 5',
             'status' => 'available',
             'capacity' => 4,
         ]);
@@ -103,7 +110,7 @@ class CompleteOrderWorkflowTest extends TestCase
 
         // Step 1: Waiter creates a guest session
         $sessionResponse = $this->actingAs($this->waiter, 'sanctum')
-            ->postJson('/api/tables/' . $this->table->id . '/sessions', [
+            ->postJson('/api/tables/'.$this->table->id.'/sessions', [
                 'guest_name' => 'John Doe',
                 'guest_count' => 2,
             ]);
@@ -231,7 +238,7 @@ class CompleteOrderWorkflowTest extends TestCase
 
         // Create guest session
         $sessionResponse = $this->actingAs($this->manager, 'sanctum')
-            ->postJson('/api/tables/' . $this->table->id . '/sessions', [
+            ->postJson('/api/tables/'.$this->table->id.'/sessions', [
                 'guest_name' => 'Jane Smith',
                 'guest_count' => 4,
             ]);

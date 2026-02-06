@@ -26,7 +26,7 @@ class ApiCheckRole extends CheckRole
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         // Check if user is authenticated
-        if (!$request->user()) {
+        if (! $request->user()) {
             return response()->json([
                 'message' => 'Unauthenticated.',
             ], 401);
@@ -35,7 +35,7 @@ class ApiCheckRole extends CheckRole
         $user = $request->user();
 
         // Check if user has one of the required roles
-        if (!in_array($user->role, $roles)) {
+        if (! in_array($user->role, $roles)) {
             return response()->json([
                 'message' => 'Insufficient permissions',
             ], 403);
@@ -45,10 +45,10 @@ class ApiCheckRole extends CheckRole
         // This allows tokens to be issued with specific scopes even if the user has the role
         // Only check abilities if token abilities are explicitly set
         $token = $user->currentAccessToken();
-        if ($token && $token->abilities !== null && is_array($token->abilities) && count($token->abilities) > 0 && !in_array('*', $token->abilities)) {
+        if ($token && $token->abilities !== null && is_array($token->abilities) && count($token->abilities) > 0 && ! in_array('*', $token->abilities)) {
             $requiredAbility = $this->mapRoleToAbility($user->role);
 
-            if ($requiredAbility && !$user->tokenCan($requiredAbility)) {
+            if ($requiredAbility && ! $user->tokenCan($requiredAbility)) {
                 return response()->json([
                     'message' => 'Insufficient permissions',
                 ], 403);
@@ -70,13 +70,10 @@ class ApiCheckRole extends CheckRole
      * - Bartender: ['bartender:access', 'bar:view', 'bar:update']
      * - Manager: ['manager:access', '*'] (full access)
      * - Admin: ['admin:access', '*'] (full access)
-     *
-     * @param  string  $role
-     * @return string|null
      */
     protected function mapRoleToAbility(string $role): ?string
     {
-        return match($role) {
+        return match ($role) {
             'waiter' => 'waiter:access',
             'chef' => 'chef:access',
             'bartender' => 'bartender:access',

@@ -2,13 +2,12 @@
 
 namespace App\Livewire;
 
+use App\Events\OrderItemUpdated;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Events\OrderItemUpdated;
-use Illuminate\Support\Facades\DB;
-use Livewire\Component;
-use Livewire\Attributes\On;
 use Carbon\Carbon;
+use Livewire\Attributes\On;
+use Livewire\Component;
 
 class KitchenDisplay extends Component
 {
@@ -41,15 +40,16 @@ class KitchenDisplay extends Component
     /**
      * Update item preparation status
      *
-     * @param int $itemId The order item ID
-     * @param string $status The new status (received, preparing, ready)
+     * @param  int  $itemId  The order item ID
+     * @param  string  $status  The new status (received, preparing, ready)
      */
     public function updateItemStatus($itemId, $status)
     {
         $validStatuses = ['pending', 'received', 'preparing', 'ready'];
 
-        if (!in_array($status, $validStatuses)) {
+        if (! in_array($status, $validStatuses)) {
             session()->flash('error', 'Invalid status');
+
             return;
         }
 
@@ -60,7 +60,7 @@ class KitchenDisplay extends Component
         // Broadcast the update to other kitchen displays
         broadcast(new OrderItemUpdated($orderItem))->toOthers();
 
-        session()->flash('message', 'Item status updated to ' . $status);
+        session()->flash('message', 'Item status updated to '.$status);
     }
 
     /**
@@ -71,10 +71,10 @@ class KitchenDisplay extends Component
     {
         // Get all order items for kitchen that are not ready yet with optimized eager loading
         $orderItems = OrderItem::with([
-                'order:id,order_number,table_id,created_at',
-                'order.table:id,name',
-                'menuItem:id,name,prep_time_minutes'
-            ])
+            'order:id,order_number,table_id,created_at',
+            'order.table:id,name',
+            'menuItem:id,name,prep_time_minutes',
+        ])
             ->whereHas('menuItem', function ($query) {
                 $query->where('prep_area', 'kitchen');
             })
@@ -119,25 +119,25 @@ class KitchenDisplay extends Component
     /**
      * Format elapsed time in human-readable format
      *
-     * @param int $minutes
+     * @param  int  $minutes
      * @return string
      */
     protected function formatElapsedTime($minutes)
     {
         if ($minutes < 60) {
-            return $minutes . ' min';
+            return $minutes.' min';
         }
 
         $hours = floor($minutes / 60);
         $remainingMinutes = $minutes % 60;
 
-        return $hours . 'h ' . $remainingMinutes . 'm';
+        return $hours.'h '.$remainingMinutes.'m';
     }
 
     /**
      * Get status button color classes
      *
-     * @param string $status
+     * @param  string  $status
      * @return string
      */
     public function getStatusButtonClass($status)

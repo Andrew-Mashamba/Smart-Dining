@@ -4,10 +4,10 @@ namespace App\Services;
 
 use App\Models\Order;
 use App\Models\Payment;
-use Stripe\Stripe;
-use Stripe\PaymentIntent;
-use Illuminate\Support\Facades\Log;
 use Exception;
+use Illuminate\Support\Facades\Log;
+use Stripe\PaymentIntent;
+use Stripe\Stripe;
 
 class StripePaymentService
 {
@@ -21,9 +21,8 @@ class StripePaymentService
      * Process payment through Stripe
      * Creates a PaymentIntent for the given order
      *
-     * @param int $orderId
-     * @param float $amount
      * @return array Contains client_secret and payment_intent_id
+     *
      * @throws Exception
      */
     public function processPayment(int $orderId, float $amount): array
@@ -33,7 +32,7 @@ class StripePaymentService
 
             // Create Stripe PaymentIntent
             $paymentIntent = PaymentIntent::create([
-                'amount' => (int)($amount * 100), // Convert to cents
+                'amount' => (int) ($amount * 100), // Convert to cents
                 'currency' => config('services.stripe.currency', 'usd'),
                 'metadata' => [
                     'order_id' => $orderId,
@@ -78,16 +77,15 @@ class StripePaymentService
                 'error' => $e->getMessage(),
             ]);
 
-            throw new Exception('Failed to create payment: ' . $e->getMessage());
+            throw new Exception('Failed to create payment: '.$e->getMessage());
         }
     }
 
     /**
      * Confirm payment success and update Payment record
      *
-     * @param string $paymentIntentId
-     * @param array $stripeResponse Full Stripe response
-     * @return Payment
+     * @param  array  $stripeResponse  Full Stripe response
+     *
      * @throws Exception
      */
     public function confirmPayment(string $paymentIntentId, array $stripeResponse): Payment
@@ -129,9 +127,6 @@ class StripePaymentService
     /**
      * Mark payment as failed
      *
-     * @param string $paymentIntentId
-     * @param array $stripeResponse
-     * @return Payment
      * @throws Exception
      */
     public function failPayment(string $paymentIntentId, array $stripeResponse): Payment
@@ -170,8 +165,6 @@ class StripePaymentService
     /**
      * Retrieve PaymentIntent from Stripe
      *
-     * @param string $paymentIntentId
-     * @return PaymentIntent
      * @throws Exception
      */
     public function retrievePaymentIntent(string $paymentIntentId): PaymentIntent
@@ -190,9 +183,6 @@ class StripePaymentService
 
     /**
      * Get user-friendly error message for Stripe errors
-     *
-     * @param string $errorCode
-     * @return string
      */
     public function getErrorMessage(string $errorCode): string
     {
@@ -213,9 +203,6 @@ class StripePaymentService
 
     /**
      * Check if order is fully paid and update status
-     *
-     * @param Order $order
-     * @return void
      */
     protected function checkOrderPaymentStatus(Order $order): void
     {

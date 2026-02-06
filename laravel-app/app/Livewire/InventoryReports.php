@@ -2,17 +2,20 @@
 
 namespace App\Livewire;
 
-use App\Models\MenuItem;
 use App\Models\InventoryTransaction;
+use App\Models\MenuItem;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class InventoryReports extends Component
 {
     public $start_date;
+
     public $end_date;
+
     public $filter_menu_item_id = '';
+
     public $filter_transaction_type = '';
 
     public function mount()
@@ -69,15 +72,15 @@ class InventoryReports extends Component
     public function getTransactionSummary()
     {
         $transactions = InventoryTransaction::whereBetween('created_at', [
-            $this->start_date . ' 00:00:00',
-            $this->end_date . ' 23:59:59'
+            $this->start_date.' 00:00:00',
+            $this->end_date.' 23:59:59',
         ])
-        ->select('transaction_type')
-        ->selectRaw('SUM(CASE WHEN transaction_type = "restock" THEN quantity ELSE 0 END) as total_restocks')
-        ->selectRaw('SUM(CASE WHEN transaction_type = "sale" THEN quantity ELSE 0 END) as total_sales')
-        ->selectRaw('SUM(CASE WHEN transaction_type = "adjustment" THEN quantity ELSE 0 END) as total_adjustments')
-        ->selectRaw('SUM(CASE WHEN transaction_type = "waste" THEN quantity ELSE 0 END) as total_waste')
-        ->first();
+            ->select('transaction_type')
+            ->selectRaw('SUM(CASE WHEN transaction_type = "restock" THEN quantity ELSE 0 END) as total_restocks')
+            ->selectRaw('SUM(CASE WHEN transaction_type = "sale" THEN quantity ELSE 0 END) as total_sales')
+            ->selectRaw('SUM(CASE WHEN transaction_type = "adjustment" THEN quantity ELSE 0 END) as total_adjustments')
+            ->selectRaw('SUM(CASE WHEN transaction_type = "waste" THEN quantity ELSE 0 END) as total_waste')
+            ->first();
 
         return [
             'total_restocks' => $transactions->total_restocks ?? 0,
@@ -94,8 +97,8 @@ class InventoryReports extends Component
     {
         $query = InventoryTransaction::with(['menuItem', 'createdBy'])
             ->whereBetween('inventory_transactions.created_at', [
-                $this->start_date . ' 00:00:00',
-                $this->end_date . ' 23:59:59'
+                $this->start_date.' 00:00:00',
+                $this->end_date.' 23:59:59',
             ]);
 
         // Apply menu item filter
@@ -122,8 +125,8 @@ class InventoryReports extends Component
         // Get daily transaction data
         $dailyData = InventoryTransaction::select(DB::raw('DATE(created_at) as date'))
             ->whereBetween('created_at', [
-                $this->start_date . ' 00:00:00',
-                $this->end_date . ' 23:59:59'
+                $this->start_date.' 00:00:00',
+                $this->end_date.' 23:59:59',
             ])
             ->groupBy('date')
             ->selectRaw('SUM(CASE WHEN transaction_type IN ("sale", "waste") THEN quantity ELSE 0 END) as usage')
@@ -132,7 +135,7 @@ class InventoryReports extends Component
             ->get();
 
         return [
-            'labels' => $dailyData->pluck('date')->map(fn($date) => date('M d', strtotime($date)))->toArray(),
+            'labels' => $dailyData->pluck('date')->map(fn ($date) => date('M d', strtotime($date)))->toArray(),
             'usage_data' => $dailyData->pluck('usage')->toArray(),
             'restock_data' => $dailyData->pluck('restocks')->toArray(),
         ];
@@ -163,9 +166,10 @@ class InventoryReports extends Component
         ];
 
         $pdf = Pdf::loadView('reports.inventory-pdf', $data);
-        return response()->streamDownload(function() use ($pdf) {
+
+        return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
-        }, 'inventory-report-' . $this->start_date . '-to-' . $this->end_date . '.pdf');
+        }, 'inventory-report-'.$this->start_date.'-to-'.$this->end_date.'.pdf');
     }
 
     /**
@@ -174,14 +178,14 @@ class InventoryReports extends Component
     public function exportCsv()
     {
         $transactions = $this->getTransactionHistory();
-        $filename = 'inventory-report-' . $this->start_date . '-to-' . $this->end_date . '.csv';
+        $filename = 'inventory-report-'.$this->start_date.'-to-'.$this->end_date.'.csv';
 
         $headers = [
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ];
 
-        $callback = function() use ($transactions) {
+        $callback = function () use ($transactions) {
             $file = fopen('php://output', 'w');
 
             // Add CSV headers
@@ -192,7 +196,7 @@ class InventoryReports extends Component
                 'Quantity',
                 'Unit',
                 'Created By',
-                'Notes'
+                'Notes',
             ]);
 
             // Add data rows
@@ -204,7 +208,7 @@ class InventoryReports extends Component
                     $transaction->quantity,
                     $transaction->unit,
                     $transaction->createdBy->name ?? 'Unknown',
-                    $transaction->notes ?? ''
+                    $transaction->notes ?? '',
                 ]);
             }
 

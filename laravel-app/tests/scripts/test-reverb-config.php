@@ -35,21 +35,21 @@ $reverbKey = config('broadcasting.connections.reverb.key');
 $reverbSecret = config('broadcasting.connections.reverb.secret');
 $reverbAppId = config('broadcasting.connections.reverb.app_id');
 
-if (!empty($reverbKey)) {
+if (! empty($reverbKey)) {
     echo "   ✓ REVERB_APP_KEY is configured\n";
 } else {
     echo "   ❌ REVERB_APP_KEY is missing\n";
     $success = false;
 }
 
-if (!empty($reverbSecret)) {
+if (! empty($reverbSecret)) {
     echo "   ✓ REVERB_APP_SECRET is configured\n";
 } else {
     echo "   ❌ REVERB_APP_SECRET is missing\n";
     $success = false;
 }
 
-if (!empty($reverbAppId)) {
+if (! empty($reverbAppId)) {
     echo "   ✓ REVERB_APP_ID is configured ({$reverbAppId})\n";
 } else {
     echo "   ❌ REVERB_APP_ID is missing\n";
@@ -102,7 +102,7 @@ if ($orderStatusUpdated->implementsInterface('Illuminate\Contracts\Broadcasting\
 
 // Test 6: Check if channel routes are configured
 echo "\n6. Checking channel routes...\n";
-$channelsFile = __DIR__ . '/routes/channels.php';
+$channelsFile = __DIR__.'/routes/channels.php';
 $channelsContent = file_get_contents($channelsFile);
 
 $requiredChannels = ['kitchen', 'bar', 'orders', 'waiter'];
@@ -117,7 +117,7 @@ foreach ($requiredChannels as $channel) {
 
 // Test 7: Check if Echo is configured
 echo "\n7. Checking Laravel Echo configuration...\n";
-$echoFile = __DIR__ . '/resources/js/echo.js';
+$echoFile = __DIR__.'/resources/js/echo.js';
 if (file_exists($echoFile)) {
     echo "   ✓ echo.js file exists\n";
     $echoContent = file_get_contents($echoFile);
@@ -133,7 +133,7 @@ if (file_exists($echoFile)) {
 
 // Test 8: Check if npm packages are installed
 echo "\n8. Checking npm packages...\n";
-$packageJson = json_decode(file_get_contents(__DIR__ . '/package.json'), true);
+$packageJson = json_decode(file_get_contents(__DIR__.'/package.json'), true);
 
 if (isset($packageJson['devDependencies']['laravel-echo'])) {
     echo "   ✓ laravel-echo is installed\n";
@@ -150,7 +150,7 @@ if (isset($packageJson['devDependencies']['pusher-js'])) {
 }
 
 // Summary
-echo "\n" . str_repeat("=", 50) . "\n";
+echo "\n".str_repeat('=', 50)."\n";
 if ($success) {
     echo "✓ All tests passed! Laravel Reverb is properly configured.\n";
     echo "\nTo start the Reverb server, run:\n";

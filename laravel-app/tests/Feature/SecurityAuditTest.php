@@ -2,13 +2,13 @@
 
 namespace Tests\Feature;
 
-use App\Models\Staff;
-use App\Models\Table;
+use App\Models\Guest;
+use App\Models\MenuCategory;
 use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\Payment;
-use App\Models\Guest;
-use App\Models\MenuCategory;
+use App\Models\Staff;
+use App\Models\Table;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -18,6 +18,7 @@ class SecurityAuditTest extends TestCase
     use RefreshDatabase;
 
     private Staff $user;
+
     private Staff $admin;
 
     protected function setUp(): void
@@ -51,7 +52,7 @@ class SecurityAuditTest extends TestCase
         ];
 
         foreach ($endpoints as $endpoint) {
-            $response = $this->{$endpoint['method'] . 'Json'}($endpoint['url']);
+            $response = $this->{$endpoint['method'].'Json'}($endpoint['url']);
             $response->assertStatus(401);
         }
     }
@@ -80,7 +81,7 @@ class SecurityAuditTest extends TestCase
         $menuItem = MenuItem::factory()->create([
             'category_id' => $category->id,
             'status' => 'available',
-            'stock_quantity' => 10
+            'stock_quantity' => 10,
         ]);
 
         // Attempt XSS in special instructions
@@ -243,7 +244,7 @@ class SecurityAuditTest extends TestCase
         $menuItem = MenuItem::factory()->create([
             'category_id' => $category->id,
             'status' => 'available',
-            'stock_quantity' => 10
+            'stock_quantity' => 10,
         ]);
 
         // Attempt to set unauthorized fields via mass assignment
@@ -292,7 +293,7 @@ class SecurityAuditTest extends TestCase
         // Create a token with short expiration
         $token = $this->user->createToken('test-token', ['*'], now()->subHour());
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token->plainTextToken)
+        $response = $this->withHeader('Authorization', 'Bearer '.$token->plainTextToken)
             ->getJson('/api/auth/me');
 
         // Should return unauthorized due to expired token (401) or not found (404)
@@ -329,7 +330,7 @@ class SecurityAuditTest extends TestCase
         $menuItem = MenuItem::factory()->create([
             'category_id' => $category->id,
             'status' => 'available',
-            'stock_quantity' => 10
+            'stock_quantity' => 10,
         ]);
 
         $response = $this->actingAs($this->user, 'sanctum')

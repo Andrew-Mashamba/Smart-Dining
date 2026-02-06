@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\OrderItemReady;
 use App\Http\Controllers\Controller;
 use App\Models\OrderItem;
 use App\Services\OrderManagement\OrderDistributionService;
-use App\Events\OrderItemReady;
 use Illuminate\Http\Request;
 
 class OrderItemController extends Controller
@@ -29,7 +29,7 @@ class OrderItemController extends Controller
         $staff = $request->user();
 
         // Validate prep_area authorization for chefs and bartenders
-        if (!$this->canUpdateItem($staff, $orderItem)) {
+        if (! $this->canUpdateItem($staff, $orderItem)) {
             return response()->json([
                 'message' => 'Insufficient permissions',
             ], 403);
@@ -55,7 +55,7 @@ class OrderItemController extends Controller
         $staff = $request->user();
 
         // Validate prep_area authorization for chefs and bartenders
-        if (!$this->canUpdateItem($staff, $orderItem)) {
+        if (! $this->canUpdateItem($staff, $orderItem)) {
             return response()->json([
                 'message' => 'Insufficient permissions',
             ], 403);
@@ -108,7 +108,7 @@ class OrderItemController extends Controller
     {
         $staff = $request->user();
 
-        if (!in_array($staff->role, ['chef', 'bartender'])) {
+        if (! in_array($staff->role, ['chef', 'bartender'])) {
             return response()->json([
                 'message' => 'Only chefs and bartenders can view pending items',
             ], 403);

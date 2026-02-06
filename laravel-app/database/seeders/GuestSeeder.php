@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Guest;
-use Illuminate\Database\Seeder;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class GuestSeeder extends Seeder
 {
@@ -21,7 +21,7 @@ class GuestSeeder extends Seeder
             'Christopher', 'Nancy', 'Daniel', 'Lisa', 'Matthew', 'Betty', 'Anthony',
             'Margaret', 'Mark', 'Sandra', 'Donald', 'Ashley', 'Steven', 'Dorothy',
             'Paul', 'Kimberly', 'Joshua', 'Emily', 'Kenneth', 'Donna', 'Kevin',
-            'Michelle', 'Brian', 'Carol', 'George', 'Amanda', 'Edward', 'Melissa'
+            'Michelle', 'Brian', 'Carol', 'George', 'Amanda', 'Edward', 'Melissa',
         ];
 
         $lastNames = [
@@ -31,7 +31,7 @@ class GuestSeeder extends Seeder
             'Ramirez', 'Lewis', 'Robinson', 'Walker', 'Young', 'Allen', 'King',
             'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores', 'Green',
             'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell', 'Mitchell',
-            'Carter', 'Roberts', 'Gomez', 'Phillips', 'Evans', 'Turner', 'Diaz'
+            'Carter', 'Roberts', 'Gomez', 'Phillips', 'Evans', 'Turner', 'Diaz',
         ];
 
         $dietaryOptions = [
@@ -53,7 +53,7 @@ class GuestSeeder extends Seeder
             $name = "$firstName $lastName";
 
             // Generate phone number
-            $phoneNumber = '+25571' . str_pad(2000001 + $i, 7, '0', STR_PAD_LEFT);
+            $phoneNumber = '+25571'.str_pad(2000001 + $i, 7, '0', STR_PAD_LEFT);
 
             // Varying visit history and loyalty points
             $monthsAgo = rand(1, 12);
@@ -95,7 +95,7 @@ class GuestSeeder extends Seeder
                     $prefData['favorite_items'] = $itemOptions[array_rand($itemOptions)];
                 }
 
-                if (!empty($prefData)) {
+                if (! empty($prefData)) {
                     $preferences = json_encode($prefData);
                 }
             }

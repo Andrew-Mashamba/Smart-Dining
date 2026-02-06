@@ -3,21 +3,14 @@
 namespace App\Services\Payment;
 
 use App\Models\Order;
-use App\Models\Tip;
-use App\Models\Staff;
 use App\Models\Payment;
+use App\Models\Staff;
+use App\Models\Tip;
 
 class TipService
 {
     /**
      * Process a tip for a waiter
-     *
-     * @param Order $order
-     * @param float $amount
-     * @param Staff $waiter
-     * @param string $method
-     * @param Payment|null $payment
-     * @return Tip
      */
     public function processTip(
         Order $order,
@@ -26,7 +19,7 @@ class TipService
         string $method = 'cash',
         ?Payment $payment = null
     ): Tip {
-        if (!$waiter->isWaiter()) {
+        if (! $waiter->isWaiter()) {
             throw new \Exception('Tips can only be given to waiters');
         }
 
@@ -54,9 +47,6 @@ class TipService
 
     /**
      * Calculate suggested tip amounts
-     *
-     * @param Order $order
-     * @return array
      */
     public function suggestTipAmounts(Order $order): array
     {
@@ -73,15 +63,10 @@ class TipService
 
     /**
      * Get tips for a specific waiter
-     *
-     * @param Staff $waiter
-     * @param string|null $startDate
-     * @param string|null $endDate
-     * @return array
      */
     public function getWaiterTips(Staff $waiter, ?string $startDate = null, ?string $endDate = null): array
     {
-        if (!$waiter->isWaiter()) {
+        if (! $waiter->isWaiter()) {
             throw new \Exception('Staff member must be a waiter');
         }
 
@@ -122,9 +107,6 @@ class TipService
 
     /**
      * Get daily tip summary for all waiters
-     *
-     * @param string $date
-     * @return array
      */
     public function getDailyTipSummary(string $date): array
     {
@@ -137,6 +119,7 @@ class TipService
 
         $byWaiter = $tips->groupBy('waiter_id')->map(function ($waiterTips) {
             $waiter = $waiterTips->first()->waiter;
+
             return [
                 'waiter_name' => $waiter->name,
                 'total_tips' => $waiterTips->sum('amount'),
@@ -158,10 +141,6 @@ class TipService
 
     /**
      * Process tip from payment
-     *
-     * @param Payment $payment
-     * @param float $tipAmount
-     * @return Tip|null
      */
     public function processTipFromPayment(Payment $payment, float $tipAmount): ?Tip
     {
@@ -182,10 +161,6 @@ class TipService
 
     /**
      * Get tip statistics
-     *
-     * @param string|null $startDate
-     * @param string|null $endDate
-     * @return array
      */
     public function getTipStatistics(?string $startDate = null, ?string $endDate = null): array
     {
@@ -222,6 +197,7 @@ class TipService
             'top_waiters' => $tips->groupBy('waiter_id')
                 ->map(function ($waiterTips) {
                     $waiter = $waiterTips->first()->waiter;
+
                     return [
                         'waiter_name' => $waiter->name,
                         'total_tips' => $waiterTips->sum('amount'),

@@ -11,9 +11,6 @@ class StateManager
 
     /**
      * Get current conversation state for guest
-     *
-     * @param Guest $guest
-     * @return string
      */
     public function getState(Guest $guest): string
     {
@@ -22,10 +19,6 @@ class StateManager
 
     /**
      * Set conversation state for guest
-     *
-     * @param Guest $guest
-     * @param string $state
-     * @return void
      */
     public function setState(Guest $guest, string $state): void
     {
@@ -34,9 +27,6 @@ class StateManager
 
     /**
      * Get conversation context data
-     *
-     * @param Guest $guest
-     * @return array
      */
     public function getContext(Guest $guest): array
     {
@@ -45,10 +35,6 @@ class StateManager
 
     /**
      * Set conversation context data
-     *
-     * @param Guest $guest
-     * @param array $context
-     * @return void
      */
     public function setContext(Guest $guest, array $context): void
     {
@@ -58,10 +44,7 @@ class StateManager
     /**
      * Update specific context field
      *
-     * @param Guest $guest
-     * @param string $key
-     * @param mixed $value
-     * @return void
+     * @param  mixed  $value
      */
     public function updateContext(Guest $guest, string $key, $value): void
     {
@@ -72,9 +55,6 @@ class StateManager
 
     /**
      * Clear conversation state and context
-     *
-     * @param Guest $guest
-     * @return void
      */
     public function clearState(Guest $guest): void
     {
@@ -84,9 +64,6 @@ class StateManager
 
     /**
      * Get cache key for state
-     *
-     * @param Guest $guest
-     * @return string
      */
     protected function getStateKey(Guest $guest): string
     {
@@ -95,9 +72,6 @@ class StateManager
 
     /**
      * Get cache key for context
-     *
-     * @param Guest $guest
-     * @return string
      */
     protected function getContextKey(Guest $guest): string
     {

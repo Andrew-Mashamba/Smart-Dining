@@ -26,9 +26,6 @@ class OrderWorkflowService
     /**
      * Update order status with validation and business rules.
      *
-     * @param int $orderId
-     * @param string $newStatus
-     * @return Order
      * @throws OrderWorkflowException
      */
     public function updateStatus(int $orderId, string $newStatus): Order
@@ -37,7 +34,7 @@ class OrderWorkflowService
             // Load order with necessary relationships
             $order = Order::with(['orderItems', 'payments', 'table'])->find($orderId);
 
-            if (!$order) {
+            if (! $order) {
                 throw OrderWorkflowException::orderNotFound($orderId);
             }
 
@@ -75,19 +72,17 @@ class OrderWorkflowService
     /**
      * Validate that the status transition is allowed.
      *
-     * @param string $currentStatus
-     * @param string $newStatus
      * @throws OrderWorkflowException
      */
     protected function validateTransition(string $currentStatus, string $newStatus): void
     {
         // Check if current status has any valid transitions
-        if (!isset($this->validTransitions[$currentStatus])) {
+        if (! isset($this->validTransitions[$currentStatus])) {
             throw OrderWorkflowException::invalidTransition($currentStatus, $newStatus);
         }
 
         // Check if new status is in the list of valid next statuses
-        if (!in_array($newStatus, $this->validTransitions[$currentStatus])) {
+        if (! in_array($newStatus, $this->validTransitions[$currentStatus])) {
             throw OrderWorkflowException::invalidTransition($currentStatus, $newStatus);
         }
     }
@@ -95,7 +90,6 @@ class OrderWorkflowService
     /**
      * Validate that all order items are ready before marking order as ready.
      *
-     * @param Order $order
      * @throws OrderWorkflowException
      */
     protected function validateOrderItemsReady(Order $order): void
@@ -112,7 +106,6 @@ class OrderWorkflowService
     /**
      * Validate that payment is complete before marking order as paid.
      *
-     * @param Order $order
      * @throws OrderWorkflowException
      */
     protected function validatePaymentComplete(Order $order): void
@@ -132,12 +125,10 @@ class OrderWorkflowService
 
     /**
      * Update table status to available if no other active orders exist.
-     *
-     * @param Order $order
      */
     protected function updateTableStatusIfNeeded(Order $order): void
     {
-        if (!$order->table) {
+        if (! $order->table) {
             return;
         }
 
@@ -155,10 +146,6 @@ class OrderWorkflowService
 
     /**
      * Create an audit log entry for the status change.
-     *
-     * @param Order $order
-     * @param string $oldStatus
-     * @param string $newStatus
      */
     protected function createAuditLog(Order $order, string $oldStatus, string $newStatus): void
     {
@@ -184,9 +171,6 @@ class OrderWorkflowService
 
     /**
      * Get all valid transitions from a given status.
-     *
-     * @param string $status
-     * @return array
      */
     public function getValidTransitions(string $status): array
     {
@@ -195,10 +179,6 @@ class OrderWorkflowService
 
     /**
      * Check if a transition is valid.
-     *
-     * @param string $currentStatus
-     * @param string $newStatus
-     * @return bool
      */
     public function isValidTransition(string $currentStatus, string $newStatus): bool
     {

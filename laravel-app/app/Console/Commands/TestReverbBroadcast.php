@@ -34,8 +34,9 @@ class TestReverbBroadcast extends Command
         // Get a test order or create one
         $order = Order::with(['table', 'orderItems'])->first();
 
-        if (!$order) {
+        if (! $order) {
             $this->error('No orders found in database. Please create an order first.');
+
             return 1;
         }
 
@@ -60,7 +61,7 @@ class TestReverbBroadcast extends Command
 
         $this->info('Events broadcasted successfully!');
         $this->info('Check the Reverb server logs to verify the broadcasts.');
-        $this->info('Channels: orders, kitchen, bar, waiter.' . $order->waiter_id);
+        $this->info('Channels: orders, kitchen, bar, waiter.'.$order->waiter_id);
 
         return 0;
     }

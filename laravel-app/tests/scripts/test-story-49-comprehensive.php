@@ -23,29 +23,31 @@ require __DIR__.'/vendor/autoload.php';
 $app = require_once __DIR__.'/bootstrap/app.php';
 $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Schema;
-use App\Models\Order;
 use App\Models\MenuCategory;
 use App\Models\Setting;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 // Color output helpers
-function success($message) {
-    echo "\033[32m✓\033[0m " . $message . "\n";
+function success($message)
+{
+    echo "\033[32m✓\033[0m ".$message."\n";
 }
 
-function error($message) {
-    echo "\033[31m✗\033[0m " . $message . "\n";
+function error($message)
+{
+    echo "\033[31m✗\033[0m ".$message."\n";
 }
 
-function info($message) {
-    echo "\033[34mℹ\033[0m " . $message . "\n";
+function info($message)
+{
+    echo "\033[34mℹ\033[0m ".$message."\n";
 }
 
-function heading($message) {
-    echo "\n\033[1;36m" . $message . "\033[0m\n";
-    echo str_repeat("=", strlen($message)) . "\n\n";
+function heading($message)
+{
+    echo "\n\033[1;36m".$message."\033[0m\n";
+    echo str_repeat('=', strlen($message))."\n\n";
 }
 
 echo "\n";
@@ -59,7 +61,7 @@ $passedTests = 0;
 $failedTests = 0;
 
 // Test 1: Check Eager Loading in Livewire Components
-heading("Test 1: Eager Loading in Livewire Components");
+heading('Test 1: Eager Loading in Livewire Components');
 
 $componentsToCheck = [
     'OrdersList' => ['orderItems.menuItem', 'table', 'waiter', 'guest'],
@@ -71,11 +73,12 @@ $componentsToCheck = [
 
 foreach ($componentsToCheck as $component => $relationships) {
     $totalTests++;
-    $filePath = __DIR__ . "/app/Livewire/{$component}.php";
+    $filePath = __DIR__."/app/Livewire/{$component}.php";
 
-    if (!file_exists($filePath)) {
+    if (! file_exists($filePath)) {
         error("Component {$component}.php not found");
         $failedTests++;
+
         continue;
     }
 
@@ -83,7 +86,7 @@ foreach ($componentsToCheck as $component => $relationships) {
     $hasEagerLoading = false;
 
     foreach ($relationships as $relationship) {
-        if (strpos($content, "with(") !== false || strpos($content, "->with([") !== false) {
+        if (strpos($content, 'with(') !== false || strpos($content, '->with([') !== false) {
             $hasEagerLoading = true;
             break;
         }
@@ -99,7 +102,7 @@ foreach ($componentsToCheck as $component => $relationships) {
 }
 
 // Test 2: Check Database Indexes
-heading("Test 2: Database Indexes");
+heading('Test 2: Database Indexes');
 
 $indexesToCheck = [
     'orders' => ['idx_orders_table_id', 'idx_orders_status', 'idx_orders_order_number', 'idx_orders_created_at'],
@@ -125,52 +128,52 @@ foreach ($indexesToCheck as $table => $indexes) {
                 $failedTests++;
             }
         } catch (\Exception $e) {
-            error("Error checking index '{$index}': " . $e->getMessage());
+            error("Error checking index '{$index}': ".$e->getMessage());
             $failedTests++;
         }
     }
 }
 
 // Test 3: Query Optimization - Check for select() and pagination
-heading("Test 3: Query Optimization (select() and pagination)");
+heading('Test 3: Query Optimization (select() and pagination)');
 
 $totalTests++;
-$orderListContent = file_get_contents(__DIR__ . "/app/Livewire/OrdersList.php");
+$orderListContent = file_get_contents(__DIR__.'/app/Livewire/OrdersList.php');
 if (strpos($orderListContent, 'WithPagination') !== false && strpos($orderListContent, '->paginate(') !== false) {
-    success("OrdersList: Uses pagination");
+    success('OrdersList: Uses pagination');
     $passedTests++;
 } else {
-    error("OrdersList: Missing pagination");
+    error('OrdersList: Missing pagination');
     $failedTests++;
 }
 
 $totalTests++;
-$dashboardContent = file_get_contents(__DIR__ . "/app/Livewire/Dashboard.php");
-if (strpos($dashboardContent, "->select(") !== false || strpos($dashboardContent, "::select(") !== false) {
-    success("Dashboard: Uses select() to limit columns");
+$dashboardContent = file_get_contents(__DIR__.'/app/Livewire/Dashboard.php');
+if (strpos($dashboardContent, '->select(') !== false || strpos($dashboardContent, '::select(') !== false) {
+    success('Dashboard: Uses select() to limit columns');
     $passedTests++;
 } else {
-    error("Dashboard: Missing select() optimization");
+    error('Dashboard: Missing select() optimization');
     $failedTests++;
 }
 
 // Test 4: Cache Configuration
-heading("Test 4: Redis Cache Configuration in .env.example");
+heading('Test 4: Redis Cache Configuration in .env.example');
 
 $totalTests++;
-$envExample = file_get_contents(__DIR__ . "/.env.example");
+$envExample = file_get_contents(__DIR__.'/.env.example');
 if (strpos($envExample, 'CACHE_STORE=') !== false &&
     strpos($envExample, 'SESSION_DRIVER=') !== false &&
     strpos($envExample, 'REDIS_HOST=') !== false) {
-    success(".env.example: Contains Redis cache configuration");
+    success('.env.example: Contains Redis cache configuration');
     $passedTests++;
 } else {
-    error(".env.example: Missing Redis configuration");
+    error('.env.example: Missing Redis configuration');
     $failedTests++;
 }
 
 // Test 5: Menu Caching
-heading("Test 5: Menu Caching Implementation");
+heading('Test 5: Menu Caching Implementation');
 
 $totalTests++;
 try {
@@ -188,10 +191,10 @@ try {
     $time2 = microtime(true) - $start;
 
     if ($time2 < $time1 && method_exists(MenuCategory::class, 'getCachedMenu')) {
-        success("Menu caching: Works correctly (2nd call faster: " . number_format($time2 * 1000, 2) . "ms vs " . number_format($time1 * 1000, 2) . "ms)");
+        success('Menu caching: Works correctly (2nd call faster: '.number_format($time2 * 1000, 2).'ms vs '.number_format($time1 * 1000, 2).'ms)');
         $passedTests++;
     } else {
-        error("Menu caching: Not optimized or method missing");
+        error('Menu caching: Not optimized or method missing');
         $failedTests++;
     }
 
@@ -200,21 +203,21 @@ try {
     MenuCategory::clearMenuCache();
     $cached = Cache::get(MenuCategory::CACHE_KEY);
     if ($cached === null) {
-        success("Menu cache invalidation: Works correctly");
+        success('Menu cache invalidation: Works correctly');
         $passedTests++;
     } else {
-        error("Menu cache invalidation: Failed");
+        error('Menu cache invalidation: Failed');
         $failedTests++;
     }
 
 } catch (\Exception $e) {
-    error("Menu caching test failed: " . $e->getMessage());
+    error('Menu caching test failed: '.$e->getMessage());
     $failedTests += 2;
     $totalTests++;
 }
 
 // Test 6: Settings Caching
-heading("Test 6: Settings Caching Implementation");
+heading('Test 6: Settings Caching Implementation');
 
 $totalTests++;
 try {
@@ -224,45 +227,45 @@ try {
         $value = Setting::get('test_key', 'default');
 
         if ($value === 'test_value') {
-            success("Settings caching: get() and set() methods work correctly");
+            success('Settings caching: get() and set() methods work correctly');
             $passedTests++;
         } else {
-            error("Settings caching: get() returns incorrect value");
+            error('Settings caching: get() returns incorrect value');
             $failedTests++;
         }
 
         // Check if caching is implemented
         $totalTests++;
-        $settingContent = file_get_contents(__DIR__ . "/app/Models/Setting.php");
+        $settingContent = file_get_contents(__DIR__.'/app/Models/Setting.php');
         if (strpos($settingContent, 'Cache::remember') !== false && strpos($settingContent, 'Cache::forget') !== false) {
-            success("Settings caching: Uses cache correctly");
+            success('Settings caching: Uses cache correctly');
             $passedTests++;
         } else {
-            error("Settings caching: Not using cache");
+            error('Settings caching: Not using cache');
             $failedTests++;
         }
 
     } else {
-        error("Settings: Missing get() or set() methods");
+        error('Settings: Missing get() or set() methods');
         $failedTests++;
     }
 } catch (\Exception $e) {
-    error("Settings caching test failed: " . $e->getMessage());
+    error('Settings caching test failed: '.$e->getMessage());
     $failedTests++;
 }
 
 // Test 7: Production Optimization Documentation
-heading("Test 7: Production Optimization Commands");
+heading('Test 7: Production Optimization Commands');
 
 $totalTests++;
-if (file_exists(__DIR__ . "/PERFORMANCE_OPTIMIZATION.md")) {
-    $perfDoc = file_get_contents(__DIR__ . "/PERFORMANCE_OPTIMIZATION.md");
+if (file_exists(__DIR__.'/PERFORMANCE_OPTIMIZATION.md')) {
+    $perfDoc = file_get_contents(__DIR__.'/PERFORMANCE_OPTIMIZATION.md');
 
     $requiredCommands = [
         'php artisan route:cache',
         'php artisan config:cache',
         'php artisan view:cache',
-        'npm run build'
+        'npm run build',
     ];
 
     $allCommandsDocumented = true;
@@ -274,69 +277,69 @@ if (file_exists(__DIR__ . "/PERFORMANCE_OPTIMIZATION.md")) {
     }
 
     if ($allCommandsDocumented) {
-        success("Documentation: All production optimization commands documented");
+        success('Documentation: All production optimization commands documented');
         $passedTests++;
     } else {
-        error("Documentation: Missing some production commands");
+        error('Documentation: Missing some production commands');
         $failedTests++;
     }
 } else {
-    error("Documentation: PERFORMANCE_OPTIMIZATION.md not found");
+    error('Documentation: PERFORMANCE_OPTIMIZATION.md not found');
     $failedTests++;
 }
 
 // Test 8: Asset Optimization (package.json)
-heading("Test 8: Asset Optimization");
+heading('Test 8: Asset Optimization');
 
 $totalTests++;
-$packageJson = json_decode(file_get_contents(__DIR__ . "/package.json"), true);
+$packageJson = json_decode(file_get_contents(__DIR__.'/package.json'), true);
 if (isset($packageJson['scripts']['build'])) {
     success("package.json: Has 'npm run build' script configured");
     $passedTests++;
 } else {
-    error("package.json: Missing build script");
+    error('package.json: Missing build script');
     $failedTests++;
 }
 
 // Test 9: Intervention/Image Package
-heading("Test 9: Image Optimization Package");
+heading('Test 9: Image Optimization Package');
 
 $totalTests++;
-$composerJson = json_decode(file_get_contents(__DIR__ . "/composer.json"), true);
+$composerJson = json_decode(file_get_contents(__DIR__.'/composer.json'), true);
 if (isset($composerJson['require']['intervention/image'])) {
-    success("intervention/image: Package is installed");
+    success('intervention/image: Package is installed');
     $passedTests++;
 } else {
-    error("intervention/image: Package not installed");
+    error('intervention/image: Package not installed');
     $failedTests++;
 }
 
 // Test 10: Laravel Debugbar
-heading("Test 10: Laravel Debugbar (Development Tool)");
+heading('Test 10: Laravel Debugbar (Development Tool)');
 
 $totalTests++;
 if (isset($composerJson['require-dev']['barryvdh/laravel-debugbar'])) {
-    success("Laravel Debugbar: Package is installed (require-dev)");
+    success('Laravel Debugbar: Package is installed (require-dev)');
     $passedTests++;
 } else {
-    error("Laravel Debugbar: Package not installed");
+    error('Laravel Debugbar: Package not installed');
     $failedTests++;
 }
 
 // Test 11: Performance Migration
-heading("Test 11: Performance Indexes Migration");
+heading('Test 11: Performance Indexes Migration');
 
 $totalTests++;
-if (file_exists(__DIR__ . "/database/migrations/2026_02_06_131146_add_performance_indexes_to_tables.php")) {
-    success("Performance indexes migration: File exists");
+if (file_exists(__DIR__.'/database/migrations/2026_02_06_131146_add_performance_indexes_to_tables.php')) {
+    success('Performance indexes migration: File exists');
     $passedTests++;
 } else {
-    error("Performance indexes migration: File not found");
+    error('Performance indexes migration: File not found');
     $failedTests++;
 }
 
 // Summary
-heading("Test Summary");
+heading('Test Summary');
 
 echo "Total Tests:  {$totalTests}\n";
 echo "\033[32mPassed:       {$passedTests}\033[0m\n";

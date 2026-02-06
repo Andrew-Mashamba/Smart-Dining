@@ -5,7 +5,6 @@ namespace App\Http\Controllers\WhatsApp;
 use App\Http\Controllers\Controller;
 use App\Models\Table;
 use App\Services\WhatsApp\QRCodeService;
-use Illuminate\Http\Request;
 
 class QRCodeController extends Controller
 {
@@ -19,7 +18,7 @@ class QRCodeController extends Controller
     /**
      * Generate QR code for a specific table
      *
-     * @param int $tableId
+     * @param  int  $tableId
      * @return \Illuminate\Http\JsonResponse
      */
     public function generate($tableId)
@@ -53,7 +52,7 @@ class QRCodeController extends Controller
     /**
      * Get QR code for a table
      *
-     * @param int $tableId
+     * @param  int  $tableId
      * @return \Illuminate\Http\JsonResponse
      */
     public function show($tableId)
@@ -62,7 +61,7 @@ class QRCodeController extends Controller
 
         $qrCodeUrl = $this->qrCodeService->getTableQRCodeUrl($table);
 
-        if (!$qrCodeUrl) {
+        if (! $qrCodeUrl) {
             $qrCodeUrl = $this->qrCodeService->generateTableQRCode($table);
         }
 

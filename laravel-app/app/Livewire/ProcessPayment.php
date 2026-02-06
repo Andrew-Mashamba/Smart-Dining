@@ -5,27 +5,33 @@ namespace App\Livewire;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Tip;
-use Livewire\Component;
-use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
+use Livewire\Component;
 
 class ProcessPayment extends Component
 {
     public $orderId;
+
     public $order;
 
     // Payment form data
     public $payment_method = '';
+
     public $amount = '';
 
     // Tip form data
     public $show_tip_section = false;
+
     public $tip_amount = '';
+
     public $tip_method = 'cash';
 
     // Payment tracking
     public $payments = [];
+
     public $totalPaid = 0;
+
     public $remainingBalance = 0;
 
     /**
@@ -50,7 +56,7 @@ class ProcessPayment extends Component
             'payments' => function ($query) {
                 $query->where('status', 'completed');
             },
-            'tip'
+            'tip',
         ])->findOrFail($this->orderId);
 
         // Calculate payment tracking
@@ -79,7 +85,7 @@ class ProcessPayment extends Component
                 function ($attribute, $value, $fail) {
                     // Allow partial payments but not overpayment
                     if ($value > $this->remainingBalance) {
-                        $fail('Payment amount cannot exceed remaining balance of $' . number_format($this->remainingBalance, 2));
+                        $fail('Payment amount cannot exceed remaining balance of $'.number_format($this->remainingBalance, 2));
                     }
                 },
             ],
@@ -120,7 +126,7 @@ class ProcessPayment extends Component
             // Show tip section after successful payment
             $this->show_tip_section = true;
 
-            session()->flash('success', 'Payment of $' . number_format($this->amount, 2) . ' processed successfully.');
+            session()->flash('success', 'Payment of $'.number_format($this->amount, 2).' processed successfully.');
 
             // Reset payment form
             $this->reset(['payment_method', 'amount']);
@@ -135,7 +141,7 @@ class ProcessPayment extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            session()->flash('error', 'Failed to process payment: ' . $e->getMessage());
+            session()->flash('error', 'Failed to process payment: '.$e->getMessage());
         }
     }
 
@@ -168,14 +174,14 @@ class ProcessPayment extends Component
             );
 
             $this->loadOrder();
-            session()->flash('success', 'Tip of $' . number_format($this->tip_amount, 2) . ' added successfully.');
+            session()->flash('success', 'Tip of $'.number_format($this->tip_amount, 2).' added successfully.');
 
             // Reset tip form
             $this->reset(['tip_amount', 'tip_method']);
             $this->tip_method = 'cash';
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to add tip: ' . $e->getMessage());
+            session()->flash('error', 'Failed to add tip: '.$e->getMessage());
         }
     }
 
@@ -204,7 +210,7 @@ class ProcessPayment extends Component
         // Download the PDF
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
-        }, 'receipt-' . $this->order->order_number . '.pdf');
+        }, 'receipt-'.$this->order->order_number.'.pdf');
     }
 
     /**
@@ -212,7 +218,7 @@ class ProcessPayment extends Component
      */
     public function getPaymentMethodName($method)
     {
-        return match($method) {
+        return match ($method) {
             'cash' => 'Cash',
             'card' => 'Credit/Debit Card',
             'mobile' => 'Mobile Payment',

@@ -1,22 +1,24 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\GuestController;
 use App\Http\Controllers\Api\MenuController;
-use App\Http\Controllers\Api\TableController;
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\OrderItemController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\TableController;
 use App\Http\Controllers\Api\TipController;
-use App\Http\Controllers\Api\GuestController;
+use Illuminate\Support\Facades\Route;
 
 // Authentication routes
 Route::post('auth/login', [AuthController::class, 'login']);
+Route::post('auth/login-pin', [AuthController::class, 'loginWithPin']);
+Route::get('auth/staff-list', [AuthController::class, 'getStaffForPinLogin']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('auth/logout', [AuthController::class, 'logout']);
     Route::post('auth/refresh', [AuthController::class, 'refresh']);
     Route::get('auth/me', [AuthController::class, 'me']);
+    Route::post('auth/set-pin', [AuthController::class, 'setPin']);
 });
 
 // Public menu routes
@@ -82,6 +84,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Manager and Admin only routes
     Route::middleware(['api.role:manager,admin'])->group(function () {
+        // Staff PIN management (managers set PINs for staff)
+        Route::post('staff/{staffId}/pin', [AuthController::class, 'setStaffPin']);
+
         // Menu management
         Route::put('menu/{id}/availability', [MenuController::class, 'updateAvailability']);
         Route::get('menu/stats', [MenuController::class, 'stats']);

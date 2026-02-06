@@ -16,6 +16,7 @@ class User extends Authenticatable
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
+
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
@@ -70,9 +71,6 @@ class User extends Authenticatable
 
     /**
      * Check if user has a specific role
-     *
-     * @param string $role
-     * @return bool
      */
     public function hasRole(string $role): bool
     {

@@ -2,14 +2,13 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\Guest;
-use App\Models\Order;
-use App\Models\MenuItem;
 use App\Models\MenuCategory;
+use App\Models\MenuItem;
+use App\Models\Order;
 use App\Services\WhatsAppService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Log;
+use Tests\TestCase;
 
 class WhatsAppIntegrationTest extends TestCase
 {
@@ -51,7 +50,7 @@ class WhatsAppIntegrationTest extends TestCase
     /** @test */
     public function test_webhook_verification_succeeds_with_correct_token()
     {
-        $response = $this->get('/api/webhooks/whatsapp?' . http_build_query([
+        $response = $this->get('/api/webhooks/whatsapp?'.http_build_query([
             'hub_mode' => 'subscribe',
             'hub_verify_token' => config('services.whatsapp.verify_token'),
             'hub_challenge' => 'test_challenge_string',
@@ -64,7 +63,7 @@ class WhatsAppIntegrationTest extends TestCase
     /** @test */
     public function test_webhook_verification_fails_with_incorrect_token()
     {
-        $response = $this->get('/api/webhooks/whatsapp?' . http_build_query([
+        $response = $this->get('/api/webhooks/whatsapp?'.http_build_query([
             'hub_mode' => 'subscribe',
             'hub_verify_token' => 'wrong_token',
             'hub_challenge' => 'test_challenge_string',
@@ -88,23 +87,23 @@ class WhatsAppIntegrationTest extends TestCase
                                         'from' => '2651234567',
                                         'type' => 'text',
                                         'text' => [
-                                            'body' => 'menu'
+                                            'body' => 'menu',
                                         ],
                                         'timestamp' => time(),
-                                    ]
+                                    ],
                                 ],
                                 'contacts' => [
                                     [
                                         'profile' => [
-                                            'name' => 'Test User'
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                            'name' => 'Test User',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         $response = $this->postJson('/api/webhooks/whatsapp', $webhookData);
@@ -136,23 +135,23 @@ class WhatsAppIntegrationTest extends TestCase
                                         'from' => '2657654321',
                                         'type' => 'text',
                                         'text' => [
-                                            'body' => 'order Grilled Salmon x 2'
+                                            'body' => 'order Grilled Salmon x 2',
                                         ],
                                         'timestamp' => time(),
-                                    ]
+                                    ],
                                 ],
                                 'contacts' => [
                                     [
                                         'profile' => [
-                                            'name' => 'Order User'
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                            'name' => 'Order User',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         $response = $this->postJson('/api/webhooks/whatsapp', $webhookData);
@@ -217,23 +216,23 @@ class WhatsAppIntegrationTest extends TestCase
                                         'from' => '2651111111',
                                         'type' => 'text',
                                         'text' => [
-                                            'body' => 'help'
+                                            'body' => 'help',
                                         ],
                                         'timestamp' => time(),
-                                    ]
+                                    ],
                                 ],
                                 'contacts' => [
                                     [
                                         'profile' => [
-                                            'name' => 'Help User'
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                            'name' => 'Help User',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         $response = $this->postJson('/api/webhooks/whatsapp', $webhookData);
@@ -256,23 +255,23 @@ class WhatsAppIntegrationTest extends TestCase
                                         'from' => '2652222222',
                                         'type' => 'text',
                                         'text' => [
-                                            'body' => 'order invalid format'
+                                            'body' => 'order invalid format',
                                         ],
                                         'timestamp' => time(),
-                                    ]
+                                    ],
                                 ],
                                 'contacts' => [
                                     [
                                         'profile' => [
-                                            'name' => 'Invalid User'
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                            'name' => 'Invalid User',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         $response = $this->postJson('/api/webhooks/whatsapp', $webhookData);

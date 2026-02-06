@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class DebugApiTest extends TestCase
 {
@@ -15,12 +15,12 @@ class DebugApiTest extends TestCase
 
         try {
             $response = $this->getJson('/api/orders');
-            echo "\nStatus: " . $response->status() . "\n";
-            echo "Content: " . $response->content() . "\n";
+            echo "\nStatus: ".$response->status()."\n";
+            echo 'Content: '.$response->content()."\n";
         } catch (\Exception $e) {
-            echo "\nException: " . get_class($e) . "\n";
-            echo "Message: " . $e->getMessage() . "\n";
-            echo "File: " . $e->getFile() . ":" . $e->getLine() . "\n";
+            echo "\nException: ".get_class($e)."\n";
+            echo 'Message: '.$e->getMessage()."\n";
+            echo 'File: '.$e->getFile().':'.$e->getLine()."\n";
         }
 
         $this->assertTrue(true);

@@ -2,14 +2,14 @@
 
 namespace App\Livewire;
 
-use App\Models\Order;
 use App\Models\MenuItem;
-use App\Models\Table;
-use App\Models\Staff;
+use App\Models\Order;
 use App\Models\OrderItem;
-use Livewire\Component;
-use Illuminate\Support\Facades\DB;
+use App\Models\Staff;
+use App\Models\Table;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Livewire\Component;
 
 class Dashboard extends Component
 {
@@ -108,6 +108,7 @@ class Dashboard extends Component
             if ($newValue > 0) {
                 return ['value' => 100, 'direction' => 'up'];
             }
+
             return ['value' => 0, 'direction' => 'neutral'];
         }
 
@@ -116,7 +117,7 @@ class Dashboard extends Component
 
         return [
             'value' => abs(round($change, 1)),
-            'direction' => $direction
+            'direction' => $direction,
         ];
     }
 
@@ -126,6 +127,7 @@ class Dashboard extends Component
     private function getYesterdayActiveTables(): int
     {
         $yesterday = Carbon::yesterday();
+
         return Order::whereDate('created_at', $yesterday)
             ->distinct('table_id')
             ->count('table_id');
@@ -142,9 +144,10 @@ class Dashboard extends Component
             $revenue = Order::whereDate('created_at', $date)->sum('total');
             $data[] = [
                 'date' => $date->format('M d'),
-                'revenue' => (float) $revenue
+                'revenue' => (float) $revenue,
             ];
         }
+
         return $data;
     }
 
@@ -171,7 +174,7 @@ class Dashboard extends Component
                 return [
                     'name' => $item->name,
                     'count' => (int) $item->total_quantity,
-                    'revenue' => (float) $item->total_revenue
+                    'revenue' => (float) $item->total_revenue,
                 ];
             })
             ->toArray();

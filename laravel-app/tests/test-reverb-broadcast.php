@@ -9,9 +9,9 @@
  * Usage: php tests/test-reverb-broadcast.php
  */
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
-$app = require_once __DIR__ . '/../bootstrap/app.php';
+$app = require_once __DIR__.'/../bootstrap/app.php';
 $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
 echo "=== Testing Reverb Broadcasting ===\n\n";
@@ -19,7 +19,7 @@ echo "=== Testing Reverb Broadcasting ===\n\n";
 try {
     // Get or create a table
     $table = App\Models\Table::first();
-    if (!$table) {
+    if (! $table) {
         echo "Creating test table...\n";
         $table = App\Models\Table::create([
             'name' => 'Test Table 1',
@@ -35,11 +35,11 @@ try {
 
     // Get or create a staff member
     $staff = App\Models\Staff::where('position', 'waiter')->first();
-    if (!$staff) {
+    if (! $staff) {
         $staff = App\Models\Staff::first();
     }
 
-    if (!$staff) {
+    if (! $staff) {
         echo "Creating test staff member...\n";
         $staff = App\Models\Staff::create([
             'name' => 'Test Waiter',
@@ -70,7 +70,7 @@ try {
     echo "✓ Order created: {$order->order_number} (ID: {$order->id})\n";
     echo "  Table: {$table->name}\n";
     echo "  Waiter: {$staff->name}\n";
-    echo "  Total: Rp " . number_format($order->total, 0, ',', '.') . "\n";
+    echo '  Total: Rp '.number_format($order->total, 0, ',', '.')."\n";
 
     // Dispatch the OrderCreated event
     echo "\nDispatching OrderCreated event...\n";
@@ -89,6 +89,6 @@ try {
 } catch (Exception $e) {
     echo "\n✗ Error: {$e->getMessage()}\n";
     echo "\nStack trace:\n";
-    echo $e->getTraceAsString() . "\n";
+    echo $e->getTraceAsString()."\n";
     exit(1);
 }

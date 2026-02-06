@@ -4,17 +4,22 @@ namespace App\Livewire;
 
 use App\Models\Table;
 use App\Services\QRCodeService;
-use Livewire\Component;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Component;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TableManagement extends Component
 {
     public $name;
+
     public $location;
+
     public $capacity;
+
     public $editingTableId;
+
     public $showDeleteConfirmation = false;
+
     public $tableToDelete;
 
     protected $rules = [
@@ -133,7 +138,7 @@ class TableManagement extends Component
      */
     public function generateQrCode($tableId)
     {
-        $qrCodeService = new QRCodeService();
+        $qrCodeService = new QRCodeService;
         $qrCodeService->generateTableQR($tableId);
 
         session()->flash('message', 'QR Code generated successfully.');
@@ -144,7 +149,7 @@ class TableManagement extends Component
      */
     public function regenerateQrCode($tableId)
     {
-        $qrCodeService = new QRCodeService();
+        $qrCodeService = new QRCodeService;
         $qrCodeService->regenerateTableQR($tableId);
 
         session()->flash('message', 'QR Code regenerated successfully.');
@@ -157,8 +162,9 @@ class TableManagement extends Component
     {
         $table = Table::findOrFail($tableId);
 
-        if (!$table->qr_code) {
+        if (! $table->qr_code) {
             session()->flash('error', 'No QR code available for this table.');
+
             return response()->streamDownload(function () {}, '');
         }
 

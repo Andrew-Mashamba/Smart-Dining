@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Services\Payment\StripePaymentService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Stripe\Webhook;
 use Stripe\Exception\SignatureVerificationException;
-use Exception;
+use Stripe\Webhook;
 
 class StripeWebhookController extends Controller
 {
@@ -21,7 +21,6 @@ class StripeWebhookController extends Controller
     /**
      * Handle incoming Stripe webhooks
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function handle(Request $request)
@@ -91,7 +90,7 @@ class StripeWebhookController extends Controller
     /**
      * Handle successful payment intent
      *
-     * @param object $paymentIntent
+     * @param  object  $paymentIntent
      * @return void
      */
     protected function handlePaymentIntentSucceeded($paymentIntent)
@@ -129,7 +128,7 @@ class StripeWebhookController extends Controller
     /**
      * Handle failed payment intent
      *
-     * @param object $paymentIntent
+     * @param  object  $paymentIntent
      * @return void
      */
     protected function handlePaymentIntentFailed($paymentIntent)
@@ -161,7 +160,7 @@ class StripeWebhookController extends Controller
     /**
      * Handle processing payment intent
      *
-     * @param object $paymentIntent
+     * @param  object  $paymentIntent
      * @return void
      */
     protected function handlePaymentIntentProcessing($paymentIntent)
@@ -177,7 +176,7 @@ class StripeWebhookController extends Controller
     /**
      * Handle canceled payment intent
      *
-     * @param object $paymentIntent
+     * @param  object  $paymentIntent
      * @return void
      */
     protected function handlePaymentIntentCanceled($paymentIntent)

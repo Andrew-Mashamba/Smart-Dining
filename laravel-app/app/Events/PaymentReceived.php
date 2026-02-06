@@ -3,9 +3,7 @@
 namespace App\Events;
 
 use App\Models\Payment;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -34,14 +32,12 @@ class PaymentReceived implements ShouldBroadcast
     {
         return [
             new PrivateChannel('orders'),
-            new PrivateChannel('waiter.' . $this->payment->order->waiter_id),
+            new PrivateChannel('waiter.'.$this->payment->order->waiter_id),
         ];
     }
 
     /**
      * Get the data to broadcast.
-     *
-     * @return array
      */
     public function broadcastWith(): array
     {

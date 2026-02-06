@@ -2,40 +2,49 @@
 
 namespace App\Livewire;
 
-use App\Models\GuestSession;
+use App\Events\OrderCreated;
 use App\Models\Guest;
-use App\Models\MenuItem;
+use App\Models\GuestSession;
 use App\Models\MenuCategory;
+use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Events\OrderCreated;
-use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use Livewire\Component;
 
 class GuestOrder extends Component
 {
     // Session management
     public $session_token = '';
+
     public $guestSession = null;
+
     public $sessionError = '';
 
     // Guest info
     public $phone_number = '';
+
     public $guest_name = '';
 
     // Cart management
     public $cart = [];
+
     public $selectedCategoryId = '';
 
     // Totals
     public $subtotal = 0;
+
     public $tax = 0;
+
     public $total = 0;
+
     public $taxRate = 0.18; // 18% VAT
 
     // UI state
     public $showCart = false;
+
     public $orderPlaced = false;
+
     public $orderNumber = '';
 
     /**
@@ -45,8 +54,9 @@ class GuestOrder extends Component
     {
         $this->session_token = request()->query('token', '');
 
-        if (!$this->session_token) {
+        if (! $this->session_token) {
             $this->sessionError = 'Invalid QR code. Please scan again or contact staff.';
+
             return;
         }
 
@@ -55,13 +65,15 @@ class GuestOrder extends Component
             ->with(['table', 'guest'])
             ->first();
 
-        if (!$this->guestSession) {
+        if (! $this->guestSession) {
             $this->sessionError = 'Session not found. Please scan a valid QR code or contact staff.';
+
             return;
         }
 
-        if (!$this->guestSession->isActive()) {
+        if (! $this->guestSession->isActive()) {
             $this->sessionError = 'This session has ended. Please request a new QR code from staff.';
+
             return;
         }
 
@@ -112,6 +124,7 @@ class GuestOrder extends Component
             $newQuantity = $this->cart[$existingIndex]['quantity'] + 1;
             if ($menuItem->stock_quantity < $newQuantity) {
                 session()->flash('error', "Cannot add more {$menuItem->name}. Only {$menuItem->stock_quantity} {$menuItem->unit} available.");
+
                 return;
             }
             // Increment quantity if already in cart
@@ -120,6 +133,7 @@ class GuestOrder extends Component
             // Check stock availability before adding to cart
             if ($menuItem->stock_quantity < 1) {
                 session()->flash('error', "{$menuItem->name} is out of stock.");
+
                 return;
             }
             // Add new item to cart
@@ -160,6 +174,7 @@ class GuestOrder extends Component
             $menuItem = MenuItem::find($this->cart[$index]['menu_item_id']);
             if ($menuItem && $menuItem->stock_quantity < $quantity) {
                 session()->flash('error', "Cannot add more {$menuItem->name}. Only {$menuItem->stock_quantity} {$menuItem->unit} available.");
+
                 return;
             }
 
@@ -203,6 +218,7 @@ class GuestOrder extends Component
                 return $index;
             }
         }
+
         return null;
     }
 
@@ -211,7 +227,7 @@ class GuestOrder extends Component
      */
     public function toggleCart()
     {
-        $this->showCart = !$this->showCart;
+        $this->showCart = ! $this->showCart;
     }
 
     /**
@@ -229,8 +245,8 @@ class GuestOrder extends Component
             foreach ($this->cart as $cartItem) {
                 $menuItem = MenuItem::find($cartItem['menu_item_id']);
 
-                if (!$menuItem) {
-                    throw new \Exception("Menu item not found.");
+                if (! $menuItem) {
+                    throw new \Exception('Menu item not found.');
                 }
 
                 if ($menuItem->stock_quantity < $cartItem['quantity']) {
@@ -250,7 +266,7 @@ class GuestOrder extends Component
             }
 
             // Update guest session with guest_id if not set
-            if (!$this->guestSession->guest_id) {
+            if (! $this->guestSession->guest_id) {
                 $this->guestSession->update(['guest_id' => $guest->id]);
             }
 
@@ -291,7 +307,7 @@ class GuestOrder extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            session()->flash('error', 'Failed to place order: ' . $e->getMessage());
+            session()->flash('error', 'Failed to place order: '.$e->getMessage());
         }
     }
 

@@ -93,7 +93,7 @@ return [
             'handler' => \Monolog\Handler\NativeMailerHandler::class,
             'handler_with' => [
                 'to' => env('MAIL_ERROR_TO', 'admin@example.com'),
-                'subject' => env('APP_NAME') . ' - Critical Error',
+                'subject' => env('APP_NAME').' - Critical Error',
                 'from' => env('MAIL_FROM_ADDRESS'),
             ],
             'level' => 'critical',

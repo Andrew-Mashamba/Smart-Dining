@@ -2,27 +2,33 @@
 
 namespace App\Livewire;
 
-use App\Models\MenuItem;
+use App\Events\OrderCreated;
 use App\Models\MenuCategory;
-use App\Models\Table;
+use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Events\OrderCreated;
-use Livewire\Component;
+use App\Models\Table;
 use Illuminate\Support\Facades\DB;
+use Livewire\Component;
 
 class CreateOrder extends Component
 {
     // Order properties
     public $selectedTableId = '';
+
     public $cart = [];
+
     public $searchTerm = '';
+
     public $selectedCategoryId = '';
 
     // Totals
     public $subtotal = 0;
+
     public $tax = 0;
+
     public $total = 0;
+
     public $taxRate = 0.18; // 18% VAT - configurable
 
     /**
@@ -63,6 +69,7 @@ class CreateOrder extends Component
             $newQuantity = $this->cart[$existingIndex]['quantity'] + 1;
             if ($menuItem->stock_quantity < $newQuantity) {
                 session()->flash('error', "Cannot add more {$menuItem->name}. Only {$menuItem->stock_quantity} {$menuItem->unit} available.");
+
                 return;
             }
             // Increment quantity if already in cart
@@ -71,6 +78,7 @@ class CreateOrder extends Component
             // Check stock availability before adding to cart
             if ($menuItem->stock_quantity < 1) {
                 session()->flash('error', "{$menuItem->name} is out of stock.");
+
                 return;
             }
             // Add new item to cart
@@ -110,6 +118,7 @@ class CreateOrder extends Component
             $menuItem = MenuItem::find($this->cart[$index]['menu_item_id']);
             if ($menuItem && $menuItem->stock_quantity < $quantity) {
                 session()->flash('error', "Cannot add more {$menuItem->name}. Only {$menuItem->stock_quantity} {$menuItem->unit} available.");
+
                 return;
             }
 
@@ -153,6 +162,7 @@ class CreateOrder extends Component
                 return $index;
             }
         }
+
         return null;
     }
 
@@ -180,8 +190,8 @@ class CreateOrder extends Component
             foreach ($this->cart as $cartItem) {
                 $menuItem = MenuItem::find($cartItem['menu_item_id']);
 
-                if (!$menuItem) {
-                    throw new \Exception("Menu item not found.");
+                if (! $menuItem) {
+                    throw new \Exception('Menu item not found.');
                 }
 
                 if ($menuItem->stock_quantity < $cartItem['quantity']) {
@@ -227,13 +237,13 @@ class CreateOrder extends Component
             $this->selectedTableId = '';
 
             // Redirect to orders list with success message
-            session()->flash('success', 'Order placed successfully! Order #' . $order->order_number);
+            session()->flash('success', 'Order placed successfully! Order #'.$order->order_number);
 
             return redirect()->route('dashboard');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            session()->flash('error', 'Failed to place order: ' . $e->getMessage());
+            session()->flash('error', 'Failed to place order: '.$e->getMessage());
         }
     }
 

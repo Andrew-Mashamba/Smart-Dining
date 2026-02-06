@@ -12,8 +12,7 @@ class Setting extends Model
     /**
      * Get a setting value by key with optional default
      *
-     * @param string $key
-     * @param mixed $default
+     * @param  mixed  $default
      * @return mixed
      */
     public static function get(string $key, $default = null)
@@ -23,7 +22,7 @@ class Setting extends Model
             return static::where('key', $key)->first();
         });
 
-        if (!$setting) {
+        if (! $setting) {
             return $default;
         }
 
@@ -34,10 +33,7 @@ class Setting extends Model
     /**
      * Set a setting value by key
      *
-     * @param string $key
-     * @param mixed $value
-     * @param string $type
-     * @return bool
+     * @param  mixed  $value
      */
     public static function set(string $key, $value, string $type = 'string'): bool
     {
@@ -50,7 +46,7 @@ class Setting extends Model
             ['key' => $key],
             [
                 'value' => $storedValue,
-                'type' => $type
+                'type' => $type,
             ]
         );
 
@@ -63,8 +59,7 @@ class Setting extends Model
     /**
      * Cast value based on type
      *
-     * @param string $value
-     * @param string $type
+     * @param  string  $value
      * @return mixed
      */
     protected static function castValue($value, string $type)

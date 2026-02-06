@@ -11,10 +11,6 @@ class SessionService
 {
     /**
      * Start a new guest session
-     *
-     * @param Guest $guest
-     * @param Table|null $table
-     * @return GuestSession
      */
     public function startSession(Guest $guest, ?Table $table = null): GuestSession
     {
@@ -42,10 +38,6 @@ class SessionService
 
     /**
      * Assign a table to an existing session
-     *
-     * @param GuestSession $session
-     * @param Table $table
-     * @return void
      */
     public function assignTable(GuestSession $session, Table $table): void
     {
@@ -53,7 +45,7 @@ class SessionService
             throw new \Exception('Can only assign tables to active sessions');
         }
 
-        if (!$table->isAvailable()) {
+        if (! $table->isAvailable()) {
             throw new \Exception('Table is not available');
         }
 
@@ -71,9 +63,6 @@ class SessionService
 
     /**
      * End a guest session
-     *
-     * @param GuestSession $session
-     * @return void
      */
     public function endSession(GuestSession $session): void
     {
@@ -108,9 +97,6 @@ class SessionService
 
     /**
      * Get active session for a guest
-     *
-     * @param Guest $guest
-     * @return GuestSession|null
      */
     public function getActiveSession(Guest $guest): ?GuestSession
     {
@@ -122,9 +108,6 @@ class SessionService
 
     /**
      * Get session by token
-     *
-     * @param string $token
-     * @return GuestSession|null
      */
     public function getSessionByToken(string $token): ?GuestSession
     {
@@ -136,8 +119,6 @@ class SessionService
 
     /**
      * Generate a unique session token
-     *
-     * @return string
      */
     protected function generateSessionToken(): string
     {
@@ -150,9 +131,6 @@ class SessionService
 
     /**
      * End all active sessions for a guest
-     *
-     * @param Guest $guest
-     * @return void
      */
     protected function endActiveSessionsForGuest(Guest $guest): void
     {
@@ -175,9 +153,6 @@ class SessionService
 
     /**
      * Award loyalty points based on session spending
-     *
-     * @param GuestSession $session
-     * @return void
      */
     protected function awardLoyaltyPoints(GuestSession $session): void
     {
@@ -201,9 +176,6 @@ class SessionService
 
     /**
      * Get session summary with orders and payments
-     *
-     * @param GuestSession $session
-     * @return array
      */
     public function getSessionSummary(GuestSession $session): array
     {

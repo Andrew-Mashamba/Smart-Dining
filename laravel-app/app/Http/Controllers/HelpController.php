@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class HelpController extends Controller
@@ -22,7 +20,7 @@ class HelpController extends Controller
         return view('help.index', [
             'role' => $role,
             'documentation' => $documentation,
-            'user' => $user
+            'user' => $user,
         ]);
     }
 
@@ -37,9 +35,9 @@ class HelpController extends Controller
                     'title' => 'API Documentation',
                     'file' => 'API.md',
                     'description' => 'Complete API reference with endpoints, authentication, and examples',
-                    'icon' => 'code'
+                    'icon' => 'code',
                 ],
-            ]
+            ],
         ];
 
         // Role-specific documentation
@@ -48,31 +46,31 @@ class HelpController extends Controller
                 'title' => 'Admin Guide',
                 'file' => 'ADMIN_GUIDE.md',
                 'description' => 'Staff management, system settings, reports, and configuration',
-                'icon' => 'shield'
+                'icon' => 'shield',
             ],
             'manager' => [
                 'title' => 'Manager Guide',
                 'file' => 'MANAGER_GUIDE.md',
                 'description' => 'Menu management, table management, inventory, and reporting',
-                'icon' => 'briefcase'
+                'icon' => 'briefcase',
             ],
             'waiter' => [
                 'title' => 'Waiter Guide',
                 'file' => 'WAITER_GUIDE.md',
                 'description' => 'Creating orders, processing payments, using POS interface',
-                'icon' => 'users'
+                'icon' => 'users',
             ],
             'chef' => [
                 'title' => 'Chef Guide',
                 'file' => 'CHEF_GUIDE.md',
                 'description' => 'Using kitchen display, updating order status, managing preparations',
-                'icon' => 'utensils'
+                'icon' => 'utensils',
             ],
             'bartender' => [
                 'title' => 'Bartender Guide',
                 'file' => 'BARTENDER_GUIDE.md',
                 'description' => 'Using bar display, updating drink status, managing bar orders',
-                'icon' => 'glass-martini'
+                'icon' => 'glass-martini',
             ],
         ];
 
@@ -95,10 +93,10 @@ class HelpController extends Controller
     public function show($filename)
     {
         $docsPath = base_path('docs');
-        $filePath = $docsPath . '/' . $filename;
+        $filePath = $docsPath.'/'.$filename;
 
         // Security: only allow .md files in docs directory
-        if (!str_ends_with($filename, '.md') || !file_exists($filePath)) {
+        if (! str_ends_with($filename, '.md') || ! file_exists($filePath)) {
             abort(404, 'Documentation not found');
         }
 
@@ -112,7 +110,7 @@ class HelpController extends Controller
         return view('help.show', [
             'title' => str_replace(['.md', '_'], ['', ' '], $filename),
             'content' => $html,
-            'filename' => $filename
+            'filename' => $filename,
         ]);
     }
 
@@ -122,10 +120,10 @@ class HelpController extends Controller
     public function exportPdf($filename)
     {
         $docsPath = base_path('docs');
-        $filePath = $docsPath . '/' . $filename;
+        $filePath = $docsPath.'/'.$filename;
 
         // Security: only allow .md files in docs directory
-        if (!str_ends_with($filename, '.md') || !file_exists($filePath)) {
+        if (! str_ends_with($filename, '.md') || ! file_exists($filePath)) {
             abort(404, 'Documentation not found');
         }
 
@@ -136,7 +134,7 @@ class HelpController extends Controller
         // Generate PDF
         $pdf = Pdf::loadView('help.pdf', [
             'title' => str_replace(['.md', '_'], ['', ' '], $filename),
-            'content' => $html
+            'content' => $html,
         ]);
 
         $pdfFilename = str_replace('.md', '.pdf', $filename);
@@ -172,7 +170,7 @@ class HelpController extends Controller
 
         // Paragraphs
         $markdown = preg_replace('/\n\n/', '</p><p>', $markdown);
-        $markdown = '<p>' . $markdown . '</p>';
+        $markdown = '<p>'.$markdown.'</p>';
 
         // Horizontal rules
         $markdown = preg_replace('/^---$/m', '<hr>', $markdown);

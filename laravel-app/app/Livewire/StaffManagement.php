@@ -3,9 +3,9 @@
 namespace App\Livewire;
 
 use App\Models\User;
-use Livewire\Component;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Livewire\Component;
 
 class StaffManagement extends Component
 {
@@ -14,23 +14,35 @@ class StaffManagement extends Component
 
     // Add staff modal properties
     public $showAddStaffModal = false;
+
     public $staffName = '';
+
     public $staffEmail = '';
+
     public $staffRole = '';
+
     public $staffPhoneNumber = '';
+
     public $staffPassword = '';
 
     // Edit staff modal properties
     public $showEditStaffModal = false;
+
     public $editStaffId = null;
+
     public $editStaffName = '';
+
     public $editStaffEmail = '';
+
     public $editStaffRole = '';
+
     public $editStaffPhoneNumber = '';
+
     public $editStaffPassword = '';
 
     // Delete confirmation modal properties
     public $showDeleteModal = false;
+
     public $deleteStaffId = null;
 
     /**
@@ -106,7 +118,7 @@ class StaffManagement extends Component
             $this->resetAddStaffForm();
             $this->showAddStaffModal = false;
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to add staff member: ' . $e->getMessage());
+            session()->flash('error', 'Failed to add staff member: '.$e->getMessage());
         }
     }
 
@@ -127,7 +139,7 @@ class StaffManagement extends Component
 
             $this->showEditStaffModal = true;
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to load staff details: ' . $e->getMessage());
+            session()->flash('error', 'Failed to load staff details: '.$e->getMessage());
         }
     }
 
@@ -149,7 +161,7 @@ class StaffManagement extends Component
             ];
 
             // Only update password if provided
-            if (!empty($this->editStaffPassword)) {
+            if (! empty($this->editStaffPassword)) {
                 $updateData['password'] = Hash::make($this->editStaffPassword);
             }
 
@@ -159,7 +171,7 @@ class StaffManagement extends Component
             $this->resetEditStaffForm();
             $this->showEditStaffModal = false;
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to update staff member: ' . $e->getMessage());
+            session()->flash('error', 'Failed to update staff member: '.$e->getMessage());
         }
     }
 
@@ -176,7 +188,7 @@ class StaffManagement extends Component
 
             session()->flash('success', 'Staff status updated successfully.');
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to update status: ' . $e->getMessage());
+            session()->flash('error', 'Failed to update status: '.$e->getMessage());
         }
     }
 
@@ -204,7 +216,7 @@ class StaffManagement extends Component
             $this->showDeleteModal = false;
             $this->deleteStaffId = null;
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to delete staff member: ' . $e->getMessage());
+            session()->flash('error', 'Failed to delete staff member: '.$e->getMessage());
         }
     }
 
@@ -271,12 +283,12 @@ class StaffManagement extends Component
         $query = User::query();
 
         // Apply search filter
-        if (!empty($this->search)) {
+        if (! empty($this->search)) {
             $query->where(function ($q) {
-                $q->where('name', 'like', '%' . $this->search . '%')
-                  ->orWhere('email', 'like', '%' . $this->search . '%')
-                  ->orWhere('role', 'like', '%' . $this->search . '%')
-                  ->orWhere('phone_number', 'like', '%' . $this->search . '%');
+                $q->where('name', 'like', '%'.$this->search.'%')
+                    ->orWhere('email', 'like', '%'.$this->search.'%')
+                    ->orWhere('role', 'like', '%'.$this->search.'%')
+                    ->orWhere('phone_number', 'like', '%'.$this->search.'%');
             });
         }
 

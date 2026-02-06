@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\Table;
 use App\Models\GuestSession;
+use App\Models\Table;
 use App\Models\User;
 use App\Services\QRCodeService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -19,7 +19,7 @@ class QRCodeGenerationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->qrCodeService = new QRCodeService();
+        $this->qrCodeService = new QRCodeService;
         Storage::fake('public');
     }
 
@@ -40,7 +40,7 @@ class QRCodeGenerationTest extends TestCase
         // Assert QR code path was returned
         $this->assertIsString($result);
         $this->assertStringContainsString('qrcodes/', $result);
-        $this->assertStringContainsString("{$table->id}.svg", $result);
+        $this->assertStringContainsString("{$table->id}.png", $result);
 
         // Assert table was updated with QR code path
         $table->refresh();

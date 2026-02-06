@@ -138,7 +138,7 @@ class ApiAuthenticationTest extends TestCase
         $this->assertEquals(1, $staff->tokens()->count());
 
         // Logout using the token
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->postJson('/api/auth/logout');
 
         // Assert successful logout

@@ -5,8 +5,8 @@ namespace Tests\Feature;
 use App\Events\OrderCreated;
 use App\Events\OrderStatusUpdated;
 use App\Models\Order;
-use App\Models\Table;
 use App\Models\Staff;
+use App\Models\Table;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
@@ -33,7 +33,7 @@ class ReverbBroadcastTest extends TestCase
 
         // Create an order
         $order = Order::create([
-            'order_number' => 'ORD-' . now()->format('YmdHis') . '-' . $waiter->id,
+            'order_number' => 'ORD-'.now()->format('YmdHis').'-'.$waiter->id,
             'waiter_id' => $waiter->id,
             'table_id' => $table->id,
             'order_source' => 'pos',
@@ -65,7 +65,7 @@ class ReverbBroadcastTest extends TestCase
             'status' => 'available',
         ]);
         $order = Order::create([
-            'order_number' => 'ORD-' . now()->format('YmdHis') . '-' . $waiter->id . '-1',
+            'order_number' => 'ORD-'.now()->format('YmdHis').'-'.$waiter->id.'-1',
             'waiter_id' => $waiter->id,
             'table_id' => $table->id,
             'order_source' => 'pos',
@@ -100,7 +100,7 @@ class ReverbBroadcastTest extends TestCase
             'status' => 'available',
         ]);
         $order = Order::create([
-            'order_number' => 'ORD-' . now()->format('YmdHis') . '-' . $waiter->id . '-2',
+            'order_number' => 'ORD-'.now()->format('YmdHis').'-'.$waiter->id.'-2',
             'waiter_id' => $waiter->id,
             'table_id' => $table->id,
             'order_source' => 'pos',
@@ -134,7 +134,7 @@ class ReverbBroadcastTest extends TestCase
             'status' => 'available',
         ]);
         $order = Order::create([
-            'order_number' => 'ORD-' . now()->format('YmdHis') . '-' . $waiter->id . '-3',
+            'order_number' => 'ORD-'.now()->format('YmdHis').'-'.$waiter->id.'-3',
             'waiter_id' => $waiter->id,
             'table_id' => $table->id,
             'order_source' => 'pos',

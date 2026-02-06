@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use App\Models\Table;
-use App\Models\Staff;
 use App\Models\Payment;
-use Carbon\Carbon;
+use App\Models\Staff;
+use App\Models\Table;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class ManagerController extends Controller
 {
@@ -43,7 +43,7 @@ class ManagerController extends Controller
     /**
      * Generate and download PDF receipt for an order.
      *
-     * @param int $orderId
+     * @param  int  $orderId
      * @return \Illuminate\Http\Response
      */
     public function generateReceipt($orderId)
@@ -54,7 +54,7 @@ class ManagerController extends Controller
             'table',
             'waiter',
             'payments',
-            'tip'
+            'tip',
         ])->findOrFail($orderId);
 
         // Generate PDF from the receipt blade template
@@ -64,6 +64,6 @@ class ManagerController extends Controller
         $pdf->setPaper([0, 0, 226.77, 841.89], 'portrait'); // 80mm x 297mm (A4 height)
 
         // Return PDF as download
-        return $pdf->download('receipt-' . $order->order_number . '.pdf');
+        return $pdf->download('receipt-'.$order->order_number.'.pdf');
     }
 }

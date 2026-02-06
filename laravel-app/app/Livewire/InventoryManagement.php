@@ -2,36 +2,48 @@
 
 namespace App\Livewire;
 
-use App\Models\MenuItem;
 use App\Models\InventoryTransaction;
-use Livewire\Component;
+use App\Models\MenuItem;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Component;
 
 class InventoryManagement extends Component
 {
     // Modal state
     public $showRestockModal = false;
+
     public $showAdjustmentModal = false;
+
     public $activeTab = 'inventory'; // 'inventory' or 'history'
 
     // Restock form fields
     public $restockItemId = null;
+
     public $restockQuantity = '';
+
     public $restockUnit = '';
+
     public $restockNotes = '';
 
     // Adjustment form fields
     public $adjustmentItemId = null;
+
     public $adjustmentQuantity = '';
+
     public $adjustmentUnit = '';
+
     public $adjustmentType = 'waste'; // 'waste', 'loss', or 'correction'
+
     public $adjustmentNotes = '';
 
     // Filters for transaction history
     public $filterMenuItemId = '';
+
     public $filterTransactionType = '';
+
     public $filterDateFrom = '';
+
     public $filterDateTo = '';
 
     /**
@@ -124,7 +136,7 @@ class InventoryManagement extends Component
             $this->closeRestockModal();
         } catch (\Exception $e) {
             DB::rollBack();
-            session()->flash('error', 'Failed to restock: ' . $e->getMessage());
+            session()->flash('error', 'Failed to restock: '.$e->getMessage());
         }
     }
 
@@ -160,7 +172,7 @@ class InventoryManagement extends Component
             $this->closeAdjustmentModal();
         } catch (\Exception $e) {
             DB::rollBack();
-            session()->flash('error', 'Failed to record adjustment: ' . $e->getMessage());
+            session()->flash('error', 'Failed to record adjustment: '.$e->getMessage());
         }
     }
 

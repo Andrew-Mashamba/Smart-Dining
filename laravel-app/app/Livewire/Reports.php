@@ -7,7 +7,9 @@ use Livewire\Component;
 class Reports extends Component
 {
     public $start_date;
+
     public $end_date;
+
     public $report_type = 'sales';
 
     public function mount()

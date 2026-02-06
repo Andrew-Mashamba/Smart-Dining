@@ -4,7 +4,6 @@ namespace App\Services\Payment;
 
 use App\Models\Order;
 use App\Models\Payment;
-use App\Models\Staff;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -12,9 +11,6 @@ class PaymentService
 {
     /**
      * Generate bill for an order
-     *
-     * @param Order $order
-     * @return array
      */
     public function generateBill(Order $order): array
     {
@@ -55,10 +51,6 @@ class PaymentService
 
     /**
      * Process a payment for an order
-     *
-     * @param Order $order
-     * @param array $paymentData
-     * @return Payment
      */
     public function processPayment(Order $order, array $paymentData): Payment
     {
@@ -93,9 +85,6 @@ class PaymentService
 
     /**
      * Confirm a payment
-     *
-     * @param Payment $payment
-     * @return void
      */
     public function confirmPayment(Payment $payment): void
     {
@@ -120,10 +109,6 @@ class PaymentService
 
     /**
      * Refund a payment
-     *
-     * @param Payment $payment
-     * @param string $reason
-     * @return void
      */
     public function refundPayment(Payment $payment, string $reason): void
     {
@@ -148,10 +133,6 @@ class PaymentService
 
     /**
      * Process cash payment
-     *
-     * @param Payment $payment
-     * @param array $data
-     * @return void
      */
     protected function processCashPayment(Payment $payment, array $data): void
     {
@@ -171,10 +152,6 @@ class PaymentService
 
     /**
      * Process card payment
-     *
-     * @param Payment $payment
-     * @param array $data
-     * @return void
      */
     protected function processCardPayment(Payment $payment, array $data): void
     {
@@ -186,10 +163,6 @@ class PaymentService
 
     /**
      * Process mobile money payment
-     *
-     * @param Payment $payment
-     * @param array $data
-     * @return void
      */
     protected function processMobileMoneyPayment(Payment $payment, array $data): void
     {
@@ -205,9 +178,6 @@ class PaymentService
 
     /**
      * Check if order is fully paid and update status
-     *
-     * @param Order $order
-     * @return void
      */
     protected function checkOrderPaymentStatus(Order $order): void
     {
@@ -222,19 +192,14 @@ class PaymentService
 
     /**
      * Generate a unique transaction ID
-     *
-     * @return string
      */
     protected function generateTransactionId(): string
     {
-        return 'TXN-' . strtoupper(Str::random(12));
+        return 'TXN-'.strtoupper(Str::random(12));
     }
 
     /**
      * Get payment history for an order
-     *
-     * @param Order $order
-     * @return array
      */
     public function getPaymentHistory(Order $order): array
     {
@@ -253,10 +218,6 @@ class PaymentService
 
     /**
      * Split payment across multiple methods
-     *
-     * @param Order $order
-     * @param array $payments
-     * @return array
      */
     public function splitPayment(Order $order, array $payments): array
     {

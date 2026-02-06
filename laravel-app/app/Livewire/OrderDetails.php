@@ -5,26 +5,31 @@ namespace App\Livewire;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Tip;
-use Livewire\Component;
-use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
+use Livewire\Component;
 
 class OrderDetails extends Component
 {
     public $orderId;
+
     public $order;
 
     // Modal states
     public $showPaymentModal = false;
+
     public $showTipModal = false;
+
     public $showCancelConfirmation = false;
 
     // Payment form data
     public $payment_method = '';
+
     public $payment_amount = '';
 
     // Tip form data
     public $tip_amount = '';
+
     public $tip_method = '';
 
     // Status workflow transitions
@@ -57,7 +62,7 @@ class OrderDetails extends Component
             'waiter',
             'guest',
             'payments',
-            'tip'
+            'tip',
         ])->findOrFail($this->orderId);
     }
 
@@ -77,8 +82,9 @@ class OrderDetails extends Component
         $currentStatus = $this->order->status;
 
         // Check if transition is allowed
-        if (!in_array($newStatus, $this->getAllowedTransitions())) {
-            session()->flash('error', 'Invalid status transition from ' . $currentStatus . ' to ' . $newStatus);
+        if (! in_array($newStatus, $this->getAllowedTransitions())) {
+            session()->flash('error', 'Invalid status transition from '.$currentStatus.' to '.$newStatus);
+
             return;
         }
 
@@ -86,7 +92,7 @@ class OrderDetails extends Component
         $this->order->updateStatus($newStatus);
         $this->loadOrder();
 
-        session()->flash('success', 'Order status updated to ' . $newStatus);
+        session()->flash('success', 'Order status updated to '.$newStatus);
     }
 
     /**
@@ -143,7 +149,7 @@ class OrderDetails extends Component
             session()->flash('success', 'Payment added successfully');
         } catch (\Exception $e) {
             DB::rollBack();
-            session()->flash('error', 'Failed to add payment: ' . $e->getMessage());
+            session()->flash('error', 'Failed to add payment: '.$e->getMessage());
         }
     }
 
@@ -189,7 +195,7 @@ class OrderDetails extends Component
             $this->closeTipModal();
             session()->flash('success', 'Tip added successfully');
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to add tip: ' . $e->getMessage());
+            session()->flash('error', 'Failed to add tip: '.$e->getMessage());
         }
     }
 
@@ -198,8 +204,9 @@ class OrderDetails extends Component
      */
     public function openCancelConfirmation()
     {
-        if (!$this->order->isPending()) {
+        if (! $this->order->isPending()) {
             session()->flash('error', 'Only pending orders can be cancelled');
+
             return;
         }
 
@@ -219,9 +226,10 @@ class OrderDetails extends Component
      */
     public function cancelOrder()
     {
-        if (!$this->order->isPending()) {
+        if (! $this->order->isPending()) {
             session()->flash('error', 'Only pending orders can be cancelled');
             $this->closeCancelConfirmation();
+
             return;
         }
 
@@ -244,7 +252,7 @@ class OrderDetails extends Component
         // Download the PDF
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
-        }, 'receipt-' . $this->order->order_number . '.pdf');
+        }, 'receipt-'.$this->order->order_number.'.pdf');
     }
 
     /**
@@ -268,7 +276,7 @@ class OrderDetails extends Component
      */
     public function getStatusBadgeClass($status)
     {
-        return match($status) {
+        return match ($status) {
             'pending' => 'bg-gray-200 text-gray-900',
             'preparing' => 'bg-gray-400 text-white',
             'ready' => 'bg-gray-600 text-white',
@@ -284,7 +292,7 @@ class OrderDetails extends Component
      */
     public function getPrepStatusBadgeClass($status)
     {
-        return match($status) {
+        return match ($status) {
             'pending' => 'bg-gray-200 text-gray-900',
             'preparing' => 'bg-gray-400 text-white',
             'ready' => 'bg-gray-900 text-white',

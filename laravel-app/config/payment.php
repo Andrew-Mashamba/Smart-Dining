@@ -30,8 +30,8 @@ return [
             'api_url' => env('PESAPAL_ENVIRONMENT', 'sandbox') === 'sandbox'
                 ? 'https://cybqa.pesapal.com/pesapalv3'
                 : 'https://pay.pesapal.com/v3',
-            'callback_url' => env('APP_URL') . '/payments/pesapal/callback',
-            'ipn_url' => env('APP_URL') . '/payments/pesapal/ipn',
+            'callback_url' => env('APP_URL').'/payments/pesapal/callback',
+            'ipn_url' => env('APP_URL').'/payments/pesapal/ipn',
         ],
 
         'mpesa' => [
@@ -41,8 +41,8 @@ return [
             'shortcode' => env('MPESA_SHORTCODE'),
             'passkey' => env('MPESA_PASSKEY'),
             'environment' => env('MPESA_ENVIRONMENT', 'sandbox'), // sandbox or live
-            'callback_url' => env('APP_URL') . '/payments/mpesa/callback',
-            'timeout_url' => env('APP_URL') . '/payments/mpesa/timeout',
+            'callback_url' => env('APP_URL').'/payments/mpesa/callback',
+            'timeout_url' => env('APP_URL').'/payments/mpesa/timeout',
         ],
 
         'stripe' => [

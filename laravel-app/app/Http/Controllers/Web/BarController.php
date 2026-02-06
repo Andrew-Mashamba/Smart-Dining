@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\OrderItem;
 use App\Services\OrderManagement\OrderDistributionService;
-use Illuminate\Http\Request;
 
 class BarController extends Controller
 {
@@ -21,26 +20,26 @@ class BarController extends Controller
         $pendingItems = OrderItem::whereHas('menuItem', function ($query) {
             $query->where('prep_area', 'bar');
         })
-        ->where('status', 'confirmed')
-        ->with(['order.table', 'menuItem'])
-        ->orderBy('created_at', 'asc')
-        ->get();
+            ->where('status', 'confirmed')
+            ->with(['order.table', 'menuItem'])
+            ->orderBy('created_at', 'asc')
+            ->get();
 
         $preparingItems = OrderItem::whereHas('menuItem', function ($query) {
             $query->where('prep_area', 'bar');
         })
-        ->where('status', 'preparing')
-        ->with(['order.table', 'menuItem', 'preparedBy'])
-        ->orderBy('updated_at', 'asc')
-        ->get();
+            ->where('status', 'preparing')
+            ->with(['order.table', 'menuItem', 'preparedBy'])
+            ->orderBy('updated_at', 'asc')
+            ->get();
 
         $readyItems = OrderItem::whereHas('menuItem', function ($query) {
             $query->where('prep_area', 'bar');
         })
-        ->where('status', 'ready')
-        ->with(['order.table', 'menuItem'])
-        ->orderBy('updated_at', 'desc')
-        ->get();
+            ->where('status', 'ready')
+            ->with(['order.table', 'menuItem'])
+            ->orderBy('updated_at', 'desc')
+            ->get();
 
         return view('bar.display', compact('pendingItems', 'preparingItems', 'readyItems'));
     }

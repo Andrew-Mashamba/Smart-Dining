@@ -20,7 +20,6 @@ class StripePaymentWebController extends Controller
     /**
      * Show Stripe payment form
      *
-     * @param Order $order
      * @return \Illuminate\View\View
      */
     public function show(Order $order)
@@ -59,14 +58,13 @@ class StripePaymentWebController extends Controller
     /**
      * Handle successful payment return
      *
-     * @param Request $request
      * @return \Illuminate\View\View
      */
     public function success(Request $request)
     {
         $paymentIntentId = $request->query('payment_intent');
 
-        if (!$paymentIntentId) {
+        if (! $paymentIntentId) {
             return redirect()->route('orders')->with('error', 'Payment information not found.');
         }
 

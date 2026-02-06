@@ -11,9 +11,6 @@ class OrderDistributionService
 {
     /**
      * Distribute order items to appropriate preparation areas
-     *
-     * @param Order $order
-     * @return array
      */
     public function distributeOrder(Order $order): array
     {
@@ -44,9 +41,6 @@ class OrderDistributionService
 
     /**
      * Notify kitchen about new food orders
-     *
-     * @param Collection $foodItems
-     * @return void
      */
     public function notifyKitchen(Collection $foodItems): void
     {
@@ -67,9 +61,6 @@ class OrderDistributionService
 
     /**
      * Notify bar about new drink orders
-     *
-     * @param Collection $drinkItems
-     * @return void
      */
     public function notifyBar(Collection $drinkItems): void
     {
@@ -90,14 +81,10 @@ class OrderDistributionService
 
     /**
      * Mark an order item as received by kitchen/bar staff
-     *
-     * @param OrderItem $item
-     * @param Staff $staff
-     * @return void
      */
     public function markItemReceived(OrderItem $item, Staff $staff): void
     {
-        if (!in_array($staff->role, ['chef', 'bartender'])) {
+        if (! in_array($staff->role, ['chef', 'bartender'])) {
             throw new \Exception('Only chefs and bartenders can mark items as received');
         }
 
@@ -116,9 +103,6 @@ class OrderDistributionService
 
     /**
      * Mark an order item as ready
-     *
-     * @param OrderItem $item
-     * @return void
      */
     public function markItemReady(OrderItem $item): void
     {
@@ -134,9 +118,6 @@ class OrderDistributionService
 
     /**
      * Check if all items in an order are ready
-     *
-     * @param Order $order
-     * @return void
      */
     protected function checkOrderReadiness(Order $order): void
     {
@@ -160,26 +141,20 @@ class OrderDistributionService
 
     /**
      * Get pending items for a specific preparation area
-     *
-     * @param string $prepArea
-     * @return Collection
      */
     public function getPendingItems(string $prepArea): Collection
     {
         return OrderItem::whereHas('menuItem', function ($query) use ($prepArea) {
             $query->where('prep_area', $prepArea);
         })
-        ->whereIn('status', ['confirmed', 'preparing'])
-        ->with(['order.table', 'menuItem'])
-        ->orderBy('created_at', 'asc')
-        ->get();
+            ->whereIn('status', ['confirmed', 'preparing'])
+            ->with(['order.table', 'menuItem'])
+            ->orderBy('created_at', 'asc')
+            ->get();
     }
 
     /**
      * Get items being prepared by a specific staff member
-     *
-     * @param Staff $staff
-     * @return Collection
      */
     public function getItemsByStaff(Staff $staff): Collection
     {

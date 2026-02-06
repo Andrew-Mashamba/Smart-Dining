@@ -20,7 +20,7 @@ class AuthController extends Controller
 
         $staff = Staff::where('email', $validated['email'])->first();
 
-        if (!$staff || !Hash::check($validated['password'], $staff->password)) {
+        if (! $staff || ! Hash::check($validated['password'], $staff->password)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
@@ -49,7 +49,143 @@ class AuthController extends Controller
                 'email' => $staff->email,
                 'role' => $staff->role,
                 'phone_number' => $staff->phone_number,
+                'has_pin' => $staff->hasPin(),
             ],
+        ]);
+    }
+
+    /**
+     * Login staff member using 4-digit PIN (for waiters/quick access)
+     */
+    public function loginWithPin(Request $request)
+    {
+        $validated = $request->validate([
+            'staff_id' => 'required|integer|exists:staff,id',
+            'pin' => 'required|string|size:4',
+            'device_name' => 'nullable|string',
+        ]);
+
+        $staff = Staff::find($validated['staff_id']);
+
+        if (! $staff) {
+            return response()->json([
+                'message' => 'Staff member not found.',
+            ], 404);
+        }
+
+        if (! $staff->hasPin()) {
+            return response()->json([
+                'message' => 'PIN not set. Please contact your manager to set up your PIN.',
+            ], 422);
+        }
+
+        if (! $staff->verifyPin($validated['pin'])) {
+            return response()->json([
+                'message' => 'Invalid PIN.',
+            ], 401);
+        }
+
+        if ($staff->status !== 'active') {
+            return response()->json([
+                'message' => 'Your account is inactive. Please contact the administrator.',
+            ], 403);
+        }
+
+        // Revoke existing tokens
+        $staff->tokens()->delete();
+
+        $abilities = $this->getAbilitiesByRole($staff->role);
+        $token = $staff->createToken(
+            $validated['device_name'] ?? 'pos-pin-login',
+            $abilities
+        )->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login successful',
+            'token' => $token,
+            'user' => [
+                'id' => $staff->id,
+                'name' => $staff->name,
+                'email' => $staff->email,
+                'role' => $staff->role,
+                'phone_number' => $staff->phone_number,
+                'has_pin' => true,
+            ],
+        ]);
+    }
+
+    /**
+     * Set or update own PIN (requires current password verification)
+     */
+    public function setPin(Request $request)
+    {
+        $validated = $request->validate([
+            'pin' => 'required|string|size:4|regex:/^[0-9]{4}$/',
+            'current_password' => 'required|string',
+        ]);
+
+        $staff = $request->user();
+
+        // Verify current password before allowing PIN change
+        if (! Hash::check($validated['current_password'], $staff->password)) {
+            return response()->json([
+                'message' => 'Current password is incorrect.',
+            ], 401);
+        }
+
+        $staff->setPin($validated['pin']);
+
+        return response()->json([
+            'message' => 'PIN set successfully.',
+        ]);
+    }
+
+    /**
+     * Set PIN for a staff member (manager/admin only)
+     */
+    public function setStaffPin(Request $request, int $staffId)
+    {
+        $validated = $request->validate([
+            'pin' => 'required|string|size:4|regex:/^[0-9]{4}$/',
+        ]);
+
+        $currentUser = $request->user();
+
+        // Only managers and admins can set other staff PINs
+        if (! in_array($currentUser->role, ['manager', 'admin'])) {
+            return response()->json([
+                'message' => 'Unauthorized. Only managers can set staff PINs.',
+            ], 403);
+        }
+
+        $staff = Staff::find($staffId);
+
+        if (! $staff) {
+            return response()->json([
+                'message' => 'Staff member not found.',
+            ], 404);
+        }
+
+        $staff->setPin($validated['pin']);
+
+        return response()->json([
+            'message' => 'PIN set successfully for ' . $staff->name,
+        ]);
+    }
+
+    /**
+     * Get list of all active staff members for PIN login selection
+     * Returns basic info (id, name, role) - PIN is mandatory for all staff
+     */
+    public function getStaffForPinLogin()
+    {
+        $staff = Staff::where('status', 'active')
+            ->select('id', 'name', 'role')
+            ->orderBy('name')
+            ->get();
+
+        return response()->json([
+            'staff' => $staff,
         ]);
     }
 

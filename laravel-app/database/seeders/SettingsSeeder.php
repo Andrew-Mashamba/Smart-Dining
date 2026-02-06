@@ -68,7 +68,7 @@ class SettingsSeeder extends Seeder
                 ['key' => $setting['key']],
                 [
                     'value' => $setting['value'],
-                    'type' => $setting['type']
+                    'type' => $setting['type'],
                 ]
             );
         }
@@ -78,6 +78,6 @@ class SettingsSeeder extends Seeder
         $this->command->info('  - Tax rate: 18%');
         $this->command->info('  - Operating hours: 09:00-23:00');
         $this->command->info('  - Loyalty program enabled');
-        $this->command->info('  - ' . count($defaultSettings) . ' settings configured');
+        $this->command->info('  - '.count($defaultSettings).' settings configured');
     }
 }

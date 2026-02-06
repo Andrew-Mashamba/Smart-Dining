@@ -9,7 +9,6 @@ use App\Models\Guest;
 use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\OrderStatusLog;
 use App\Models\Payment;
 use App\Models\Staff;
 use App\Models\Table;
@@ -24,12 +23,13 @@ class OrderWorkflowServiceTest extends TestCase
     use RefreshDatabase;
 
     protected OrderWorkflowService $service;
+
     protected User $user;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new OrderWorkflowService();
+        $this->service = new OrderWorkflowService;
         $this->user = User::factory()->create();
         $this->actingAs($this->user);
     }
@@ -119,7 +119,7 @@ class OrderWorkflowServiceTest extends TestCase
         $this->createPayment($order, 50.00);
 
         $this->expectException(OrderWorkflowException::class);
-        $this->expectExceptionMessage("cannot be marked as paid");
+        $this->expectExceptionMessage('cannot be marked as paid');
 
         $this->service->updateStatus($order->id, 'paid');
     }
@@ -197,7 +197,7 @@ class OrderWorkflowServiceTest extends TestCase
     public function it_throws_exception_when_order_not_found()
     {
         $this->expectException(OrderWorkflowException::class);
-        $this->expectExceptionMessage("Order #999 not found");
+        $this->expectExceptionMessage('Order #999 not found');
 
         $this->service->updateStatus(999, 'preparing');
     }
@@ -231,7 +231,7 @@ class OrderWorkflowServiceTest extends TestCase
      */
     protected function createOrder(string $status, float $total = 50.00, ?Table $table = null): Order
     {
-        if (!$table) {
+        if (! $table) {
             $table = Table::factory()->create();
         }
 

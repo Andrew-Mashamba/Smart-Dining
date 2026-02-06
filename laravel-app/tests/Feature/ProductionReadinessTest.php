@@ -2,14 +2,15 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\Guest;
-use App\Models\Table;
-use App\Models\MenuItem;
 use App\Models\MenuCategory;
+use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
+use App\Models\Staff;
+use App\Models\Table;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -28,13 +29,21 @@ class ProductionReadinessTest extends TestCase
     use RefreshDatabase;
 
     protected User $admin;
+
     protected User $manager;
-    protected User $waiter;
-    protected User $chef;
-    protected User $bartender;
+
+    protected Staff $waiter;
+
+    protected Staff $chef;
+
+    protected Staff $bartender;
+
     protected Guest $guest;
+
     protected Table $table;
+
     protected MenuItem $foodItem;
+
     protected MenuItem $drinkItem;
 
     protected function setUp(): void
@@ -52,17 +61,17 @@ class ProductionReadinessTest extends TestCase
             'role' => 'manager',
         ]);
 
-        $this->waiter = User::factory()->create([
+        $this->waiter = Staff::factory()->create([
             'email' => 'waiter@test.com',
             'role' => 'waiter',
         ]);
 
-        $this->chef = User::factory()->create([
+        $this->chef = Staff::factory()->create([
             'email' => 'chef@test.com',
             'role' => 'chef',
         ]);
 
-        $this->bartender = User::factory()->create([
+        $this->bartender = Staff::factory()->create([
             'email' => 'bartender@test.com',
             'role' => 'bartender',
         ]);
@@ -415,7 +424,8 @@ class ProductionReadinessTest extends TestCase
             'order_id' => $order->id,
             'menu_item_id' => $this->foodItem->id,
             'quantity' => 2,
-            'price' => 25.00,
+            'unit_price' => 25.00,
+            'subtotal' => 50.00,
         ]);
 
         $response = $this->actingAs($this->waiter, 'sanctum')
@@ -439,7 +449,7 @@ class ProductionReadinessTest extends TestCase
                 'tables' => [
                     '*' => [
                         'id',
-                        'table_number',
+                        'name',
                         'status',
                         'capacity',
                     ],
@@ -469,7 +479,7 @@ class ProductionReadinessTest extends TestCase
         ];
 
         foreach ($endpoints as $endpoint) {
-            $response = $this->{$endpoint['method'] . 'Json'}($endpoint['url']);
+            $response = $this->{$endpoint['method'].'Json'}($endpoint['url']);
             $response->assertStatus(401);
         }
     }
@@ -540,7 +550,8 @@ class ProductionReadinessTest extends TestCase
             'order_id' => $order->id,
             'menu_item_id' => $this->foodItem->id,
             'quantity' => 4,
-            'price' => 25.00,
+            'unit_price' => 25.00,
+            'subtotal' => 100.00,
         ]);
 
         $response = $this->actingAs($this->waiter, 'sanctum')

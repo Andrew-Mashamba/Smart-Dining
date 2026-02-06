@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\Table;
 use App\Models\GuestSession;
+use App\Models\Table;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -12,7 +12,6 @@ class QRCodeService
     /**
      * Generate QR code for a specific table.
      *
-     * @param int $tableId
      * @return string Path to the generated QR code file
      */
     public function generateTableQR(int $tableId): string
@@ -62,7 +61,6 @@ class QRCodeService
      * Regenerate QR code for a specific table.
      * This will create a new session and QR code.
      *
-     * @param int $tableId
      * @return string Path to the regenerated QR code file
      */
     public function regenerateTableQR(int $tableId): string
@@ -80,9 +78,6 @@ class QRCodeService
 
     /**
      * Get the full URL path to a table's QR code.
-     *
-     * @param string $filePath
-     * @return string
      */
     public function getQRCodeUrl(string $filePath): string
     {
@@ -91,9 +86,6 @@ class QRCodeService
 
     /**
      * Get the full storage path to a table's QR code.
-     *
-     * @param string $filePath
-     * @return string
      */
     public function getQRCodePath(string $filePath): string
     {
@@ -102,9 +94,6 @@ class QRCodeService
 
     /**
      * Delete QR code for a specific table.
-     *
-     * @param int $tableId
-     * @return bool
      */
     public function deleteTableQR(int $tableId): bool
     {
@@ -127,9 +116,6 @@ class QRCodeService
      * Convert SVG to PNG using GD library.
      * This is a workaround since simple-qrcode PNG format requires Imagick.
      *
-     * @param string $svgContent
-     * @param int $width
-     * @param int $height
      * @return string PNG binary data
      */
     private function convertSvgToPng(string $svgContent, int $width, int $height): string
@@ -154,7 +140,7 @@ class QRCodeService
 
             // Only draw black rectangles (QR code modules)
             if (stripos($fill, '#000') !== false || stripos($fill, 'black') !== false || $fill === 'rgb(0,0,0)') {
-                imagefilledrectangle($image, (int)$x, (int)$y, (int)($x + $w), (int)($y + $h), $black);
+                imagefilledrectangle($image, (int) $x, (int) $y, (int) ($x + $w), (int) ($y + $h), $black);
             }
         }
 

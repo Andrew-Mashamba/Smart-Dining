@@ -32,16 +32,18 @@ class TestOrderCreatedBroadcast extends Command
         if ($orderId) {
             $order = Order::with(['table', 'orderItems'])->find($orderId);
 
-            if (!$order) {
+            if (! $order) {
                 $this->error("Order with ID {$orderId} not found.");
+
                 return 1;
             }
         } else {
             // Get the latest order or create a test one
             $order = Order::with(['table', 'orderItems'])->latest()->first();
 
-            if (!$order) {
+            if (! $order) {
                 $this->error('No orders found in the database. Please create an order first.');
+
                 return 1;
             }
         }

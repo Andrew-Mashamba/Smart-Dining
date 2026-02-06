@@ -3,9 +3,7 @@
 namespace App\Events;
 
 use App\Models\Order;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -16,6 +14,7 @@ class OrderStatusChanged implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public Order $order;
+
     public string $previousStatus;
 
     /**
@@ -37,14 +36,12 @@ class OrderStatusChanged implements ShouldBroadcast
         return [
             new PrivateChannel('orders'),
             new PrivateChannel('kitchen'),
-            new PrivateChannel('waiter.' . $this->order->waiter_id),
+            new PrivateChannel('waiter.'.$this->order->waiter_id),
         ];
     }
 
     /**
      * Get the data to broadcast.
-     *
-     * @return array
      */
     public function broadcastWith(): array
     {

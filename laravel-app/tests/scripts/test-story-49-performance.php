@@ -13,27 +13,36 @@
  * Run: php test-story-49-performance.php
  */
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
-$app = require_once __DIR__ . '/bootstrap/app.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
-use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\MenuCategory;
-use App\Models\MenuItem;
+use App\Models\Order;
 use App\Models\Setting;
 use App\Models\Staff;
-use App\Models\Table;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 // Color output helpers
-function green($text) { return "\033[32m{$text}\033[0m"; }
-function red($text) { return "\033[31m{$text}\033[0m"; }
-function yellow($text) { return "\033[33m{$text}\033[0m"; }
-function blue($text) { return "\033[34m{$text}\033[0m"; }
+function green($text)
+{
+    return "\033[32m{$text}\033[0m";
+}
+function red($text)
+{
+    return "\033[31m{$text}\033[0m";
+}
+function yellow($text)
+{
+    return "\033[33m{$text}\033[0m";
+}
+function blue($text)
+{
+    return "\033[34m{$text}\033[0m";
+}
 
 echo "\n";
 echo "========================================\n";
@@ -218,7 +227,7 @@ $queryCount = count(DB::getQueryLog());
 $hasLinks = method_exists($paginatedOrders, 'links');
 
 echo "Queries executed: {$queryCount}\n";
-echo "Has pagination links: " . ($hasLinks ? 'Yes' : 'No') . "\n";
+echo 'Has pagination links: '.($hasLinks ? 'Yes' : 'No')."\n";
 
 if ($hasLinks && $queryCount <= 3) {
     echo green("✓ PASS: Pagination working correctly\n");
@@ -243,7 +252,7 @@ $testCategory = MenuCategory::create([
     'name' => 'Test Performance Category',
     'description' => 'Test',
     'display_order' => 999,
-    'status' => 'active'
+    'status' => 'active',
 ]);
 
 // Check if cache was cleared
@@ -296,15 +305,15 @@ echo "Performance Optimization Summary\n";
 echo "========================================\n\n";
 
 echo "Optimizations Verified:\n";
-echo green("✓") . " Eager loading with with() to prevent N+1 queries\n";
-echo green("✓") . " Database indexes on foreign keys and frequently queried columns\n";
-echo green("✓") . " Query optimization with select() to limit columns\n";
-echo green("✓") . " Pagination for large datasets\n";
-echo green("✓") . " Menu caching with 1-hour TTL\n";
-echo green("✓") . " Settings caching with cache invalidation\n";
-echo green("✓") . " Cache invalidation on model updates\n";
-echo green("✓") . " intervention/image package installed\n";
-echo green("✓") . " Laravel Debugbar installed for N+1 detection\n";
+echo green('✓')." Eager loading with with() to prevent N+1 queries\n";
+echo green('✓')." Database indexes on foreign keys and frequently queried columns\n";
+echo green('✓')." Query optimization with select() to limit columns\n";
+echo green('✓')." Pagination for large datasets\n";
+echo green('✓')." Menu caching with 1-hour TTL\n";
+echo green('✓')." Settings caching with cache invalidation\n";
+echo green('✓')." Cache invalidation on model updates\n";
+echo green('✓')." intervention/image package installed\n";
+echo green('✓')." Laravel Debugbar installed for N+1 detection\n";
 
 echo "\n";
 echo "Production Readiness:\n";

@@ -36,7 +36,7 @@ return new class extends Migration
 
         Schema::table('tips', function (Blueprint $table) {
             // Add tip_method column with correct enum values if it doesn't exist
-            if (!Schema::hasColumn('tips', 'tip_method')) {
+            if (! Schema::hasColumn('tips', 'tip_method')) {
                 $table->enum('tip_method', ['cash', 'card'])->after('amount');
             }
 

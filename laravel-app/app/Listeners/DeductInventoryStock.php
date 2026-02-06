@@ -4,7 +4,6 @@ namespace App\Listeners;
 
 use App\Events\OrderCreated;
 use App\Models\InventoryTransaction;
-use App\Models\MenuItem;
 use App\Models\Staff;
 use App\Notifications\LowStockAlert;
 use Illuminate\Contracts\Queue\ShouldQueue;

@@ -15,7 +15,7 @@ class GuestController extends Controller
     {
         $guest = Guest::where('phone_number', $phone)->first();
 
-        if (!$guest) {
+        if (! $guest) {
             return response()->json([
                 'message' => 'Guest not found',
             ], 404);

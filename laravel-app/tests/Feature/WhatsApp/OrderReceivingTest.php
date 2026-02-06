@@ -2,14 +2,13 @@
 
 namespace Tests\Feature\WhatsApp;
 
+use App\Models\Guest;
+use App\Models\MenuCategory;
+use App\Models\MenuItem;
+use App\Models\Order;
+use App\Services\WhatsAppService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\Guest;
-use App\Models\Order;
-use App\Models\MenuItem;
-use App\Models\MenuCategory;
-use App\Services\WhatsAppService;
-use Illuminate\Support\Facades\Log;
 
 class OrderReceivingTest extends TestCase
 {
@@ -55,7 +54,7 @@ class OrderReceivingTest extends TestCase
     {
         config(['services.whatsapp.verify_token' => 'test_verify_token']);
 
-        $response = $this->get('/webhooks/whatsapp?' . http_build_query([
+        $response = $this->get('/webhooks/whatsapp?'.http_build_query([
             'hub_mode' => 'subscribe',
             'hub_verify_token' => 'test_verify_token',
             'hub_challenge' => 'challenge_string_123',
@@ -72,7 +71,7 @@ class OrderReceivingTest extends TestCase
     {
         config(['services.whatsapp.verify_token' => 'correct_token']);
 
-        $response = $this->get('/webhooks/whatsapp?' . http_build_query([
+        $response = $this->get('/webhooks/whatsapp?'.http_build_query([
             'hub_mode' => 'subscribe',
             'hub_verify_token' => 'wrong_token',
             'hub_challenge' => 'challenge_string_123',
@@ -98,15 +97,15 @@ class OrderReceivingTest extends TestCase
                                         'from' => '26771234567',
                                         'type' => 'text',
                                         'text' => [
-                                            'body' => 'order Pizza x 2, Burger x 1'
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                            'body' => 'order Pizza x 2, Burger x 1',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         // Partial mock to allow actual order processing but prevent API calls
@@ -156,15 +155,15 @@ class OrderReceivingTest extends TestCase
                                         'from' => '26771234567',
                                         'type' => 'text',
                                         'text' => [
-                                            'body' => 'menu'
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                            'body' => 'menu',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         // Mock the WhatsApp service
@@ -195,15 +194,15 @@ class OrderReceivingTest extends TestCase
                                         'from' => '26771234567',
                                         'type' => 'text',
                                         'text' => [
-                                            'body' => 'help'
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                            'body' => 'help',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         // Mock the WhatsApp service
@@ -234,15 +233,15 @@ class OrderReceivingTest extends TestCase
                                         'from' => '26771234567',
                                         'type' => 'text',
                                         'text' => [
-                                            'body' => 'status'
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                            'body' => 'status',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         // Mock the WhatsApp service
@@ -273,15 +272,15 @@ class OrderReceivingTest extends TestCase
                                         'from' => '26771234567',
                                         'type' => 'text',
                                         'text' => [
-                                            'body' => 'invalid command'
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                            'body' => 'invalid command',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         // Mock the WhatsApp service
@@ -345,15 +344,15 @@ class OrderReceivingTest extends TestCase
                                         'from' => '26771234567',
                                         'type' => 'image',
                                         'image' => [
-                                            'id' => 'image_id'
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                            'id' => 'image_id',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         $response = $this->postJson('/webhooks/whatsapp', $payload);

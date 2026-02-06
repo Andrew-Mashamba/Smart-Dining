@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\GuestSession;
+use Illuminate\Http\Request;
 
 class GuestOrderController extends Controller
 {
@@ -15,9 +15,9 @@ class GuestOrderController extends Controller
     {
         $token = $request->query('token');
 
-        if (!$token) {
+        if (! $token) {
             return view('guest.order-error', [
-                'error' => 'Invalid QR code. Please scan again or contact staff.'
+                'error' => 'Invalid QR code. Please scan again or contact staff.',
             ]);
         }
 
@@ -26,16 +26,16 @@ class GuestOrderController extends Controller
             ->with('table')
             ->first();
 
-        if (!$guestSession) {
+        if (! $guestSession) {
             return view('guest.order-error', [
-                'error' => 'Session not found. Please scan a valid QR code or contact staff.'
+                'error' => 'Session not found. Please scan a valid QR code or contact staff.',
             ]);
         }
 
         // Check if session is still active
-        if (!$guestSession->isActive()) {
+        if (! $guestSession->isActive()) {
             return view('guest.order-error', [
-                'error' => 'This session has ended. Please request a new QR code from staff.'
+                'error' => 'This session has ended. Please request a new QR code from staff.',
             ]);
         }
 

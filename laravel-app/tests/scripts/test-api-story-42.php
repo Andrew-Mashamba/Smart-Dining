@@ -18,12 +18,19 @@ $kernel->bootstrap();
 class ApiTester
 {
     private $baseUrl;
+
     private $token = null;
+
     private $testResults = [];
+
     private $testStaff = null;
+
     private $testGuest = null;
+
     private $testTable = null;
+
     private $testOrder = null;
+
     private $testMenuItem = null;
 
     public function __construct($baseUrl = 'http://localhost:8000/api')
@@ -117,7 +124,7 @@ class ApiTester
         echo "-----------------------------------\n";
 
         // Test 1: Login
-        echo "1. POST /api/auth/login: ";
+        echo '1. POST /api/auth/login: ';
         $response = $this->post('/auth/login', [
             'email' => 'test-pos@restaurant.com',
             'password' => 'password123',
@@ -126,29 +133,30 @@ class ApiTester
 
         if (isset($response['token'])) {
             $this->token = $response['token'];
-            $this->recordSuccess("Login", "Token received and stored");
+            $this->recordSuccess('Login', 'Token received and stored');
         } else {
-            $this->recordFailure("Login", "Token not received", $response);
+            $this->recordFailure('Login', 'Token not received', $response);
+
             return;
         }
 
         // Test 2: Get current user
-        echo "2. GET /api/auth/me: ";
+        echo '2. GET /api/auth/me: ';
         $response = $this->get('/auth/me');
         if (isset($response['user']['email'])) {
-            $this->recordSuccess("Get Current User", "User data received");
+            $this->recordSuccess('Get Current User', 'User data received');
         } else {
-            $this->recordFailure("Get Current User", "User data not received", $response);
+            $this->recordFailure('Get Current User', 'User data not received', $response);
         }
 
         // Test 3: Refresh token
-        echo "3. POST /api/auth/refresh: ";
+        echo '3. POST /api/auth/refresh: ';
         $response = $this->post('/auth/refresh', []);
         if (isset($response['token'])) {
             $this->token = $response['token'];
-            $this->recordSuccess("Refresh Token", "New token received");
+            $this->recordSuccess('Refresh Token', 'New token received');
         } else {
-            $this->recordFailure("Refresh Token", "Token refresh failed", $response);
+            $this->recordFailure('Refresh Token', 'Token refresh failed', $response);
         }
 
         echo "\n";
@@ -160,48 +168,48 @@ class ApiTester
         echo "-------------------------\n";
 
         // Test 1: Get all menu items (public)
-        echo "1. GET /api/menu: ";
+        echo '1. GET /api/menu: ';
         $response = $this->get('/menu', [], false);
         if (isset($response['items'])) {
-            $this->recordSuccess("Get Menu", "Menu items retrieved");
+            $this->recordSuccess('Get Menu', 'Menu items retrieved');
         } else {
-            $this->recordFailure("Get Menu", "Failed to get menu", $response);
+            $this->recordFailure('Get Menu', 'Failed to get menu', $response);
         }
 
         // Test 2: Get menu items by category
-        echo "2. GET /api/menu/items?category_id=1: ";
+        echo '2. GET /api/menu/items?category_id=1: ';
         $response = $this->get('/menu/items?category_id=1', [], false);
         if (isset($response['items'])) {
-            $this->recordSuccess("Get Menu by Category", "Category items retrieved");
+            $this->recordSuccess('Get Menu by Category', 'Category items retrieved');
         } else {
-            $this->recordFailure("Get Menu by Category", "Failed", $response);
+            $this->recordFailure('Get Menu by Category', 'Failed', $response);
         }
 
         // Test 3: Get menu categories
-        echo "3. GET /api/menu/categories: ";
+        echo '3. GET /api/menu/categories: ';
         $response = $this->get('/menu/categories', [], false);
         if (isset($response['categories'])) {
-            $this->recordSuccess("Get Menu Categories", "Categories retrieved");
+            $this->recordSuccess('Get Menu Categories', 'Categories retrieved');
         } else {
-            $this->recordFailure("Get Menu Categories", "Failed", $response);
+            $this->recordFailure('Get Menu Categories', 'Failed', $response);
         }
 
         // Test 4: Search menu
-        echo "4. GET /api/menu/search?query=chicken: ";
+        echo '4. GET /api/menu/search?query=chicken: ';
         $response = $this->get('/menu/search?query=chicken', [], false);
         if (isset($response['results'])) {
-            $this->recordSuccess("Search Menu", "Search results received");
+            $this->recordSuccess('Search Menu', 'Search results received');
         } else {
-            $this->recordFailure("Search Menu", "Search failed", $response);
+            $this->recordFailure('Search Menu', 'Search failed', $response);
         }
 
         // Test 5: Get popular items
-        echo "5. GET /api/menu/popular: ";
+        echo '5. GET /api/menu/popular: ';
         $response = $this->get('/menu/popular', [], false);
         if (isset($response['items'])) {
-            $this->recordSuccess("Get Popular Items", "Popular items retrieved");
+            $this->recordSuccess('Get Popular Items', 'Popular items retrieved');
         } else {
-            $this->recordFailure("Get Popular Items", "Failed", $response);
+            $this->recordFailure('Get Popular Items', 'Failed', $response);
         }
 
         echo "\n";
@@ -213,32 +221,32 @@ class ApiTester
         echo "--------------------------\n";
 
         // Test 1: Get all tables
-        echo "1. GET /api/tables: ";
+        echo '1. GET /api/tables: ';
         $response = $this->get('/tables');
         if (isset($response['tables'])) {
-            $this->recordSuccess("Get Tables", "Tables retrieved");
+            $this->recordSuccess('Get Tables', 'Tables retrieved');
         } else {
-            $this->recordFailure("Get Tables", "Failed", $response);
+            $this->recordFailure('Get Tables', 'Failed', $response);
         }
 
         // Test 2: Get specific table
-        echo "2. GET /api/tables/{id}: ";
-        $response = $this->get('/tables/' . $this->testTable->id);
+        echo '2. GET /api/tables/{id}: ';
+        $response = $this->get('/tables/'.$this->testTable->id);
         if (isset($response['id'])) {
-            $this->recordSuccess("Get Table Details", "Table details retrieved");
+            $this->recordSuccess('Get Table Details', 'Table details retrieved');
         } else {
-            $this->recordFailure("Get Table Details", "Failed", $response);
+            $this->recordFailure('Get Table Details', 'Failed', $response);
         }
 
         // Test 3: Update table status
-        echo "3. PUT /api/tables/{id}/status: ";
-        $response = $this->put('/tables/' . $this->testTable->id . '/status', [
-            'status' => 'occupied'
+        echo '3. PUT /api/tables/{id}/status: ';
+        $response = $this->put('/tables/'.$this->testTable->id.'/status', [
+            'status' => 'occupied',
         ]);
         if (isset($response['message'])) {
-            $this->recordSuccess("Update Table Status", "Status updated");
+            $this->recordSuccess('Update Table Status', 'Status updated');
         } else {
-            $this->recordFailure("Update Table Status", "Failed", $response);
+            $this->recordFailure('Update Table Status', 'Failed', $response);
         }
 
         echo "\n";
@@ -250,7 +258,7 @@ class ApiTester
         echo "--------------------------\n";
 
         // Test 1: Create order
-        echo "1. POST /api/orders: ";
+        echo '1. POST /api/orders: ';
         $response = $this->post('/orders', [
             'guest_id' => $this->testGuest->id,
             'table_id' => $this->testTable->id,
@@ -268,44 +276,45 @@ class ApiTester
 
         if (isset($response['order']['id'])) {
             $this->testOrder = \App\Models\Order::find($response['order']['id']);
-            $this->recordSuccess("Create Order", "Order created with ID: " . $response['order']['id']);
+            $this->recordSuccess('Create Order', 'Order created with ID: '.$response['order']['id']);
         } else {
-            $this->recordFailure("Create Order", "Failed to create order", $response);
+            $this->recordFailure('Create Order', 'Failed to create order', $response);
+
             return;
         }
 
         // Test 2: Get orders
-        echo "2. GET /api/orders: ";
+        echo '2. GET /api/orders: ';
         $response = $this->get('/orders');
         if (isset($response['data'])) {
-            $this->recordSuccess("Get Orders", "Orders list retrieved");
+            $this->recordSuccess('Get Orders', 'Orders list retrieved');
         } else {
-            $this->recordFailure("Get Orders", "Failed", $response);
+            $this->recordFailure('Get Orders', 'Failed', $response);
         }
 
         // Test 3: Get specific order
-        echo "3. GET /api/orders/{id}: ";
-        $response = $this->get('/orders/' . $this->testOrder->id);
+        echo '3. GET /api/orders/{id}: ';
+        $response = $this->get('/orders/'.$this->testOrder->id);
         if (isset($response['id'])) {
-            $this->recordSuccess("Get Order Details", "Order details retrieved");
+            $this->recordSuccess('Get Order Details', 'Order details retrieved');
         } else {
-            $this->recordFailure("Get Order Details", "Failed", $response);
+            $this->recordFailure('Get Order Details', 'Failed', $response);
         }
 
         // Test 4: Update order status
-        echo "4. PUT /api/orders/{id}/status: ";
-        $response = $this->put('/orders/' . $this->testOrder->id . '/status', [
-            'status' => 'confirmed'
+        echo '4. PUT /api/orders/{id}/status: ';
+        $response = $this->put('/orders/'.$this->testOrder->id.'/status', [
+            'status' => 'confirmed',
         ]);
         if (isset($response['message'])) {
-            $this->recordSuccess("Update Order Status", "Status updated to confirmed");
+            $this->recordSuccess('Update Order Status', 'Status updated to confirmed');
         } else {
-            $this->recordFailure("Update Order Status", "Failed", $response);
+            $this->recordFailure('Update Order Status', 'Failed', $response);
         }
 
         // Test 5: Add items to order
-        echo "5. POST /api/orders/{id}/items: ";
-        $response = $this->post('/orders/' . $this->testOrder->id . '/items', [
+        echo '5. POST /api/orders/{id}/items: ';
+        $response = $this->post('/orders/'.$this->testOrder->id.'/items', [
             'items' => [
                 [
                     'menu_item_id' => $this->testMenuItem->id,
@@ -315,9 +324,9 @@ class ApiTester
             ],
         ]);
         if (isset($response['message'])) {
-            $this->recordSuccess("Add Items to Order", "Items added successfully");
+            $this->recordSuccess('Add Items to Order', 'Items added successfully');
         } else {
-            $this->recordFailure("Add Items to Order", "Failed", $response);
+            $this->recordFailure('Add Items to Order', 'Failed', $response);
         }
 
         echo "\n";
@@ -329,16 +338,16 @@ class ApiTester
         echo "----------------------------\n";
 
         // Test 1: Get bill for order
-        echo "1. GET /api/orders/{orderId}/bill: ";
-        $response = $this->get('/orders/' . $this->testOrder->id . '/bill');
+        echo '1. GET /api/orders/{orderId}/bill: ';
+        $response = $this->get('/orders/'.$this->testOrder->id.'/bill');
         if (isset($response['total'])) {
-            $this->recordSuccess("Get Order Bill", "Bill retrieved");
+            $this->recordSuccess('Get Order Bill', 'Bill retrieved');
         } else {
-            $this->recordFailure("Get Order Bill", "Failed", $response);
+            $this->recordFailure('Get Order Bill', 'Failed', $response);
         }
 
         // Test 2: Process payment
-        echo "2. POST /api/payments: ";
+        echo '2. POST /api/payments: ';
         $response = $this->post('/payments', [
             'order_id' => $this->testOrder->id,
             'amount' => $this->testOrder->total_amount,
@@ -346,18 +355,18 @@ class ApiTester
             'tendered' => $this->testOrder->total_amount + 5000,
         ]);
         if (isset($response['payment']['id'])) {
-            $this->recordSuccess("Process Payment", "Payment processed");
+            $this->recordSuccess('Process Payment', 'Payment processed');
         } else {
-            $this->recordFailure("Process Payment", "Failed", $response);
+            $this->recordFailure('Process Payment', 'Failed', $response);
         }
 
         // Test 3: Get payments
-        echo "3. GET /api/payments?order_id={id}: ";
-        $response = $this->get('/payments?order_id=' . $this->testOrder->id);
+        echo '3. GET /api/payments?order_id={id}: ';
+        $response = $this->get('/payments?order_id='.$this->testOrder->id);
         if (isset($response['payments'])) {
-            $this->recordSuccess("Get Payments", "Payments retrieved");
+            $this->recordSuccess('Get Payments', 'Payments retrieved');
         } else {
-            $this->recordFailure("Get Payments", "Failed", $response);
+            $this->recordFailure('Get Payments', 'Failed', $response);
         }
 
         echo "\n";
@@ -372,16 +381,16 @@ class ApiTester
         $headers = [];
         for ($i = 0; $i < 5; $i++) {
             $response = Http::withToken($this->token)
-                ->get($this->baseUrl . '/menu');
+                ->get($this->baseUrl.'/menu');
             $headers = $response->headers();
         }
 
         if (isset($headers['X-Ratelimit-Limit'])) {
-            echo "✓ Rate limit header present: " . $headers['X-Ratelimit-Limit'][0] . " requests/minute\n";
-            $this->recordSuccess("Rate Limiting", "Rate limiting configured correctly");
+            echo '✓ Rate limit header present: '.$headers['X-Ratelimit-Limit'][0]." requests/minute\n";
+            $this->recordSuccess('Rate Limiting', 'Rate limiting configured correctly');
         } else {
             echo "✗ Rate limit headers not found\n";
-            $this->recordFailure("Rate Limiting", "Headers missing");
+            $this->recordFailure('Rate Limiting', 'Headers missing');
         }
 
         echo "\n";
@@ -389,9 +398,9 @@ class ApiTester
 
     private function get($endpoint, $params = [], $requireAuth = true)
     {
-        $url = $this->baseUrl . $endpoint;
-        if (!empty($params)) {
-            $url .= '?' . http_build_query($params);
+        $url = $this->baseUrl.$endpoint;
+        if (! empty($params)) {
+            $url .= '?'.http_build_query($params);
         }
 
         try {
@@ -401,6 +410,7 @@ class ApiTester
             }
 
             $response = $request->get($url);
+
             return $response->json();
         } catch (\Exception $e) {
             return ['error' => $e->getMessage()];
@@ -415,7 +425,8 @@ class ApiTester
                 $request = $request->withToken($this->token);
             }
 
-            $response = $request->post($this->baseUrl . $endpoint, $data);
+            $response = $request->post($this->baseUrl.$endpoint, $data);
+
             return $response->json();
         } catch (\Exception $e) {
             return ['error' => $e->getMessage()];
@@ -427,7 +438,8 @@ class ApiTester
         try {
             $response = Http::withToken($this->token)
                 ->acceptJson()
-                ->put($this->baseUrl . $endpoint, $data);
+                ->put($this->baseUrl.$endpoint, $data);
+
             return $response->json();
         } catch (\Exception $e) {
             return ['error' => $e->getMessage()];
@@ -448,7 +460,7 @@ class ApiTester
     {
         echo "✗ FAIL: $message\n";
         if ($response && isset($response['message'])) {
-            echo "  Error: " . $response['message'] . "\n";
+            echo '  Error: '.$response['message']."\n";
         }
         $this->testResults[] = [
             'test' => $test,
@@ -464,14 +476,14 @@ class ApiTester
         echo "TEST SUMMARY\n";
         echo "========================================\n";
 
-        $passed = count(array_filter($this->testResults, fn($r) => $r['status'] === 'PASS'));
-        $failed = count(array_filter($this->testResults, fn($r) => $r['status'] === 'FAIL'));
+        $passed = count(array_filter($this->testResults, fn ($r) => $r['status'] === 'PASS'));
+        $failed = count(array_filter($this->testResults, fn ($r) => $r['status'] === 'FAIL'));
         $total = count($this->testResults);
 
         echo "Total Tests: $total\n";
         echo "Passed: $passed ✓\n";
         echo "Failed: $failed ✗\n";
-        echo "Success Rate: " . round(($passed / $total) * 100, 2) . "%\n\n";
+        echo 'Success Rate: '.round(($passed / $total) * 100, 2)."%\n\n";
 
         if ($failed > 0) {
             echo "Failed Tests:\n";
@@ -505,5 +517,5 @@ class ApiTester
 }
 
 // Run the tests
-$tester = new ApiTester();
+$tester = new ApiTester;
 $tester->runAllTests();

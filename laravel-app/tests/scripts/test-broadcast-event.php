@@ -6,17 +6,17 @@
  * This script tests actual event dispatching to verify broadcasts work
  */
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
-$app = require_once __DIR__ . '/bootstrap/app.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
+use App\Events\OrderCreated;
+use App\Events\OrderStatusUpdated;
 use App\Models\Order;
 use App\Models\Table;
 use App\Models\User;
-use App\Events\OrderCreated;
-use App\Events\OrderStatusUpdated;
 use Illuminate\Support\Facades\Event;
 
 echo "==============================================\n";
@@ -34,7 +34,7 @@ try {
     \Illuminate\Support\Facades\DB::connection()->getPdo();
     echo "   ✓ Database connected\n\n";
 } catch (\Exception $e) {
-    echo "   ✗ Database connection failed: " . $e->getMessage() . "\n";
+    echo '   ✗ Database connection failed: '.$e->getMessage()."\n";
     echo "   Please ensure database is set up and migrations are run.\n";
     exit(1);
 }
@@ -44,27 +44,27 @@ echo "2. Checking for test data...\n";
 $table = Table::first();
 $waiter = User::where('role', 'waiter')->first();
 
-if (!$table) {
+if (! $table) {
     echo "   ! No tables found in database\n";
     echo "   Creating a test table...\n";
     $table = Table::create([
         'name' => 'Test Table 1',
         'seats' => 4,
-        'status' => 'available'
+        'status' => 'available',
     ]);
     echo "   ✓ Test table created (ID: {$table->id})\n";
 } else {
     echo "   ✓ Found existing table (ID: {$table->id}, Name: {$table->name})\n";
 }
 
-if (!$waiter) {
+if (! $waiter) {
     echo "   ! No waiter found in database\n";
     echo "   Creating a test waiter...\n";
     $waiter = User::create([
         'name' => 'Test Waiter',
         'email' => 'waiter@test.com',
         'password' => bcrypt('password'),
-        'role' => 'waiter'
+        'role' => 'waiter',
     ]);
     echo "   ✓ Test waiter created (ID: {$waiter->id})\n";
 } else {
@@ -76,7 +76,7 @@ echo "\n";
 echo "3. Creating test order...\n";
 try {
     // Generate unique order number
-    $orderNumber = 'TEST-' . strtoupper(uniqid());
+    $orderNumber = 'TEST-'.strtoupper(uniqid());
 
     $order = Order::create([
         'order_number' => $orderNumber,
@@ -94,7 +94,7 @@ try {
     echo "   - Waiter: {$waiter->name}\n";
     echo "   - Status: {$order->status}\n";
 } catch (\Exception $e) {
-    echo "   ✗ Failed to create order: " . $e->getMessage() . "\n";
+    echo '   ✗ Failed to create order: '.$e->getMessage()."\n";
     exit(1);
 }
 echo "\n";
@@ -110,7 +110,7 @@ try {
     echo "   - Order ID: {$order->id}\n";
     echo "   - Broadcasting to channels: orders, kitchen, bar, waiter.{$waiter->id}\n";
 } catch (\Exception $e) {
-    echo "   ✗ Failed to dispatch event: " . $e->getMessage() . "\n";
+    echo '   ✗ Failed to dispatch event: '.$e->getMessage()."\n";
     exit(1);
 }
 echo "\n";
@@ -131,7 +131,7 @@ try {
     echo "   - Status changed: {$oldStatus} -> preparing\n";
     echo "   - Broadcasting to channels: orders, kitchen, bar, waiter.{$waiter->id}\n";
 } catch (\Exception $e) {
-    echo "   ✗ Failed to dispatch event: " . $e->getMessage() . "\n";
+    echo '   ✗ Failed to dispatch event: '.$e->getMessage()."\n";
     exit(1);
 }
 echo "\n";
@@ -144,10 +144,10 @@ echo "   ✓ Broadcast connection: {$broadcastConnection}\n";
 if ($broadcastConnection === 'reverb') {
     $reverbConfig = config('broadcasting.connections.reverb');
     echo "   ✓ Using Reverb broadcaster\n";
-    echo "   - App ID: " . config('reverb.apps.apps.0.app_id') . "\n";
-    echo "   - Host: " . config('reverb.apps.apps.0.options.host') . "\n";
-    echo "   - Port: " . config('reverb.apps.apps.0.options.port') . "\n";
-    echo "   - Scheme: " . config('reverb.apps.apps.0.options.scheme') . "\n";
+    echo '   - App ID: '.config('reverb.apps.apps.0.app_id')."\n";
+    echo '   - Host: '.config('reverb.apps.apps.0.options.host')."\n";
+    echo '   - Port: '.config('reverb.apps.apps.0.options.port')."\n";
+    echo '   - Scheme: '.config('reverb.apps.apps.0.options.scheme')."\n";
 }
 echo "\n";
 
@@ -157,7 +157,7 @@ try {
     $order->delete();
     echo "   ✓ Test order deleted\n";
 } catch (\Exception $e) {
-    echo "   ! Warning: Could not delete test order: " . $e->getMessage() . "\n";
+    echo '   ! Warning: Could not delete test order: '.$e->getMessage()."\n";
 }
 echo "\n";
 

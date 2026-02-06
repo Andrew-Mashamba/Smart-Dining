@@ -10,20 +10,20 @@
  * 4. Stock validation (out of stock prevention)
  */
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
-$app = require_once __DIR__ . '/bootstrap/app.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
 $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
+use App\Events\OrderCreated;
+use App\Models\Guest;
+use App\Models\InventoryTransaction;
 use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Guest;
-use App\Models\Table;
 use App\Models\Staff;
-use App\Models\InventoryTransaction;
+use App\Models\Table;
 use App\Models\User;
-use App\Events\OrderCreated;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 
@@ -40,24 +40,24 @@ try {
     echo "   Guest: {$guest->name} (ID: {$guest->id})\n";
 
     $table = Table::first();
-    if (!$table) {
+    if (! $table) {
         echo "   ERROR: No tables found. Please seed tables first.\n";
         exit(1);
     }
     echo "   Table: {$table->name} (ID: {$table->id})\n";
 
     $waiter = Staff::where('role', 'waiter')->first();
-    if (!$waiter) {
+    if (! $waiter) {
         $waiter = Staff::first();
     }
-    echo "   Waiter: " . ($waiter ? $waiter->id : 'None') . "\n";
+    echo '   Waiter: '.($waiter ? $waiter->id : 'None')."\n";
 
     // Find a menu item with stock
     $menuItem = MenuItem::where('stock_quantity', '>', 5)
         ->where('low_stock_threshold', '>', 0)
         ->first();
 
-    if (!$menuItem) {
+    if (! $menuItem) {
         echo "   ERROR: No menu items with stock found.\n";
         exit(1);
     }
@@ -68,7 +68,7 @@ try {
 
     // Find or create a manager user for notifications
     $manager = User::where('role', 'manager')->first();
-    if (!$manager) {
+    if (! $manager) {
         echo "   WARNING: No manager users found for notifications.\n";
     } else {
         echo "   Manager for notifications: {$manager->name}\n\n";
@@ -157,7 +157,7 @@ try {
 
             if ($notification) {
                 echo "   ✓ Low stock notification sent to manager!\n";
-                echo "   Message: " . $notification->data['message'] . "\n\n";
+                echo '   Message: '.$notification->data['message']."\n\n";
             } else {
                 echo "   ✗ Low stock notification not found!\n\n";
             }
@@ -208,7 +208,7 @@ try {
     } catch (\Exception $e) {
         DB::rollBack();
         echo "   ✓ Validation successful: Order prevented due to insufficient stock!\n";
-        echo "   Error message: " . $e->getMessage() . "\n\n";
+        echo '   Error message: '.$e->getMessage()."\n\n";
     }
 
     echo "=== Test Summary ===\n";
@@ -217,6 +217,6 @@ try {
 
 } catch (\Exception $e) {
     DB::rollBack();
-    echo "\n✗ ERROR: " . $e->getMessage() . "\n";
-    echo "Stack trace:\n" . $e->getTraceAsString() . "\n";
+    echo "\n✗ ERROR: ".$e->getMessage()."\n";
+    echo "Stack trace:\n".$e->getTraceAsString()."\n";
 }

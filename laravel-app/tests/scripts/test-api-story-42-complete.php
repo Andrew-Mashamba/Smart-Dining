@@ -10,9 +10,7 @@
 
 require __DIR__.'/vendor/autoload.php';
 
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 $app = require_once __DIR__.'/bootstrap/app.php';
 $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
@@ -89,7 +87,7 @@ try {
         }
     }
 
-    echo "  ✓ Found {$found}/" . count($requiredRoutes) . " required API routes\n";
+    echo "  ✓ Found {$found}/".count($requiredRoutes)." required API routes\n";
 
     if ($found === count($requiredRoutes)) {
         $results[] = ['test' => 'API Routes Registration', 'status' => 'PASS'];
@@ -105,7 +103,7 @@ echo "\n";
 // Test 4: Check Staff model has HasApiTokens trait
 echo "✓ Test 4: Checking Staff model for HasApiTokens trait...\n";
 try {
-    $staffModel = new \App\Models\Staff();
+    $staffModel = new \App\Models\Staff;
     $traits = class_uses(\App\Models\Staff::class);
 
     if (isset($traits['Laravel\Sanctum\HasApiTokens'])) {
@@ -217,11 +215,11 @@ try {
         $hasPatch = strpos($content, 'PATCH /api/orders/{id}/status') !== false;
 
         echo "  ✓ API documentation file exists\n";
-        echo "  " . ($hasAuth ? '✓' : '✗') . " Authentication endpoints documented\n";
-        echo "  " . ($hasMenu ? '✓' : '✗') . " Menu endpoints documented\n";
-        echo "  " . ($hasOrders ? '✓' : '✗') . " Order endpoints documented\n";
-        echo "  " . ($hasPayments ? '✓' : '✗') . " Payment endpoints documented\n";
-        echo "  " . ($hasPatch ? '✓' : '✗') . " PATCH method for status updates\n";
+        echo '  '.($hasAuth ? '✓' : '✗')." Authentication endpoints documented\n";
+        echo '  '.($hasMenu ? '✓' : '✗')." Menu endpoints documented\n";
+        echo '  '.($hasOrders ? '✓' : '✗')." Order endpoints documented\n";
+        echo '  '.($hasPayments ? '✓' : '✗')." Payment endpoints documented\n";
+        echo '  '.($hasPatch ? '✓' : '✗')." PATCH method for status updates\n";
 
         if ($hasAuth && $hasMenu && $hasOrders && $hasPayments && $hasPatch) {
             $results[] = ['test' => 'API Documentation', 'status' => 'PASS'];
@@ -294,7 +292,7 @@ try {
             echo "  ✓ {$controller} exists\n";
 
             foreach ($methods as $method) {
-                if (!method_exists($class, $method)) {
+                if (! method_exists($class, $method)) {
                     echo "    ✗ Missing method: {$method}\n";
                     $allPass = false;
                 }
@@ -327,7 +325,7 @@ $errors = 0;
 $skipped = 0;
 
 foreach ($results as $result) {
-    $icon = match($result['status']) {
+    $icon = match ($result['status']) {
         'PASS' => '✓',
         'FAIL' => '✗',
         'ERROR' => '⚠',

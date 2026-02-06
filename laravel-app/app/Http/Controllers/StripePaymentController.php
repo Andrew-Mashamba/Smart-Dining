@@ -18,7 +18,6 @@ class StripePaymentController extends Controller
     /**
      * Create a Stripe PaymentIntent
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function createIntent(Request $request)
@@ -53,7 +52,6 @@ class StripePaymentController extends Controller
     /**
      * Confirm a Stripe payment (client-side confirmation)
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function confirm(Request $request)

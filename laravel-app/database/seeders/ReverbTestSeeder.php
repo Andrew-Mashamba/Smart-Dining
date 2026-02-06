@@ -10,7 +10,6 @@ use App\Models\OrderItem;
 use App\Models\Staff;
 use App\Models\Table;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class ReverbTestSeeder extends Seeder
 {
@@ -24,7 +23,7 @@ class ReverbTestSeeder extends Seeder
 
         // Use existing guest or create new one
         $guest = Guest::first();
-        if (!$guest) {
+        if (! $guest) {
             $guest = Guest::create([
                 'phone_number' => '+1234567890',
                 'name' => 'Test Guest',
@@ -36,7 +35,7 @@ class ReverbTestSeeder extends Seeder
 
         // Use existing table or create new one
         $table = Table::first();
-        if (!$table) {
+        if (! $table) {
             $table = Table::create([
                 'name' => 'T-01',
                 'capacity' => 4,
@@ -49,7 +48,7 @@ class ReverbTestSeeder extends Seeder
 
         // Use existing waiter or create new one
         $waiter = Staff::where('role', 'waiter')->first();
-        if (!$waiter) {
+        if (! $waiter) {
             $waiter = Staff::create([
                 'name' => 'Test Waiter',
                 'email' => 'waiter@test.com',
@@ -66,7 +65,7 @@ class ReverbTestSeeder extends Seeder
 
         // Use existing menu item or create new one
         $menuItem = MenuItem::first();
-        if (!$menuItem) {
+        if (! $menuItem) {
             $menuItem = MenuItem::create([
                 'name' => 'Test Burger',
                 'description' => 'Delicious test burger',
@@ -103,11 +102,11 @@ class ReverbTestSeeder extends Seeder
             'status' => 'pending',
             'destination' => 'kitchen',
         ]);
-        $this->command->info("✓ Order item created");
+        $this->command->info('✓ Order item created');
 
         // Calculate totals
         $order->calculateTotals();
-        $this->command->info("✓ Order totals calculated");
+        $this->command->info('✓ Order totals calculated');
 
         // Dispatch the OrderCreated event
         $this->command->info("\n🚀 Broadcasting OrderCreated event...");
@@ -120,9 +119,9 @@ class ReverbTestSeeder extends Seeder
         $this->command->info("Status: {$order->status}");
         $this->command->info("Total: £{$order->total}");
         $this->command->info("\n📡 Event broadcasted to channels:");
-        $this->command->info("  - orders");
-        $this->command->info("  - kitchen");
-        $this->command->info("  - bar");
+        $this->command->info('  - orders');
+        $this->command->info('  - kitchen');
+        $this->command->info('  - bar');
         $this->command->info("  - waiter.{$waiter->id}");
         $this->command->info("\n💡 Make sure Reverb server is running: php artisan reverb:start");
     }

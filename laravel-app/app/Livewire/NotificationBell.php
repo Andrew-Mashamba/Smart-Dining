@@ -2,12 +2,13 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class NotificationBell extends Component
 {
     public $showDropdown = false;
+
     public $unreadCount = 0;
 
     protected $listeners = ['notificationMarkedAsRead' => '$refresh'];
@@ -25,7 +26,7 @@ class NotificationBell extends Component
      */
     public function toggleDropdown()
     {
-        $this->showDropdown = !$this->showDropdown;
+        $this->showDropdown = ! $this->showDropdown;
 
         if ($this->showDropdown) {
             $this->updateUnreadCount();

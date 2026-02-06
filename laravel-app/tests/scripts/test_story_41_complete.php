@@ -14,21 +14,21 @@
  * 8. NotificationBell Livewire component exists
  */
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
-$app = require_once __DIR__ . '/bootstrap/app.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
 $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
+use App\Events\OrderCreated;
+use App\Listeners\DeductInventoryStock;
+use App\Models\Guest;
+use App\Models\InventoryTransaction;
 use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Guest;
-use App\Models\Table;
 use App\Models\Staff;
+use App\Models\Table;
 use App\Models\User;
-use App\Models\InventoryTransaction;
-use App\Events\OrderCreated;
-use App\Listeners\DeductInventoryStock;
 use App\Notifications\LowStockAlert;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -72,8 +72,8 @@ if (class_exists('App\Notifications\LowStockAlert')) {
     echo "✓ LowStockAlert notification exists\n";
 
     // Check if it uses database channel
-    $notification = new LowStockAlert(new MenuItem());
-    $channels = $notification->via(new User());
+    $notification = new LowStockAlert(new MenuItem);
+    $channels = $notification->via(new User);
     if (in_array('database', $channels)) {
         echo "✓ LowStockAlert uses database channel\n";
     } else {
@@ -114,14 +114,14 @@ try {
     );
 
     $table = Table::first();
-    if (!$table) {
+    if (! $table) {
         echo "✗ No tables found in database. Please seed table data first.\n";
         DB::rollBack();
         exit(1);
     }
 
     $staff = Staff::first();
-    if (!$staff) {
+    if (! $staff) {
         echo "✗ No staff found in database. Please seed staff data first.\n";
         DB::rollBack();
         exit(1);
@@ -129,7 +129,7 @@ try {
 
     // Create or find a menu item with sufficient stock
     $menuItem = MenuItem::first();
-    if (!$menuItem) {
+    if (! $menuItem) {
         echo "✗ No menu items found in database. Please seed menu items first.\n";
         DB::rollBack();
         exit(1);
@@ -212,7 +212,7 @@ try {
 
 } catch (\Exception $e) {
     DB::rollBack();
-    echo "✗ Error during test: " . $e->getMessage() . "\n";
+    echo '✗ Error during test: '.$e->getMessage()."\n";
     exit(1);
 }
 
@@ -253,7 +253,7 @@ try {
         'low_stock_threshold' => $threshold,
     ]);
 
-    echo "  Initial stock: " . ($lowStock + $orderQuantity) . " {$menuItem->unit}\n";
+    echo '  Initial stock: '.($lowStock + $orderQuantity)." {$menuItem->unit}\n";
     echo "  Low stock threshold: {$threshold} {$menuItem->unit}\n";
     echo "  Order quantity: {$orderQuantity}\n";
 
@@ -298,7 +298,7 @@ try {
 
 } catch (\Exception $e) {
     DB::rollBack();
-    echo "✗ Error during low stock test: " . $e->getMessage() . "\n";
+    echo '✗ Error during low stock test: '.$e->getMessage()."\n";
 }
 
 // Test 9: Test stock validation (prevent order if insufficient stock)
@@ -352,7 +352,7 @@ try {
         echo "✓ GuestOrder.php has validation at line 209-220\n";
         echo "✓ OrderService.php has validation at line 52-59\n";
     } catch (\Exception $e) {
-        echo "✓ Exception thrown: " . $e->getMessage() . "\n";
+        echo '✓ Exception thrown: '.$e->getMessage()."\n";
     }
 
     DB::rollBack();
@@ -360,7 +360,7 @@ try {
 
 } catch (\Exception $e) {
     DB::rollBack();
-    echo "  Note: " . $e->getMessage() . "\n";
+    echo '  Note: '.$e->getMessage()."\n";
 }
 
 echo "\n=== All Tests Complete ===\n\n";

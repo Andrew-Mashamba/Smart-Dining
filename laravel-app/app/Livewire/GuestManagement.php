@@ -5,7 +5,6 @@ namespace App\Livewire;
 use App\Models\Guest;
 use App\Models\Order;
 use Livewire\Component;
-use Illuminate\Support\Facades\DB;
 
 class GuestManagement extends Component
 {
@@ -14,17 +13,23 @@ class GuestManagement extends Component
 
     // Add guest modal properties
     public $showAddGuestModal = false;
+
     public $guestPhoneNumber = '';
+
     public $guestName = '';
 
     // View guest details modal properties
     public $showGuestDetailsModal = false;
+
     public $selectedGuest = null;
+
     public $guestOrders = [];
 
     // Points adjustment modal properties
     public $showPointsModal = false;
+
     public $pointsAdjustment = '';
+
     public $pointsReason = '';
 
     /**
@@ -76,7 +81,7 @@ class GuestManagement extends Component
             $this->resetAddGuestForm();
             $this->showAddGuestModal = false;
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to add guest: ' . $e->getMessage());
+            session()->flash('error', 'Failed to add guest: '.$e->getMessage());
         }
     }
 
@@ -109,7 +114,7 @@ class GuestManagement extends Component
 
             $this->showGuestDetailsModal = true;
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to load guest details: ' . $e->getMessage());
+            session()->flash('error', 'Failed to load guest details: '.$e->getMessage());
         }
     }
 
@@ -130,7 +135,7 @@ class GuestManagement extends Component
         $this->validate($this->pointsRules());
 
         try {
-            if (!$this->selectedGuest) {
+            if (! $this->selectedGuest) {
                 throw new \Exception('No guest selected.');
             }
 
@@ -146,7 +151,7 @@ class GuestManagement extends Component
             $this->resetPointsForm();
             $this->showPointsModal = false;
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to adjust points: ' . $e->getMessage());
+            session()->flash('error', 'Failed to adjust points: '.$e->getMessage());
         }
     }
 
@@ -211,10 +216,10 @@ class GuestManagement extends Component
             }]);
 
         // Apply search filter
-        if (!empty($this->search)) {
+        if (! empty($this->search)) {
             $query->where(function ($q) {
-                $q->where('phone_number', 'like', '%' . $this->search . '%')
-                  ->orWhere('name', 'like', '%' . $this->search . '%');
+                $q->where('phone_number', 'like', '%'.$this->search.'%')
+                    ->orWhere('name', 'like', '%'.$this->search.'%');
             });
         }
 

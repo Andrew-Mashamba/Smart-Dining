@@ -3,15 +3,14 @@
 namespace App\Services\WhatsApp;
 
 use App\Models\Table;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Storage;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class QRCodeService
 {
     /**
      * Generate QR code for a table
      *
-     * @param Table $table
      * @return string Path to QR code image
      */
     public function generateTableQRCode(Table $table): string
@@ -20,7 +19,7 @@ class QRCodeService
         $message = $this->generateTableMessage($table);
 
         // Create WhatsApp link
-        $whatsappUrl = "https://wa.me/{$restaurantPhone}?text=" . urlencode($message);
+        $whatsappUrl = "https://wa.me/{$restaurantPhone}?text=".urlencode($message);
 
         // Generate QR code
         $qrCode = QrCode::format('png')
@@ -40,22 +39,17 @@ class QRCodeService
 
     /**
      * Generate message for table QR code
-     *
-     * @param Table $table
-     * @return string
      */
     protected function generateTableMessage(Table $table): string
     {
         // Generate a unique token for the table
-        $token = substr(md5($table->id . $table->name . now()->timestamp), 0, 8);
+        $token = substr(md5($table->id.$table->name.now()->timestamp), 0, 8);
 
         return "TABLE_{$table->id}_{$token}";
     }
 
     /**
      * Generate QR codes for all tables
-     *
-     * @return array
      */
     public function generateAllTableQRCodes(): array
     {
@@ -74,9 +68,6 @@ class QRCodeService
 
     /**
      * Get QR code URL for a table
-     *
-     * @param Table $table
-     * @return string|null
      */
     public function getTableQRCodeUrl(Table $table): ?string
     {

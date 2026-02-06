@@ -10,10 +10,10 @@ $app = require_once __DIR__.'/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
-use App\Models\Order;
-use App\Models\Table;
-use App\Models\Staff;
 use App\Events\OrderCreated;
+use App\Models\Order;
+use App\Models\Staff;
+use App\Models\Table;
 
 echo "Testing OrderCreated Event Broadcast\n";
 echo "=====================================\n\n";
@@ -23,7 +23,7 @@ try {
     $table = Table::first();
     $waiter = Staff::where('role', 'waiter')->first();
 
-    if (!$table || !$waiter) {
+    if (! $table || ! $waiter) {
         echo "⚠ Missing required data (table or waiter)\n";
         echo "Please ensure database has been seeded.\n";
         exit(1);
@@ -63,7 +63,7 @@ try {
     echo "Check the Reverb server logs to confirm broadcast.\n\n";
 
 } catch (\Exception $e) {
-    echo "❌ Error: " . $e->getMessage() . "\n";
-    echo $e->getTraceAsString() . "\n";
+    echo '❌ Error: '.$e->getMessage()."\n";
+    echo $e->getTraceAsString()."\n";
     exit(1);
 }

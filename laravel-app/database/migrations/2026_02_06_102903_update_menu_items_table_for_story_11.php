@@ -14,27 +14,27 @@ return new class extends Migration
     {
         Schema::table('menu_items', function (Blueprint $table) {
             // Add category_id foreign key if it doesn't exist
-            if (!Schema::hasColumn('menu_items', 'category_id')) {
+            if (! Schema::hasColumn('menu_items', 'category_id')) {
                 $table->foreignId('category_id')->nullable()->after('id')->constrained('menu_categories')->onDelete('cascade');
             }
 
             // Rename preparation_time to prep_time_minutes if needed
-            if (Schema::hasColumn('menu_items', 'preparation_time') && !Schema::hasColumn('menu_items', 'prep_time_minutes')) {
+            if (Schema::hasColumn('menu_items', 'preparation_time') && ! Schema::hasColumn('menu_items', 'prep_time_minutes')) {
                 $table->renameColumn('preparation_time', 'prep_time_minutes');
             }
         });
 
         Schema::table('menu_items', function (Blueprint $table) {
             // Add stock tracking columns if they don't exist
-            if (!Schema::hasColumn('menu_items', 'stock_quantity')) {
+            if (! Schema::hasColumn('menu_items', 'stock_quantity')) {
                 $table->integer('stock_quantity')->nullable()->after('prep_time_minutes');
             }
-            if (!Schema::hasColumn('menu_items', 'low_stock_threshold')) {
+            if (! Schema::hasColumn('menu_items', 'low_stock_threshold')) {
                 $table->integer('low_stock_threshold')->nullable()->after('stock_quantity');
             }
 
             // Add status column if it doesn't exist
-            if (!Schema::hasColumn('menu_items', 'status')) {
+            if (! Schema::hasColumn('menu_items', 'status')) {
                 $table->enum('status', ['available', 'unavailable'])->default('available')->after('low_stock_threshold');
             }
 

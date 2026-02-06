@@ -3,18 +3,20 @@
 namespace App\Livewire;
 
 use App\Models\Staff;
-use App\Models\Order;
 use App\Models\Tip;
-use Illuminate\Support\Facades\DB;
-use Livewire\Component;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Livewire\Component;
 
 class StaffReports extends Component
 {
     public $start_date;
+
     public $end_date;
+
     public $selected_staff_id = 'all';
+
     public $sort_by = 'orders';
+
     public $sort_direction = 'desc';
 
     public function mount()
@@ -52,19 +54,19 @@ class StaffReports extends Component
         }
 
         // Join orders and calculate metrics
-        $staffPerformance = $query->leftJoin('orders', function($join) {
-                $join->on('staff.id', '=', 'orders.waiter_id')
-                    ->whereBetween('orders.created_at', [
-                        $this->start_date . ' 00:00:00',
-                        $this->end_date . ' 23:59:59'
-                    ])
-                    ->where('orders.status', '!=', 'cancelled');
-            })
-            ->leftJoin('tips', function($join) {
+        $staffPerformance = $query->leftJoin('orders', function ($join) {
+            $join->on('staff.id', '=', 'orders.waiter_id')
+                ->whereBetween('orders.created_at', [
+                    $this->start_date.' 00:00:00',
+                    $this->end_date.' 23:59:59',
+                ])
+                ->where('orders.status', '!=', 'cancelled');
+        })
+            ->leftJoin('tips', function ($join) {
                 $join->on('staff.id', '=', 'tips.waiter_id')
                     ->whereBetween('tips.created_at', [
-                        $this->start_date . ' 00:00:00',
-                        $this->end_date . ' 23:59:59'
+                        $this->start_date.' 00:00:00',
+                        $this->end_date.' 23:59:59',
                     ]);
             })
             ->groupBy('staff.id', 'staff.name', 'staff.email')
@@ -81,8 +83,8 @@ class StaffReports extends Component
                 ->selectRaw('SUM(amount) as total')
                 ->where('waiter_id', $staff->id)
                 ->whereBetween('created_at', [
-                    $this->start_date . ' 00:00:00',
-                    $this->end_date . ' 23:59:59'
+                    $this->start_date.' 00:00:00',
+                    $this->end_date.' 23:59:59',
                 ])
                 ->groupBy('tip_method')
                 ->get()
@@ -186,9 +188,10 @@ class StaffReports extends Component
         ];
 
         $pdf = Pdf::loadView('reports.staff-pdf', $data);
-        return response()->streamDownload(function() use ($pdf) {
+
+        return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
-        }, 'staff-performance-report-' . $this->start_date . '-to-' . $this->end_date . '.pdf');
+        }, 'staff-performance-report-'.$this->start_date.'-to-'.$this->end_date.'.pdf');
     }
 
     /**
@@ -198,14 +201,14 @@ class StaffReports extends Component
     {
         $staffPerformance = $this->getStaffPerformance();
 
-        $filename = 'staff-performance-report-' . $this->start_date . '-to-' . $this->end_date . '.csv';
+        $filename = 'staff-performance-report-'.$this->start_date.'-to-'.$this->end_date.'.csv';
 
         $headers = [
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ];
 
-        $callback = function() use ($staffPerformance) {
+        $callback = function () use ($staffPerformance) {
             $file = fopen('php://output', 'w');
 
             // Add CSV headers
@@ -219,7 +222,7 @@ class StaffReports extends Component
                 'Average Tip %',
                 'Cash Tips',
                 'Card Tips',
-                'Mobile Tips'
+                'Mobile Tips',
             ]);
 
             // Add data rows
@@ -231,7 +234,7 @@ class StaffReports extends Component
                     number_format($staff->total_revenue, 2),
                     number_format($staff->average_order_value, 2),
                     number_format($staff->total_tips, 2),
-                    number_format($staff->average_tip_percentage, 2) . '%',
+                    number_format($staff->average_tip_percentage, 2).'%',
                     number_format($staff->tip_breakdown['cash'] ?? 0, 2),
                     number_format($staff->tip_breakdown['card'] ?? 0, 2),
                     number_format($staff->tip_breakdown['mobile'] ?? 0, 2),

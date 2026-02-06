@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Log;
 class WhatsAppService
 {
     protected string $apiUrl;
+
     protected string $accessToken;
+
     protected string $phoneNumberId;
 
     public function __construct()
@@ -20,10 +22,6 @@ class WhatsAppService
 
     /**
      * Send a text message
-     *
-     * @param string $to
-     * @param string $message
-     * @return array
      */
     public function sendTextMessage(string $to, string $message): array
     {
@@ -52,11 +50,6 @@ class WhatsAppService
 
     /**
      * Send an interactive message with buttons
-     *
-     * @param string $to
-     * @param string $bodyText
-     * @param array $buttons
-     * @return array
      */
     public function sendButtonMessage(string $to, string $bodyText, array $buttons): array
     {
@@ -99,12 +92,6 @@ class WhatsAppService
 
     /**
      * Send an interactive list message
-     *
-     * @param string $to
-     * @param string $bodyText
-     * @param string $buttonText
-     * @param array $sections
-     * @return array
      */
     public function sendListMessage(string $to, string $bodyText, string $buttonText, array $sections): array
     {
@@ -138,18 +125,13 @@ class WhatsAppService
 
     /**
      * Send a template message
-     *
-     * @param string $to
-     * @param string $templateName
-     * @param array $parameters
-     * @return array
      */
     public function sendTemplateMessage(string $to, string $templateName, array $parameters = []): array
     {
         $url = "{$this->apiUrl}/{$this->phoneNumberId}/messages";
 
         $components = [];
-        if (!empty($parameters)) {
+        if (! empty($parameters)) {
             $components[] = [
                 'type' => 'body',
                 'parameters' => array_map(function ($param) {
@@ -184,9 +166,6 @@ class WhatsAppService
 
     /**
      * Mark a message as read
-     *
-     * @param string $messageId
-     * @return array
      */
     public function markAsRead(string $messageId): array
     {

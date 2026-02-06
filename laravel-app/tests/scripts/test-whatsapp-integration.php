@@ -10,20 +10,18 @@
  * Usage: php test-whatsapp-integration.php
  */
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
+use App\Models\Guest;
 use App\Models\MenuCategory;
 use App\Models\MenuItem;
-use App\Models\Guest;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\WhatsAppService;
+use Illuminate\Support\Facades\Config;
 
 // Bootstrap Laravel application
-$app = require_once __DIR__ . '/bootstrap/app.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
@@ -38,7 +36,8 @@ $tests = [];
 $passed = 0;
 $failed = 0;
 
-function test($name, $callback) {
+function test($name, $callback)
+{
     global $tests, $passed, $failed;
 
     echo "→ Testing: {$name}... ";
@@ -65,96 +64,113 @@ echo "ACCEPTANCE CRITERIA VERIFICATION:\n";
 echo "═════════════════════════════════════════════════════════════\n\n";
 
 // 1. Install WhatsApp SDK
-test("AC1: WhatsApp SDK installed (netflie/whatsapp-cloud-api)", function() {
-    $composerJson = json_decode(file_get_contents(__DIR__ . '/composer.json'), true);
+test('AC1: WhatsApp SDK installed (netflie/whatsapp-cloud-api)', function () {
+    $composerJson = json_decode(file_get_contents(__DIR__.'/composer.json'), true);
+
     return isset($composerJson['require']['netflie/whatsapp-cloud-api']);
 });
 
 // 2. Configure .env
-test("AC2: .env configuration exists", function() {
+test('AC2: .env configuration exists', function () {
     return Config::has('services.whatsapp.api_token')
         && Config::has('services.whatsapp.phone_number_id')
         && Config::has('services.whatsapp.verify_token');
 });
 
 // 3. Webhook route exists
-test("AC3: Webhook POST route exists", function() {
+test('AC3: Webhook POST route exists', function () {
     $routes = app('router')->getRoutes();
     foreach ($routes as $route) {
         if ($route->uri() === 'webhooks/whatsapp' && in_array('POST', $route->methods())) {
             return true;
         }
     }
+
     return false;
 });
 
 // 4. Webhook verification route
-test("AC4: Webhook verification GET route exists", function() {
+test('AC4: Webhook verification GET route exists', function () {
     $routes = app('router')->getRoutes();
     foreach ($routes as $route) {
         if ($route->uri() === 'webhooks/whatsapp' && in_array('GET', $route->methods())) {
             return true;
         }
     }
+
     return false;
 });
 
 // 5. WhatsAppController exists
-test("AC5: WhatsAppController exists with webhook methods", function() {
+test('AC5: WhatsAppController exists with webhook methods', function () {
     $controllerExists = class_exists('App\Http\Controllers\WhatsAppController');
-    if (!$controllerExists) return false;
+    if (! $controllerExists) {
+        return false;
+    }
 
     $reflection = new \ReflectionClass('App\Http\Controllers\WhatsAppController');
+
     return $reflection->hasMethod('webhook') && $reflection->hasMethod('verify');
 });
 
 // 6. Message parsing implementation
-test("AC6: Message parsing logic exists", function() {
+test('AC6: Message parsing logic exists', function () {
     $serviceExists = class_exists('App\Services\WhatsAppService');
-    if (!$serviceExists) return false;
+    if (! $serviceExists) {
+        return false;
+    }
 
     $reflection = new \ReflectionClass('App\Services\WhatsAppService');
+
     return $reflection->hasMethod('processOrder');
 });
 
 // 7. Send menu functionality
-test("AC7: Send menu functionality exists", function() {
+test('AC7: Send menu functionality exists', function () {
     $reflection = new \ReflectionClass('App\Services\WhatsAppService');
+
     return $reflection->hasMethod('sendMenu');
 });
 
 // 8. Process order functionality
-test("AC8: Process order creates Guest if new", function() {
+test('AC8: Process order creates Guest if new', function () {
     // This is tested by verifying the code logic exists
-    $source = file_get_contents(__DIR__ . '/app/Services/WhatsAppService.php');
+    $source = file_get_contents(__DIR__.'/app/Services/WhatsAppService.php');
+
     return strpos($source, 'firstOrCreate') !== false
         && strpos($source, 'phone_number') !== false;
 });
 
 // 9. Create Order with order_source='whatsapp'
-test("AC9: Order creation with WhatsApp source", function() {
-    $source = file_get_contents(__DIR__ . '/app/Services/WhatsAppService.php');
+test('AC9: Order creation with WhatsApp source', function () {
+    $source = file_get_contents(__DIR__.'/app/Services/WhatsAppService.php');
+
     return strpos($source, "'order_source' => 'whatsapp'") !== false;
 });
 
 // 10. Confirmation message
-test("AC10: Order confirmation message functionality", function() {
+test('AC10: Order confirmation message functionality', function () {
     $reflection = new \ReflectionClass('App\Services\WhatsAppService');
+
     return $reflection->hasMethod('sendOrderConfirmation');
 });
 
 // 11. Status update notifications
-test("AC11: Status update notifications via OrderObserver", function() {
+test('AC11: Status update notifications via OrderObserver', function () {
     $observerExists = class_exists('App\Observers\OrderObserver');
-    if (!$observerExists) return false;
+    if (! $observerExists) {
+        return false;
+    }
 
     $reflection = new \ReflectionClass('App\Observers\OrderObserver');
+
     return $reflection->hasMethod('updated');
 });
 
 // 12. Error handling
-test("AC12: Error handling with help message", function() {
+test('AC12: Error handling with help message', function () {
     $reflection = new \ReflectionClass('App\Services\WhatsAppService');
+
     return $reflection->hasMethod('sendHelpMessage');
 });
 
@@ -164,14 +180,14 @@ echo "DATABASE INTEGRATION TESTS:\n";
 echo "═════════════════════════════════════════════════════════════\n\n";
 
 // Test database integration
-test("Database: Create test menu items", function() {
+test('Database: Create test menu items', function () {
     // Create a test category if it doesn't exist
     $category = MenuCategory::firstOrCreate(
         ['name' => 'Test WhatsApp Category'],
         [
             'description' => 'Test category for WhatsApp integration',
             'display_order' => 999,
-            'status' => 'active'
+            'status' => 'active',
         ]
     );
 
@@ -203,7 +219,7 @@ test("Database: Create test menu items", function() {
     return MenuItem::where('name', 'LIKE', 'Test %')->count() >= 2;
 });
 
-test("Database: WhatsApp order creation simulation", function() {
+test('Database: WhatsApp order creation simulation', function () {
     // Create test guest
     $guest = Guest::firstOrCreate(
         ['phone_number' => '26775123456'],
@@ -222,7 +238,7 @@ test("Database: WhatsApp order creation simulation", function() {
 
     // Add order item
     $menuItem = MenuItem::where('name', 'Test Burger')->first();
-    if (!$menuItem) {
+    if (! $menuItem) {
         throw new \Exception('Test menu item not found');
     }
 
@@ -250,8 +266,9 @@ test("Database: WhatsApp order creation simulation", function() {
     return $success;
 });
 
-test("WhatsAppService: Can instantiate service", function() {
+test('WhatsAppService: Can instantiate service', function () {
     $service = app(WhatsAppService::class);
+
     return $service instanceof WhatsAppService;
 });
 
@@ -260,23 +277,27 @@ echo "════════════════════════�
 echo "CODE STRUCTURE VERIFICATION:\n";
 echo "═════════════════════════════════════════════════════════════\n\n";
 
-test("Code: WhatsApp config in services.php", function() {
-    $configFile = file_get_contents(__DIR__ . '/config/services.php');
+test('Code: WhatsApp config in services.php', function () {
+    $configFile = file_get_contents(__DIR__.'/config/services.php');
+
     return strpos($configFile, "'whatsapp'") !== false;
 });
 
-test("Code: OrderObserver registered in AppServiceProvider", function() {
-    $providerFile = file_get_contents(__DIR__ . '/app/Providers/AppServiceProvider.php');
+test('Code: OrderObserver registered in AppServiceProvider', function () {
+    $providerFile = file_get_contents(__DIR__.'/app/Providers/AppServiceProvider.php');
+
     return strpos($providerFile, 'OrderObserver') !== false;
 });
 
-test("Code: Order model has calculateTotals method", function() {
+test('Code: Order model has calculateTotals method', function () {
     $reflection = new \ReflectionClass('App\Models\Order');
+
     return $reflection->hasMethod('calculateTotals');
 });
 
-test("Code: Guest model has phone_number field", function() {
-    $modelFile = file_get_contents(__DIR__ . '/app/Models/Guest.php');
+test('Code: Guest model has phone_number field', function () {
+    $modelFile = file_get_contents(__DIR__.'/app/Models/Guest.php');
+
     return strpos($modelFile, 'phone_number') !== false;
 });
 
@@ -285,23 +306,27 @@ echo "════════════════════════�
 echo "FEATURE COVERAGE VERIFICATION:\n";
 echo "═════════════════════════════════════════════════════════════\n\n";
 
-test("Feature: Menu command support", function() {
-    $controllerFile = file_get_contents(__DIR__ . '/app/Http/Controllers/WhatsAppController.php');
+test('Feature: Menu command support', function () {
+    $controllerFile = file_get_contents(__DIR__.'/app/Http/Controllers/WhatsAppController.php');
+
     return strpos($controllerFile, 'menu') !== false;
 });
 
-test("Feature: Order command support", function() {
-    $controllerFile = file_get_contents(__DIR__ . '/app/Http/Controllers/WhatsAppController.php');
+test('Feature: Order command support', function () {
+    $controllerFile = file_get_contents(__DIR__.'/app/Http/Controllers/WhatsAppController.php');
+
     return strpos($controllerFile, 'order') !== false;
 });
 
-test("Feature: Help command support", function() {
-    $serviceFile = file_get_contents(__DIR__ . '/app/Services/WhatsAppService.php');
+test('Feature: Help command support', function () {
+    $serviceFile = file_get_contents(__DIR__.'/app/Services/WhatsAppService.php');
+
     return strpos($serviceFile, 'sendHelpMessage') !== false;
 });
 
-test("Feature: Status command support", function() {
-    $serviceFile = file_get_contents(__DIR__ . '/app/Services/WhatsAppService.php');
+test('Feature: Status command support', function () {
+    $serviceFile = file_get_contents(__DIR__.'/app/Services/WhatsAppService.php');
+
     return strpos($serviceFile, 'sendRecentOrderStatus') !== false;
 });
 
@@ -310,10 +335,10 @@ echo "════════════════════════�
 echo "TEST SUMMARY\n";
 echo "═════════════════════════════════════════════════════════════\n\n";
 
-echo "Total Tests: " . ($passed + $failed) . "\n";
-echo "Passed: " . $passed . " ✓\n";
-echo "Failed: " . $failed . " ✗\n";
-echo "Success Rate: " . round(($passed / ($passed + $failed)) * 100, 2) . "%\n";
+echo 'Total Tests: '.($passed + $failed)."\n";
+echo 'Passed: '.$passed." ✓\n";
+echo 'Failed: '.$failed." ✗\n";
+echo 'Success Rate: '.round(($passed / ($passed + $failed)) * 100, 2)."%\n";
 
 echo "\n";
 

@@ -5,15 +5,15 @@ require __DIR__.'/vendor/autoload.php';
 $app = require_once __DIR__.'/bootstrap/app.php';
 $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
 
-use App\Models\MenuItem;
+use App\Events\OrderCreated;
+use App\Models\InventoryTransaction;
 use App\Models\MenuCategory;
+use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Table;
 use App\Models\Staff;
+use App\Models\Table;
 use App\Models\User;
-use App\Models\InventoryTransaction;
-use App\Events\OrderCreated;
 use Illuminate\Support\Facades\DB;
 
 // Clear database
@@ -66,7 +66,7 @@ $menuItem = MenuItem::create([
     'status' => 'available',
 ]);
 
-echo "Initial stock: " . $menuItem->stock_quantity . "\n";
+echo 'Initial stock: '.$menuItem->stock_quantity."\n";
 
 // Create an order
 $order = Order::create([
@@ -79,7 +79,7 @@ $order = Order::create([
     'total' => 59.00,
 ]);
 
-echo "Order created with ID: " . $order->id . "\n";
+echo 'Order created with ID: '.$order->id."\n";
 
 OrderItem::create([
     'order_id' => $order->id,
@@ -97,7 +97,7 @@ $order = $order->fresh(['orderItems.menuItem', 'table']);
 
 // Check stock before event
 $menuItem->refresh();
-echo "Stock before event: " . $menuItem->stock_quantity . "\n";
+echo 'Stock before event: '.$menuItem->stock_quantity."\n";
 
 // Trigger the event
 echo "Firing OrderCreated event...\n";
@@ -105,14 +105,14 @@ event(new OrderCreated($order));
 
 // Check stock after event (with sync queue, should be immediate)
 $menuItem->refresh();
-echo "Stock after event: " . $menuItem->stock_quantity . "\n";
+echo 'Stock after event: '.$menuItem->stock_quantity."\n";
 
 // Check transactions
 $transactions = InventoryTransaction::where('menu_item_id', $menuItem->id)->get();
-echo "Number of transactions: " . $transactions->count() . "\n";
+echo 'Number of transactions: '.$transactions->count()."\n";
 foreach ($transactions as $transaction) {
     echo "  - Transaction ID: {$transaction->id}, Quantity: {$transaction->quantity}, Type: {$transaction->transaction_type}\n";
 }
 
 echo "\nExpected stock: 8 (10 - 2)\n";
-echo "Actual stock: " . $menuItem->stock_quantity . "\n";
+echo 'Actual stock: '.$menuItem->stock_quantity."\n";

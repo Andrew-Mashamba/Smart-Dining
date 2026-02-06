@@ -2,13 +2,12 @@
 
 namespace App\Console\Commands;
 
-use App\Events\OrderCreated;
-use App\Events\OrderStatusUpdated;
 use Illuminate\Console\Command;
 
 class TestBroadcasting extends Command
 {
     protected $signature = 'test:broadcasting';
+
     protected $description = 'Test Reverb broadcasting configuration';
 
     public function handle()
@@ -19,10 +18,10 @@ class TestBroadcasting extends Command
 
         // Verify configuration
         $this->info('Broadcasting Configuration:');
-        $this->info('  Driver: ' . config('broadcasting.default'));
-        $this->info('  Reverb App ID: ' . config('broadcasting.connections.reverb.app_id'));
-        $this->info('  Reverb Host: ' . config('broadcasting.connections.reverb.options.host'));
-        $this->info('  Reverb Port: ' . config('broadcasting.connections.reverb.options.port'));
+        $this->info('  Driver: '.config('broadcasting.default'));
+        $this->info('  Reverb App ID: '.config('broadcasting.connections.reverb.app_id'));
+        $this->info('  Reverb Host: '.config('broadcasting.connections.reverb.options.host'));
+        $this->info('  Reverb Port: '.config('broadcasting.connections.reverb.options.port'));
         $this->newLine();
 
         // Verify events

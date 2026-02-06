@@ -2,19 +2,19 @@
 
 namespace App\Services;
 
-use Netflie\WhatsAppCloudApi\WhatsAppCloudApi;
-use Netflie\WhatsAppCloudApi\Message\TextMessage;
+use App\Models\Guest;
 use App\Models\MenuCategory;
 use App\Models\MenuItem;
-use App\Models\Guest;
 use App\Models\Order;
 use App\Models\OrderItem;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Netflie\WhatsAppCloudApi\WhatsAppCloudApi;
 
 class WhatsAppService
 {
     protected $whatsapp;
+
     protected $fromPhoneNumberId;
 
     public function __construct()
@@ -35,7 +35,7 @@ class WhatsAppService
             $this->whatsapp->sendTextMessage($to, $message);
             Log::info("WhatsApp message sent to {$to}");
         } catch (\Exception $e) {
-            Log::error("Failed to send WhatsApp message to {$to}: " . $e->getMessage());
+            Log::error("Failed to send WhatsApp message to {$to}: ".$e->getMessage());
             throw $e;
         }
     }
@@ -59,7 +59,7 @@ class WhatsAppService
             $menuText .= "\n";
 
             foreach ($category->menuItems as $item) {
-                $menuText .= "• {$item->name} - BWP " . number_format($item->price, 2) . "\n";
+                $menuText .= "• {$item->name} - BWP ".number_format($item->price, 2)."\n";
                 if ($item->description) {
                     $menuText .= "  _{$item->description}_\n";
                 }
@@ -70,7 +70,7 @@ class WhatsAppService
         $menuText .= "📝 To order, type:\n";
         $menuText .= "*order [item name] x [quantity]*\n\n";
         $menuText .= "Example: order Pizza x 2, Burger x 1\n\n";
-        $menuText .= "Type *help* for more commands.";
+        $menuText .= 'Type *help* for more commands.';
 
         $this->sendMessage($to, $menuText);
     }
@@ -86,7 +86,7 @@ class WhatsAppService
         $helpText .= "  Example: order Pizza x 2, Burger x 1\n\n";
         $helpText .= "*status* - Check your recent order status\n";
         $helpText .= "*help* - Show this help message\n\n";
-        $helpText .= "Need assistance? Just send us a message!";
+        $helpText .= 'Need assistance? Just send us a message!';
 
         $this->sendMessage($to, $helpText);
     }
@@ -103,7 +103,7 @@ class WhatsAppService
             // Get or create guest
             $guest = Guest::firstOrCreate(
                 ['phone_number' => $phoneNumber],
-                ['name' => 'WhatsApp Guest ' . substr($phoneNumber, -4)]
+                ['name' => 'WhatsApp Guest '.substr($phoneNumber, -4)]
             );
 
             // Parse order items from text
@@ -112,6 +112,7 @@ class WhatsAppService
             if (empty($orderItems)) {
                 $this->sendMessage($phoneNumber, "❌ Sorry, I couldn't understand your order. Please use the format:\n\n*order Pizza x 2, Burger x 1*\n\nType *menu* to see available items.");
                 DB::rollBack();
+
                 return;
             }
 
@@ -148,8 +149,8 @@ class WhatsAppService
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Error processing WhatsApp order: " . $e->getMessage());
-            $this->sendMessage($phoneNumber, "❌ Sorry, there was an error processing your order. Please try again or contact us directly.");
+            Log::error('Error processing WhatsApp order: '.$e->getMessage());
+            $this->sendMessage($phoneNumber, '❌ Sorry, there was an error processing your order. Please try again or contact us directly.');
         }
     }
 
@@ -173,7 +174,7 @@ class WhatsAppService
             // Match pattern: "item name x quantity"
             if (preg_match('/(.+?)\s*x\s*(\d+)/i', $part, $matches)) {
                 $itemName = trim($matches[1]);
-                $quantity = (int)$matches[2];
+                $quantity = (int) $matches[2];
 
                 // Find menu item (case-insensitive partial match)
                 $menuItem = MenuItem::where('status', 'available')
@@ -202,18 +203,18 @@ class WhatsAppService
         $confirmationText .= "*Items:*\n";
 
         foreach ($order->orderItems as $item) {
-            $confirmationText .= "• {$item->menuItem->name} x {$item->quantity} - BWP " . number_format($item->subtotal, 2) . "\n";
+            $confirmationText .= "• {$item->menuItem->name} x {$item->quantity} - BWP ".number_format($item->subtotal, 2)."\n";
         }
 
-        $confirmationText .= "\n*Subtotal:* BWP " . number_format($order->subtotal, 2) . "\n";
-        $confirmationText .= "*Tax (18%):* BWP " . number_format($order->tax, 2) . "\n";
-        $confirmationText .= "*Total:* BWP " . number_format($order->total, 2) . "\n\n";
+        $confirmationText .= "\n*Subtotal:* BWP ".number_format($order->subtotal, 2)."\n";
+        $confirmationText .= '*Tax (18%):* BWP '.number_format($order->tax, 2)."\n";
+        $confirmationText .= '*Total:* BWP '.number_format($order->total, 2)."\n\n";
 
         // Calculate estimated time based on prep times
         $estimatedTime = $this->calculateEstimatedTime($order);
         $confirmationText .= "⏱️ Estimated Time: {$estimatedTime} minutes\n\n";
         $confirmationText .= "We'll notify you when your order is ready for pickup!\n";
-        $confirmationText .= "Thank you for ordering! 🙏";
+        $confirmationText .= 'Thank you for ordering! 🙏';
 
         $this->sendMessage($phoneNumber, $confirmationText);
     }
@@ -240,14 +241,14 @@ class WhatsAppService
      */
     public function sendOrderStatusUpdate(Order $order, string $newStatus): void
     {
-        if (!$order->guest || !$order->guest->phone_number) {
+        if (! $order->guest || ! $order->guest->phone_number) {
             return;
         }
 
         $phoneNumber = $order->guest->phone_number;
         $statusMessages = [
             'preparing' => "👨‍🍳 *ORDER IN PREPARATION* 👨‍🍳\n\nYour order *{$order->order_number}* is now being prepared by our kitchen team!\n\nWe'll notify you when it's ready.",
-            'ready' => "✅ *ORDER READY FOR PICKUP* ✅\n\nYour order *{$order->order_number}* is ready!\n\nPlease come to the counter to collect your order.\n\nTotal: BWP " . number_format($order->total, 2),
+            'ready' => "✅ *ORDER READY FOR PICKUP* ✅\n\nYour order *{$order->order_number}* is ready!\n\nPlease come to the counter to collect your order.\n\nTotal: BWP ".number_format($order->total, 2),
             'completed' => "🎉 *ORDER COMPLETED* 🎉\n\nThank you for your order *{$order->order_number}*!\n\nWe hope you enjoyed your meal. Looking forward to serving you again! 😊",
             'cancelled' => "❌ *ORDER CANCELLED* ❌\n\nYour order *{$order->order_number}* has been cancelled.\n\nIf you have any questions, please contact us.",
         ];
@@ -256,7 +257,7 @@ class WhatsAppService
             try {
                 $this->sendMessage($phoneNumber, $statusMessages[$newStatus]);
             } catch (\Exception $e) {
-                Log::error("Failed to send status update for order {$order->id}: " . $e->getMessage());
+                Log::error("Failed to send status update for order {$order->id}: ".$e->getMessage());
             }
         }
     }
@@ -268,8 +269,9 @@ class WhatsAppService
     {
         $guest = Guest::where('phone_number', $phoneNumber)->first();
 
-        if (!$guest) {
+        if (! $guest) {
             $this->sendMessage($phoneNumber, "You don't have any orders yet. Type *menu* to see our offerings!");
+
             return;
         }
 
@@ -278,15 +280,16 @@ class WhatsAppService
             ->latest()
             ->first();
 
-        if (!$recentOrder) {
+        if (! $recentOrder) {
             $this->sendMessage($phoneNumber, "You don't have any orders yet. Type *menu* to see our offerings!");
+
             return;
         }
 
         $statusText = "📋 *ORDER STATUS* 📋\n\n";
         $statusText .= "Order Number: *{$recentOrder->order_number}*\n";
-        $statusText .= "Status: *" . ucfirst($recentOrder->status) . "*\n";
-        $statusText .= "Total: BWP " . number_format($recentOrder->total, 2) . "\n\n";
+        $statusText .= 'Status: *'.ucfirst($recentOrder->status)."*\n";
+        $statusText .= 'Total: BWP '.number_format($recentOrder->total, 2)."\n\n";
 
         $statusEmojis = [
             'pending' => '⏳',

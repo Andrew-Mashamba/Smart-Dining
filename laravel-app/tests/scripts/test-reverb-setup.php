@@ -6,11 +6,9 @@
  * This script verifies all acceptance criteria for Story 24
  */
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
-use Illuminate\Support\Facades\Artisan;
-
-$app = require_once __DIR__ . '/bootstrap/app.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
@@ -22,7 +20,7 @@ $allPassed = true;
 
 // Test 1: Check if Reverb is installed
 echo "1. Checking if Laravel Reverb is installed...\n";
-$composerJson = json_decode(file_get_contents(__DIR__ . '/composer.json'), true);
+$composerJson = json_decode(file_get_contents(__DIR__.'/composer.json'), true);
 if (isset($composerJson['require']['laravel/reverb'])) {
     echo "   ✓ Laravel Reverb is installed (version: {$composerJson['require']['laravel/reverb']})\n";
 } else {
@@ -33,7 +31,7 @@ echo "\n";
 
 // Test 2: Check if Reverb config exists
 echo "2. Checking if Reverb config file exists...\n";
-if (file_exists(__DIR__ . '/config/reverb.php')) {
+if (file_exists(__DIR__.'/config/reverb.php')) {
     echo "   ✓ config/reverb.php exists\n";
 } else {
     echo "   ✗ config/reverb.php does NOT exist\n";
@@ -50,7 +48,7 @@ $envVars = [
     'REVERB_APP_SECRET',
     'REVERB_HOST',
     'REVERB_PORT',
-    'REVERB_SCHEME'
+    'REVERB_SCHEME',
 ];
 
 foreach ($envVars as $key => $expectedValue) {
@@ -78,7 +76,7 @@ echo "\n";
 
 // Test 4: Check broadcasting.php config
 echo "4. Checking config/broadcasting.php...\n";
-$broadcastingConfig = require __DIR__ . '/config/broadcasting.php';
+$broadcastingConfig = require __DIR__.'/config/broadcasting.php';
 if (isset($broadcastingConfig['connections']['reverb'])) {
     echo "   ✓ Reverb connection is configured in broadcasting.php\n";
 
@@ -102,11 +100,11 @@ echo "\n";
 
 // Test 5: Check if OrderCreated event exists
 echo "5. Checking if OrderCreated event exists...\n";
-if (file_exists(__DIR__ . '/app/Events/OrderCreated.php')) {
+if (file_exists(__DIR__.'/app/Events/OrderCreated.php')) {
     echo "   ✓ app/Events/OrderCreated.php exists\n";
 
     // Check if it implements ShouldBroadcast
-    $content = file_get_contents(__DIR__ . '/app/Events/OrderCreated.php');
+    $content = file_get_contents(__DIR__.'/app/Events/OrderCreated.php');
     if (strpos($content, 'implements ShouldBroadcast') !== false) {
         echo "   ✓ OrderCreated implements ShouldBroadcast\n";
     } else {
@@ -128,11 +126,11 @@ echo "\n";
 
 // Test 6: Check if OrderStatusUpdated event exists
 echo "6. Checking if OrderStatusUpdated event exists...\n";
-if (file_exists(__DIR__ . '/app/Events/OrderStatusUpdated.php')) {
+if (file_exists(__DIR__.'/app/Events/OrderStatusUpdated.php')) {
     echo "   ✓ app/Events/OrderStatusUpdated.php exists\n";
 
     // Check if it implements ShouldBroadcast
-    $content = file_get_contents(__DIR__ . '/app/Events/OrderStatusUpdated.php');
+    $content = file_get_contents(__DIR__.'/app/Events/OrderStatusUpdated.php');
     if (strpos($content, 'implements ShouldBroadcast') !== false) {
         echo "   ✓ OrderStatusUpdated implements ShouldBroadcast\n";
     } else {
@@ -154,10 +152,10 @@ echo "\n";
 
 // Test 7: Check channel routes
 echo "7. Checking routes/channels.php...\n";
-if (file_exists(__DIR__ . '/routes/channels.php')) {
+if (file_exists(__DIR__.'/routes/channels.php')) {
     echo "   ✓ routes/channels.php exists\n";
 
-    $content = file_get_contents(__DIR__ . '/routes/channels.php');
+    $content = file_get_contents(__DIR__.'/routes/channels.php');
     $channels = ['kitchen', 'bar', 'orders'];
 
     foreach ($channels as $channel) {
@@ -176,7 +174,7 @@ echo "\n";
 
 // Test 8: Check if Laravel Echo and Pusher JS are installed
 echo "8. Checking if Laravel Echo and Pusher JS are installed...\n";
-$packageJson = json_decode(file_get_contents(__DIR__ . '/package.json'), true);
+$packageJson = json_decode(file_get_contents(__DIR__.'/package.json'), true);
 if (isset($packageJson['devDependencies']['laravel-echo'])) {
     echo "   ✓ laravel-echo is installed (version: {$packageJson['devDependencies']['laravel-echo']})\n";
 } else {
@@ -194,10 +192,10 @@ echo "\n";
 
 // Test 9: Check Echo configuration
 echo "9. Checking Echo configuration in resources/js/...\n";
-if (file_exists(__DIR__ . '/resources/js/echo.js')) {
+if (file_exists(__DIR__.'/resources/js/echo.js')) {
     echo "   ✓ resources/js/echo.js exists\n";
 
-    $content = file_get_contents(__DIR__ . '/resources/js/echo.js');
+    $content = file_get_contents(__DIR__.'/resources/js/echo.js');
     if (strpos($content, "broadcaster: 'reverb'") !== false) {
         echo "   ✓ Echo is configured to use 'reverb' broadcaster\n";
     } else {
@@ -221,30 +219,30 @@ echo "\n";
 echo "10. Testing event broadcasting capability...\n";
 try {
     // Check if we can instantiate the events
-    $testOrder = new \App\Models\Order();
+    $testOrder = new \App\Models\Order;
     $testOrder->id = 999;
     $testOrder->waiter_id = 1;
     $testOrder->status = 'pending';
 
     // Mock the relationships
-    $testOrder->setRelation('table', (object)['name' => 'Test Table']);
+    $testOrder->setRelation('table', (object) ['name' => 'Test Table']);
     $testOrder->setRelation('items', collect([]));
 
     $event = new \App\Events\OrderCreated($testOrder);
     echo "   ✓ OrderCreated event can be instantiated\n";
 
     $channels = $event->broadcastOn();
-    echo "   ✓ OrderCreated broadcasts to " . count($channels) . " channels\n";
+    echo '   ✓ OrderCreated broadcasts to '.count($channels)." channels\n";
 
     $event2 = new \App\Events\OrderStatusUpdated($testOrder, 'pending', 'preparing');
     echo "   ✓ OrderStatusUpdated event can be instantiated\n";
 
     $channels2 = $event2->broadcastOn();
-    echo "   ✓ OrderStatusUpdated broadcasts to " . count($channels2) . " channels\n";
+    echo '   ✓ OrderStatusUpdated broadcasts to '.count($channels2)." channels\n";
 
     echo "   ✓ Events are properly configured for broadcasting\n";
 } catch (\Exception $e) {
-    echo "   ✗ Error testing events: " . $e->getMessage() . "\n";
+    echo '   ✗ Error testing events: '.$e->getMessage()."\n";
     $allPassed = false;
 }
 echo "\n";

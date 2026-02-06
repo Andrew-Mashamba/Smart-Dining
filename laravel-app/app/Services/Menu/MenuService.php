@@ -9,9 +9,6 @@ class MenuService
 {
     /**
      * Get available menu items with optional filters
-     *
-     * @param array $filters
-     * @return Collection
      */
     public function getAvailableMenu(array $filters = []): Collection
     {
@@ -40,9 +37,6 @@ class MenuService
 
     /**
      * Get menu items by category
-     *
-     * @param string $category
-     * @return Collection
      */
     public function getItemsByCategory(string $category): Collection
     {
@@ -54,9 +48,6 @@ class MenuService
 
     /**
      * Get menu items by preparation area
-     *
-     * @param string $prepArea
-     * @return Collection
      */
     public function getItemsByPrepArea(string $prepArea): Collection
     {
@@ -69,10 +60,6 @@ class MenuService
 
     /**
      * Update menu item availability
-     *
-     * @param MenuItem $item
-     * @param bool $available
-     * @return void
      */
     public function updateAvailability(MenuItem $item, bool $available): void
     {
@@ -87,8 +74,6 @@ class MenuService
 
     /**
      * Get menu grouped by category
-     *
-     * @return array
      */
     public function getMenuByCategory(): array
     {
@@ -119,9 +104,6 @@ class MenuService
 
     /**
      * Search menu items by name or description
-     *
-     * @param string $searchTerm
-     * @return Collection
      */
     public function searchMenu(string $searchTerm): Collection
     {
@@ -136,9 +118,6 @@ class MenuService
 
     /**
      * Get menu item with details
-     *
-     * @param int $itemId
-     * @return MenuItem
      */
     public function getMenuItem(int $itemId): MenuItem
     {
@@ -147,9 +126,6 @@ class MenuService
 
     /**
      * Get popular menu items based on order count
-     *
-     * @param int $limit
-     * @return Collection
      */
     public function getPopularItems(int $limit = 10): Collection
     {
@@ -162,10 +138,6 @@ class MenuService
 
     /**
      * Bulk update menu item availability
-     *
-     * @param array $itemIds
-     * @param bool $available
-     * @return int
      */
     public function bulkUpdateAvailability(array $itemIds, bool $available): int
     {
@@ -175,8 +147,6 @@ class MenuService
 
     /**
      * Get menu statistics
-     *
-     * @return array
      */
     public function getMenuStats(): array
     {

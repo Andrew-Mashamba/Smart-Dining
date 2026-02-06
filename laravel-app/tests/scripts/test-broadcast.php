@@ -16,8 +16,8 @@ $app = require_once __DIR__.'/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
-use App\Models\Order;
 use App\Events\OrderCreated;
+use App\Models\Order;
 
 echo "=== Laravel Reverb Broadcasting Test ===\n\n";
 
@@ -39,14 +39,14 @@ $reverbPort = config('broadcasting.connections.reverb.options.port');
 
 echo "Reverb App ID: {$reverbAppId}\n";
 echo "Reverb Host: {$reverbHost}:{$reverbPort}\n";
-echo "Reverb Key: " . substr($reverbKey, 0, 10) . "...\n\n";
+echo 'Reverb Key: '.substr($reverbKey, 0, 10)."...\n\n";
 
 // Try to find a test order or create one
 echo "Looking for a test order...\n";
 
 $order = Order::with(['table', 'orderItems'])->first();
 
-if (!$order) {
+if (! $order) {
     echo "❌ No orders found in database. Please create an order first.\n";
     echo "You can create a test order through the application or seeder.\n";
     exit(1);
@@ -77,6 +77,6 @@ try {
 
 } catch (Exception $e) {
     echo "❌ ERROR: Failed to dispatch event\n";
-    echo "Error: " . $e->getMessage() . "\n";
+    echo 'Error: '.$e->getMessage()."\n";
     exit(1);
 }

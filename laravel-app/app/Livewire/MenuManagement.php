@@ -4,31 +4,44 @@ namespace App\Livewire;
 
 use App\Models\MenuCategory;
 use App\Models\MenuItem;
-use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use Livewire\Component;
 
 class MenuManagement extends Component
 {
     // Category properties
     public $categoryId = null;
+
     public $categoryName = '';
+
     public $categoryDescription = '';
+
     public $categoryStatus = 'active';
 
     // Item properties
     public $itemId = null;
+
     public $itemName = '';
+
     public $itemDescription = '';
+
     public $itemCategoryId = '';
+
     public $itemPrice = '';
+
     public $itemPrepArea = 'kitchen';
+
     public $itemPrepTime = '';
+
     public $itemStatus = 'available';
+
     public $itemStock = '';
 
     // UI state
     public $showCategoryModal = false;
+
     public $showItemModal = false;
+
     public $editMode = false;
 
     protected $listeners = ['reorderCategories' => 'updateCategoryOrder'];
@@ -119,7 +132,7 @@ class MenuManagement extends Component
             $this->resetCategoryForm();
             $this->showCategoryModal = false;
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to save category: ' . $e->getMessage());
+            session()->flash('error', 'Failed to save category: '.$e->getMessage());
         }
     }
 
@@ -134,13 +147,14 @@ class MenuManagement extends Component
             // Check if category has items
             if ($category->menuItems()->count() > 0) {
                 session()->flash('error', 'Cannot delete category with existing menu items.');
+
                 return;
             }
 
             $category->delete();
             session()->flash('success', 'Category deleted successfully.');
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to delete category: ' . $e->getMessage());
+            session()->flash('error', 'Failed to delete category: '.$e->getMessage());
         }
     }
 
@@ -158,7 +172,7 @@ class MenuManagement extends Component
 
             session()->flash('success', 'Category order updated successfully.');
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to update order: ' . $e->getMessage());
+            session()->flash('error', 'Failed to update order: '.$e->getMessage());
         }
     }
 
@@ -226,7 +240,7 @@ class MenuManagement extends Component
             $this->resetItemForm();
             $this->showItemModal = false;
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to save menu item: ' . $e->getMessage());
+            session()->flash('error', 'Failed to save menu item: '.$e->getMessage());
         }
     }
 
@@ -240,7 +254,7 @@ class MenuManagement extends Component
             $item->delete();
             session()->flash('success', 'Menu item deleted successfully.');
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to delete menu item: ' . $e->getMessage());
+            session()->flash('error', 'Failed to delete menu item: '.$e->getMessage());
         }
     }
 
@@ -256,7 +270,7 @@ class MenuManagement extends Component
 
             session()->flash('success', 'Item status updated successfully.');
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to update status: ' . $e->getMessage());
+            session()->flash('error', 'Failed to update status: '.$e->getMessage());
         }
     }
 

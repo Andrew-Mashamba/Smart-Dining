@@ -11,7 +11,6 @@
  * - Unused imports
  * - TODO/FIXME comments
  */
-
 echo "========================================\n";
 echo "Code Cleanup Check\n";
 echo "========================================\n\n";
@@ -48,7 +47,8 @@ $patterns = [
     ],
 ];
 
-function scanDirectory($dir, $patterns, &$issues) {
+function scanDirectory($dir, $patterns, &$issues)
+{
     $iterator = new RecursiveIteratorIterator(
         new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS),
         RecursiveIteratorIterator::SELF_FIRST
@@ -75,7 +75,7 @@ function scanDirectory($dir, $patterns, &$issues) {
                         }
 
                         $issues['debug'][] = [
-                            'file' => str_replace($GLOBALS['projectRoot'] . '/', '', $file->getPathname()),
+                            'file' => str_replace($GLOBALS['projectRoot'].'/', '', $file->getPathname()),
                             'line' => $lineNumber,
                             'content' => trim($line),
                         ];
@@ -86,7 +86,7 @@ function scanDirectory($dir, $patterns, &$issues) {
                 foreach ($patterns['todos'] as $pattern) {
                     if (preg_match($pattern, $line)) {
                         $issues['todos'][] = [
-                            'file' => str_replace($GLOBALS['projectRoot'] . '/', '', $file->getPathname()),
+                            'file' => str_replace($GLOBALS['projectRoot'].'/', '', $file->getPathname()),
                             'line' => $lineNumber,
                             'content' => trim($line),
                         ];
@@ -100,7 +100,7 @@ function scanDirectory($dir, $patterns, &$issues) {
 $GLOBALS['projectRoot'] = $projectRoot;
 
 foreach ($directories as $dir) {
-    $fullPath = $projectRoot . '/' . $dir;
+    $fullPath = $projectRoot.'/'.$dir;
     if (is_dir($fullPath)) {
         echo "Scanning $dir...\n";
         scanDirectory($fullPath, $patterns, $issues);
@@ -112,8 +112,8 @@ echo "Results\n";
 echo "========================================\n\n";
 
 // Report debug statements
-if (!empty($issues['debug'])) {
-    echo "⚠ DEBUG STATEMENTS FOUND (" . count($issues['debug']) . "):\n";
+if (! empty($issues['debug'])) {
+    echo '⚠ DEBUG STATEMENTS FOUND ('.count($issues['debug'])."):\n";
     echo "----------------------------------------\n";
     foreach ($issues['debug'] as $issue) {
         echo "  {$issue['file']}:{$issue['line']}\n";
@@ -126,8 +126,8 @@ if (!empty($issues['debug'])) {
 echo "\n";
 
 // Report TODO/FIXME comments
-if (!empty($issues['todos'])) {
-    echo "⚠ TODO/FIXME COMMENTS FOUND (" . count($issues['todos']) . "):\n";
+if (! empty($issues['todos'])) {
+    echo '⚠ TODO/FIXME COMMENTS FOUND ('.count($issues['todos'])."):\n";
     echo "----------------------------------------\n";
     foreach ($issues['todos'] as $issue) {
         echo "  {$issue['file']}:{$issue['line']}\n";

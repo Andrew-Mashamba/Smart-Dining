@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProcessPaymentRequest;
+use App\Jobs\ProcessPayment;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Services\Payment\PaymentService;
-use App\Jobs\ProcessPayment;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller

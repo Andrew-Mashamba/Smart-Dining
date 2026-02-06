@@ -19,7 +19,6 @@ class WebhookController extends Controller
     /**
      * Verify webhook for WhatsApp Business API
      *
-     * @param Request $request
      * @return \Illuminate\Http\Response
      */
     public function verify(Request $request)
@@ -32,6 +31,7 @@ class WebhookController extends Controller
 
         if ($mode === 'subscribe' && $token === $verifyToken) {
             Log::info('WhatsApp webhook verified successfully');
+
             return response($challenge, 200)->header('Content-Type', 'text/plain');
         }
 
@@ -46,7 +46,6 @@ class WebhookController extends Controller
     /**
      * Handle incoming WhatsApp messages
      *
-     * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function handle(Request $request)
@@ -92,21 +91,18 @@ class WebhookController extends Controller
 
     /**
      * Verify webhook signature (optional security layer)
-     *
-     * @param Request $request
-     * @return void
      */
     protected function verifySignature(Request $request): void
     {
         $signature = $request->header('X-Hub-Signature-256');
 
-        if (!$signature) {
+        if (! $signature) {
             throw new \Exception('Missing signature');
         }
 
-        $expectedSignature = 'sha256=' . hash_hmac('sha256', $request->getContent(), config('whatsapp.webhook_secret'));
+        $expectedSignature = 'sha256='.hash_hmac('sha256', $request->getContent(), config('whatsapp.webhook_secret'));
 
-        if (!hash_equals($expectedSignature, $signature)) {
+        if (! hash_equals($expectedSignature, $signature)) {
             throw new \Exception('Invalid signature');
         }
     }

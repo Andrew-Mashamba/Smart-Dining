@@ -2,12 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Models\Staff;
-use App\Models\Order;
-use App\Models\MenuItem;
-use App\Models\Table;
 use App\Models\Guest;
 use App\Models\MenuCategory;
+use App\Models\MenuItem;
+use App\Models\Order;
+use App\Models\Staff;
+use App\Models\Table;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -349,7 +349,7 @@ class ApiOrdersTest extends TestCase
 
         // Waiter1 should not be able to view waiter2's order details
         $response = $this->actingAs($waiter1, 'sanctum')
-            ->getJson('/api/orders/' . $order2->id);
+            ->getJson('/api/orders/'.$order2->id);
 
         $response->assertStatus(403);
     }

@@ -3,14 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 class Staff extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +21,7 @@ class Staff extends Authenticatable
         'name',
         'email',
         'password',
+        'pin',
         'role',
         'phone_number',
         'status',
@@ -33,6 +34,7 @@ class Staff extends Authenticatable
      */
     protected $hidden = [
         'password',
+        'pin',
         'remember_token',
     ];
 
@@ -43,9 +45,41 @@ class Staff extends Authenticatable
      */
     protected $casts = [
         'password' => 'hashed',
+        'pin' => 'hashed',
         'role' => 'string',
         'status' => 'string',
     ];
+
+    /**
+     * Set the staff's PIN (4-digit code).
+     */
+    public function setPin(string $pin): void
+    {
+        if (strlen($pin) !== 4 || !ctype_digit($pin)) {
+            throw new \InvalidArgumentException('PIN must be exactly 4 digits');
+        }
+        $this->pin = $pin; // Will be hashed automatically via cast
+        $this->save();
+    }
+
+    /**
+     * Verify the staff's PIN.
+     */
+    public function verifyPin(string $pin): bool
+    {
+        if (!$this->pin) {
+            return false;
+        }
+        return \Illuminate\Support\Facades\Hash::check($pin, $this->pin);
+    }
+
+    /**
+     * Check if staff has a PIN set.
+     */
+    public function hasPin(): bool
+    {
+        return !empty($this->pin);
+    }
 
     /**
      * Get orders assigned to this waiter.
@@ -121,9 +155,6 @@ class Staff extends Authenticatable
 
     /**
      * Check if staff has a specific role.
-     *
-     * @param string $role
-     * @return bool
      */
     public function hasRole(string $role): bool
     {

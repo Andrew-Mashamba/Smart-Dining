@@ -30,6 +30,7 @@ class WhatsAppController extends Controller
         // Check if mode and token are correct
         if ($mode === 'subscribe' && $token === $verifyToken) {
             Log::info('WhatsApp webhook verified successfully');
+
             return response($challenge, 200);
         }
 
@@ -51,7 +52,7 @@ class WhatsAppController extends Controller
             Log::info('WhatsApp webhook received', ['data' => $data]);
 
             // Check if this is a message event
-            if (!isset($data['entry'][0]['changes'][0]['value']['messages'][0])) {
+            if (! isset($data['entry'][0]['changes'][0]['value']['messages'][0])) {
                 return response()->json(['status' => 'ok'], 200);
             }
 
@@ -62,6 +63,7 @@ class WhatsAppController extends Controller
             // Only process text messages
             if ($messageType !== 'text') {
                 Log::info('Non-text message received, ignoring', ['type' => $messageType]);
+
                 return response()->json(['status' => 'ok'], 200);
             }
 
@@ -73,7 +75,7 @@ class WhatsAppController extends Controller
             return response()->json(['status' => 'ok'], 200);
 
         } catch (\Exception $e) {
-            Log::error('Error processing WhatsApp webhook: ' . $e->getMessage(), [
+            Log::error('Error processing WhatsApp webhook: '.$e->getMessage(), [
                 'exception' => $e,
                 'request' => $request->all(),
             ]);
@@ -103,7 +105,7 @@ class WhatsAppController extends Controller
                 $this->whatsappService->sendHelpMessage($phoneNumber);
             }
         } catch (\Exception $e) {
-            Log::error('Error handling WhatsApp message: ' . $e->getMessage(), [
+            Log::error('Error handling WhatsApp message: '.$e->getMessage(), [
                 'phone' => $phoneNumber,
                 'message' => $messageText,
                 'exception' => $e,
@@ -112,7 +114,7 @@ class WhatsAppController extends Controller
             // Send error message to user
             $this->whatsappService->sendMessage(
                 $phoneNumber,
-                "Sorry, something went wrong. Please try again or type *help* for assistance."
+                'Sorry, something went wrong. Please try again or type *help* for assistance.'
             );
         }
     }

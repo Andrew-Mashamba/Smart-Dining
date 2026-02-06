@@ -5,15 +5,15 @@ namespace App\Livewire;
 use App\Models\MenuCategory;
 use App\Models\MenuItem;
 use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\Payment;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class SalesReports extends Component
 {
     public $start_date;
+
     public $end_date;
 
     public function mount()
@@ -31,8 +31,8 @@ class SalesReports extends Component
     {
         $stats = Order::select(DB::raw('COUNT(*) as total_orders, SUM(total) as total_revenue, SUM(tax) as total_tax'))
             ->whereBetween('created_at', [
-                $this->start_date . ' 00:00:00',
-                $this->end_date . ' 23:59:59'
+                $this->start_date.' 00:00:00',
+                $this->end_date.' 23:59:59',
             ])
             ->where('status', '!=', 'cancelled')
             ->first();
@@ -55,8 +55,8 @@ class SalesReports extends Component
             ->leftJoin('order_items', 'menu_items.id', '=', 'order_items.menu_item_id')
             ->leftJoin('orders', 'order_items.order_id', '=', 'orders.id')
             ->whereBetween('orders.created_at', [
-                $this->start_date . ' 00:00:00',
-                $this->end_date . ' 23:59:59'
+                $this->start_date.' 00:00:00',
+                $this->end_date.' 23:59:59',
             ])
             ->where('orders.status', '!=', 'cancelled')
             ->groupBy('menu_categories.id', 'menu_categories.name')
@@ -73,8 +73,8 @@ class SalesReports extends Component
         return Payment::select('payment_method')
             ->join('orders', 'payments.order_id', '=', 'orders.id')
             ->whereBetween('payments.created_at', [
-                $this->start_date . ' 00:00:00',
-                $this->end_date . ' 23:59:59'
+                $this->start_date.' 00:00:00',
+                $this->end_date.' 23:59:59',
             ])
             ->where('payments.status', 'completed')
             ->where('orders.status', '!=', 'cancelled')
@@ -91,8 +91,8 @@ class SalesReports extends Component
     {
         $dailyRevenue = Order::select(DB::raw('DATE(created_at) as date'))
             ->whereBetween('created_at', [
-                $this->start_date . ' 00:00:00',
-                $this->end_date . ' 23:59:59'
+                $this->start_date.' 00:00:00',
+                $this->end_date.' 23:59:59',
             ])
             ->where('status', '!=', 'cancelled')
             ->groupBy('date')
@@ -101,7 +101,7 @@ class SalesReports extends Component
             ->get();
 
         return [
-            'labels' => $dailyRevenue->pluck('date')->map(fn($date) => date('M d', strtotime($date)))->toArray(),
+            'labels' => $dailyRevenue->pluck('date')->map(fn ($date) => date('M d', strtotime($date)))->toArray(),
             'data' => $dailyRevenue->pluck('revenue')->toArray(),
         ];
     }
@@ -115,8 +115,8 @@ class SalesReports extends Component
             ->join('order_items', 'menu_items.id', '=', 'order_items.menu_item_id')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->whereBetween('orders.created_at', [
-                $this->start_date . ' 00:00:00',
-                $this->end_date . ' 23:59:59'
+                $this->start_date.' 00:00:00',
+                $this->end_date.' 23:59:59',
             ])
             ->where('orders.status', '!=', 'cancelled')
             ->groupBy('menu_items.id', 'menu_items.name', 'menu_items.price')
@@ -143,9 +143,10 @@ class SalesReports extends Component
         ];
 
         $pdf = Pdf::loadView('reports.sales-pdf', $data);
-        return response()->streamDownload(function() use ($pdf) {
+
+        return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
-        }, 'sales-report-' . $this->start_date . '-to-' . $this->end_date . '.pdf');
+        }, 'sales-report-'.$this->start_date.'-to-'.$this->end_date.'.pdf');
     }
 
     /**
@@ -158,23 +159,23 @@ class SalesReports extends Component
             ->with([
                 'orderItems:id,order_id,menu_item_id,quantity,unit_price,subtotal',
                 'orderItems.menuItem:id,name',
-                'payments:id,order_id,payment_method'
+                'payments:id,order_id,payment_method',
             ])
             ->whereBetween('created_at', [
-                $this->start_date . ' 00:00:00',
-                $this->end_date . ' 23:59:59'
+                $this->start_date.' 00:00:00',
+                $this->end_date.' 23:59:59',
             ])
             ->where('status', '!=', 'cancelled')
             ->get();
 
-        $filename = 'sales-report-' . $this->start_date . '-to-' . $this->end_date . '.csv';
+        $filename = 'sales-report-'.$this->start_date.'-to-'.$this->end_date.'.csv';
 
         $headers = [
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ];
 
-        $callback = function() use ($orders) {
+        $callback = function () use ($orders) {
             $file = fopen('php://output', 'w');
 
             // Add CSV headers
@@ -188,7 +189,7 @@ class SalesReports extends Component
                 'Order Total',
                 'Tax',
                 'Payment Method',
-                'Status'
+                'Status',
             ]);
 
             // Add data rows
@@ -206,7 +207,7 @@ class SalesReports extends Component
                         number_format($order->total, 2),
                         number_format($order->tax, 2),
                         $paymentMethod,
-                        $order->status
+                        $order->status,
                     ]);
                 }
             }

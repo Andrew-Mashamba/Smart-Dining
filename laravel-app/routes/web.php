@@ -1,31 +1,31 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HelpController;
 use App\Http\Controllers\Web\AuthController;
-use App\Http\Controllers\Web\ManagerController;
-use App\Http\Controllers\Web\KitchenController;
 use App\Http\Controllers\Web\BarController;
+use App\Http\Controllers\Web\KitchenController;
+use App\Http\Controllers\Web\ManagerController;
+use App\Http\Controllers\WhatsAppController;
+use App\Livewire\BarDisplay;
+use App\Livewire\CreateOrder;
 use App\Livewire\Dashboard;
+use App\Livewire\GuestManagement;
+use App\Livewire\GuestOrder;
+use App\Livewire\InventoryManagement;
+use App\Livewire\InventoryReports;
+use App\Livewire\KitchenDisplay;
+use App\Livewire\MenuManagement;
+use App\Livewire\OrderDetails;
+use App\Livewire\OrdersList;
+use App\Livewire\ProcessPayment;
 use App\Livewire\Reports;
 use App\Livewire\SalesReports;
-use App\Livewire\StaffReports;
-use App\Livewire\InventoryReports;
-use App\Livewire\Users;
-use App\Livewire\StaffManagement;
-use App\Livewire\MenuManagement;
-use App\Livewire\TableManagement;
-use App\Livewire\CreateOrder;
-use App\Livewire\OrdersList;
-use App\Livewire\OrderDetails;
-use App\Livewire\ProcessPayment;
-use App\Livewire\KitchenDisplay;
-use App\Livewire\BarDisplay;
-use App\Livewire\GuestManagement;
-use App\Livewire\InventoryManagement;
-use App\Livewire\GuestOrder;
 use App\Livewire\SettingsManagement;
-use App\Http\Controllers\WhatsAppController;
-use App\Http\Controllers\HelpController;
+use App\Livewire\StaffManagement;
+use App\Livewire\StaffReports;
+use App\Livewire\TableManagement;
+use App\Livewire\Users;
+use Illuminate\Support\Facades\Route;
 
 // Guest ordering route (public access via QR code)
 Route::get('/guest/order', GuestOrder::class)->name('guest.order');
@@ -86,6 +86,7 @@ if (config('app.env') !== 'production') {
         // View error logs
         Route::get('/logs', function () {
             $logs = \App\Models\ErrorLog::orderBy('created_at', 'desc')->limit(50)->get();
+
             return response()->json($logs);
         });
     });
@@ -96,6 +97,7 @@ Route::get('/', function () {
     if (auth()->check()) {
         return redirect('/dashboard');
     }
+
     return redirect()->route('login');
 })->name('home');
 

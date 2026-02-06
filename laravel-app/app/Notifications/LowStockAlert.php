@@ -5,7 +5,6 @@ namespace App\Notifications;
 use App\Models\MenuItem;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class LowStockAlert extends Notification implements ShouldQueue
@@ -17,8 +16,7 @@ class LowStockAlert extends Notification implements ShouldQueue
      */
     public function __construct(
         public MenuItem $menuItem
-    ) {
-    }
+    ) {}
 
     /**
      * Get the notification's delivery channels.

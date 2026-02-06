@@ -2,15 +2,11 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\Order;
 use App\Models\Payment;
-use App\Models\Table;
-use App\Models\Guest;
 use App\Services\StripePaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
+use Tests\TestCase;
 
 class StripePaymentIntegrationTest extends TestCase
 {
@@ -50,7 +46,7 @@ class StripePaymentIntegrationTest extends TestCase
     /** @test */
     public function payment_model_has_gateway_response_field()
     {
-        $payment = new Payment();
+        $payment = new Payment;
         $this->assertContains('gateway_response', $payment->getFillable());
         $this->assertArrayHasKey('gateway_response', $payment->getCasts());
         $this->assertEquals('array', $payment->getCasts()['gateway_response']);
@@ -132,7 +128,7 @@ class StripePaymentIntegrationTest extends TestCase
     /** @test */
     public function error_messages_are_user_friendly()
     {
-        $service = new StripePaymentService();
+        $service = new StripePaymentService;
 
         $messages = [
             'card_declined' => $service->getErrorMessage('card_declined'),
@@ -161,7 +157,7 @@ class StripePaymentIntegrationTest extends TestCase
     /** @test */
     public function payment_service_has_required_methods()
     {
-        $service = new StripePaymentService();
+        $service = new StripePaymentService;
 
         $this->assertTrue(method_exists($service, 'processPayment'));
         $this->assertTrue(method_exists($service, 'confirmPayment'));

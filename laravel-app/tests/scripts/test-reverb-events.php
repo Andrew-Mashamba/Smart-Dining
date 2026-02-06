@@ -18,19 +18,16 @@ $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 use App\Events\OrderCreated;
 use App\Events\OrderStatusUpdated;
 use App\Models\Order;
-use App\Models\Table;
-use App\Models\Staff;
-use App\Models\Guest;
 
 echo "\n=== Laravel Reverb Setup Verification ===\n\n";
 
 // 1. Check Broadcasting Configuration
 echo "1. Broadcasting Configuration:\n";
-echo "   - Driver: " . config('broadcasting.default') . "\n";
-echo "   - Reverb Key: " . config('broadcasting.connections.reverb.key') . "\n";
-echo "   - Reverb App ID: " . config('broadcasting.connections.reverb.app_id') . "\n";
-echo "   - Reverb Host: " . config('broadcasting.connections.reverb.options.host') . "\n";
-echo "   - Reverb Port: " . config('broadcasting.connections.reverb.options.port') . "\n";
+echo '   - Driver: '.config('broadcasting.default')."\n";
+echo '   - Reverb Key: '.config('broadcasting.connections.reverb.key')."\n";
+echo '   - Reverb App ID: '.config('broadcasting.connections.reverb.app_id')."\n";
+echo '   - Reverb Host: '.config('broadcasting.connections.reverb.options.host')."\n";
+echo '   - Reverb Port: '.config('broadcasting.connections.reverb.options.port')."\n";
 echo "   ✓ Configuration loaded successfully\n\n";
 
 // 2. Verify Events Implement ShouldBroadcast
@@ -72,7 +69,7 @@ try {
 
     echo "   OrderCreated broadcasts on:\n";
     foreach ($channels as $channel) {
-        echo "      - " . $channel->name . " (type: " . get_class($channel) . ")\n";
+        echo '      - '.$channel->name.' (type: '.get_class($channel).")\n";
     }
     echo "   ✓ OrderCreated channels configured correctly\n\n";
 
@@ -82,17 +79,17 @@ try {
 
     echo "   OrderStatusUpdated broadcasts on:\n";
     foreach ($channels as $channel) {
-        echo "      - " . $channel->name . " (type: " . get_class($channel) . ")\n";
+        echo '      - '.$channel->name.' (type: '.get_class($channel).")\n";
     }
     echo "   ✓ OrderStatusUpdated channels configured correctly\n\n";
 
 } catch (Exception $e) {
-    echo "   ✗ Error testing events: " . $e->getMessage() . "\n\n";
+    echo '   ✗ Error testing events: '.$e->getMessage()."\n\n";
 }
 
 // 4. Check Channel Routes
 echo "4. Channel Authorization Routes:\n";
-$channelsFile = __DIR__ . '/routes/channels.php';
+$channelsFile = __DIR__.'/routes/channels.php';
 if (file_exists($channelsFile)) {
     echo "   ✓ routes/channels.php exists\n";
 
@@ -114,7 +111,7 @@ echo "\n";
 
 // 5. Check Laravel Echo Configuration
 echo "5. Laravel Echo Configuration:\n";
-$echoFile = __DIR__ . '/resources/js/echo.js';
+$echoFile = __DIR__.'/resources/js/echo.js';
 if (file_exists($echoFile)) {
     echo "   ✓ resources/js/echo.js exists\n";
     $echoContent = file_get_contents($echoFile);
@@ -131,7 +128,7 @@ echo "\n";
 
 // 6. Check package.json for required dependencies
 echo "6. Required NPM Packages:\n";
-$packageJson = json_decode(file_get_contents(__DIR__ . '/package.json'), true);
+$packageJson = json_decode(file_get_contents(__DIR__.'/package.json'), true);
 
 $requiredPackages = ['laravel-echo', 'pusher-js'];
 foreach ($requiredPackages as $package) {

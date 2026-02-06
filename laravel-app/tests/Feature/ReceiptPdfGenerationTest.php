@@ -2,23 +2,23 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
+use App\Models\Guest;
+use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\MenuItem;
-use App\Models\Table;
-use App\Models\Guest;
-use App\Models\Staff;
 use App\Models\Payment;
+use App\Models\Staff;
+use App\Models\Table;
 use App\Models\Tip;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class ReceiptPdfGenerationTest extends TestCase
 {
     use RefreshDatabase;
 
     protected Staff $staff;
+
     protected Order $order;
 
     protected function setUp(): void
@@ -141,7 +141,7 @@ class ReceiptPdfGenerationTest extends TestCase
         $response->assertStatus(200);
         $response->assertHeader('content-type', 'application/pdf');
         $response->assertHeader('content-disposition',
-            'attachment; filename=receipt-' . $this->order->order_number . '.pdf');
+            'attachment; filename=receipt-'.$this->order->order_number.'.pdf');
     }
 
     /**
@@ -175,7 +175,7 @@ class ReceiptPdfGenerationTest extends TestCase
     public function test_receipt_generation_fails_for_nonexistent_order(): void
     {
         $response = $this->actingAs($this->staff, 'sanctum')
-            ->getJson("/api/orders/99999/receipt");
+            ->getJson('/api/orders/99999/receipt');
 
         $response->assertStatus(404);
     }
@@ -188,11 +188,11 @@ class ReceiptPdfGenerationTest extends TestCase
         $response = $this->actingAs($this->staff, 'sanctum')
             ->getJson("/api/orders/{$this->order->id}/receipt");
 
-        $expectedFilename = 'receipt-' . $this->order->order_number . '.pdf';
+        $expectedFilename = 'receipt-'.$this->order->order_number.'.pdf';
 
         $response->assertStatus(200);
         $response->assertHeader('content-disposition',
-            'attachment; filename=' . $expectedFilename);
+            'attachment; filename='.$expectedFilename);
     }
 
     /**

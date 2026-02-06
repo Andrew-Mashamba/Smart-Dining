@@ -4,9 +4,9 @@ namespace App\Services\Payment;
 
 use App\Models\Order;
 use App\Models\Payment;
-use Stripe\StripeClient;
-use Stripe\Exception\ApiErrorException;
 use Illuminate\Support\Facades\Log;
+use Stripe\Exception\ApiErrorException;
+use Stripe\StripeClient;
 
 class StripePaymentService
 {
@@ -20,9 +20,6 @@ class StripePaymentService
     /**
      * Process payment via Stripe PaymentIntent
      *
-     * @param int $orderId
-     * @param float $amount
-     * @return array
      * @throws \Exception
      */
     public function processPayment(int $orderId, float $amount): array
@@ -69,8 +66,6 @@ class StripePaymentService
     /**
      * Confirm payment after successful Stripe charge
      *
-     * @param string $paymentIntentId
-     * @return Payment
      * @throws \Exception
      */
     public function confirmPayment(string $paymentIntentId): Payment
@@ -79,7 +74,7 @@ class StripePaymentService
             $paymentIntent = $this->stripe->paymentIntents->retrieve($paymentIntentId);
 
             $orderId = $paymentIntent->metadata->order_id ?? null;
-            if (!$orderId) {
+            if (! $orderId) {
                 throw new \Exception('Order ID not found in payment metadata');
             }
 
@@ -124,10 +119,6 @@ class StripePaymentService
 
     /**
      * Handle failed payment
-     *
-     * @param string $paymentIntentId
-     * @param string $errorMessage
-     * @return Payment|null
      */
     public function handleFailedPayment(string $paymentIntentId, string $errorMessage): ?Payment
     {
@@ -135,7 +126,7 @@ class StripePaymentService
             $paymentIntent = $this->stripe->paymentIntents->retrieve($paymentIntentId);
 
             $orderId = $paymentIntent->metadata->order_id ?? null;
-            if (!$orderId) {
+            if (! $orderId) {
                 return null;
             }
 
@@ -177,9 +168,6 @@ class StripePaymentService
 
     /**
      * Convert amount to smallest currency unit (cents for USD)
-     *
-     * @param float $amount
-     * @return int
      */
     protected function convertToSmallestUnit(float $amount): int
     {
@@ -188,9 +176,6 @@ class StripePaymentService
 
     /**
      * Convert amount from smallest currency unit
-     *
-     * @param int $amount
-     * @return float
      */
     protected function convertFromSmallestUnit(int $amount): float
     {
@@ -199,9 +184,6 @@ class StripePaymentService
 
     /**
      * Get user-friendly error message from Stripe exception
-     *
-     * @param ApiErrorException $exception
-     * @return string
      */
     protected function getUserFriendlyErrorMessage(ApiErrorException $exception): string
     {
@@ -221,8 +203,8 @@ class StripePaymentService
     /**
      * Retrieve PaymentIntent from Stripe
      *
-     * @param string $paymentIntentId
      * @return \Stripe\PaymentIntent
+     *
      * @throws ApiErrorException
      */
     public function retrievePaymentIntent(string $paymentIntentId)

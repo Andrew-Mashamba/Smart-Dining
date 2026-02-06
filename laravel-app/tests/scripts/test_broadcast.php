@@ -7,9 +7,9 @@
  * and ready for real-time broadcasting.
  */
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
-$app = require_once __DIR__ . '/bootstrap/app.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
 $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
 echo "Laravel Reverb Broadcasting Configuration Test\n";
@@ -39,7 +39,7 @@ $reverbScheme = config('reverb.apps.apps.0.options.scheme');
 
 echo "   REVERB_APP_ID: {$reverbAppId}\n";
 echo "   REVERB_APP_KEY: {$reverbAppKey}\n";
-echo "   REVERB_APP_SECRET: " . str_repeat('*', strlen($reverbAppSecret ?? '')) . "\n";
+echo '   REVERB_APP_SECRET: '.str_repeat('*', strlen($reverbAppSecret ?? ''))."\n";
 echo "   REVERB_HOST: {$reverbHost}\n";
 echo "   REVERB_PORT: {$reverbPort}\n";
 echo "   REVERB_SCHEME: {$reverbScheme}\n";

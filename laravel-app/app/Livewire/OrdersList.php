@@ -7,7 +7,6 @@ use App\Models\Staff;
 use App\Models\Table;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\DB;
 
 class OrdersList extends Component
 {
@@ -15,12 +14,19 @@ class OrdersList extends Component
 
     // Search and filter properties
     public $search = '';
+
     public $statusFilter = '';
+
     public $dateFrom = '';
+
     public $dateTo = '';
+
     public $waiterFilter = '';
+
     public $tableFilter = '';
+
     public $sourceFilter = '';
+
     public $perPage = 10;
 
     // Status workflow transitions
@@ -94,16 +100,17 @@ class OrdersList extends Component
         $currentStatus = $order->status;
 
         // Check if transition is allowed
-        if (!isset($this->allowedTransitions[$currentStatus]) ||
-            !in_array($newStatus, $this->allowedTransitions[$currentStatus])) {
-            session()->flash('error', 'Invalid status transition from ' . $currentStatus . ' to ' . $newStatus);
+        if (! isset($this->allowedTransitions[$currentStatus]) ||
+            ! in_array($newStatus, $this->allowedTransitions[$currentStatus])) {
+            session()->flash('error', 'Invalid status transition from '.$currentStatus.' to '.$newStatus);
+
             return;
         }
 
         // Update the status
         $order->updateStatus($newStatus);
 
-        session()->flash('message', 'Order status updated to ' . $newStatus);
+        session()->flash('message', 'Order status updated to '.$newStatus);
     }
 
     /**
@@ -132,10 +139,10 @@ class OrdersList extends Component
         $query = Order::with(['orderItems.menuItem', 'table', 'waiter', 'guest'])
             ->when($this->search, function ($q) {
                 $q->where(function ($query) {
-                    $query->where('order_number', 'like', '%' . $this->search . '%')
-                          ->orWhereHas('guest', function ($guestQuery) {
-                              $guestQuery->where('name', 'like', '%' . $this->search . '%');
-                          });
+                    $query->where('order_number', 'like', '%'.$this->search.'%')
+                        ->orWhereHas('guest', function ($guestQuery) {
+                            $guestQuery->where('name', 'like', '%'.$this->search.'%');
+                        });
                 });
             })
             ->when($this->statusFilter, function ($q) {

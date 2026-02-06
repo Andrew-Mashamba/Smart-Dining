@@ -71,7 +71,7 @@ class GenerateDailyReport implements ShouldQueue
             'total_revenue' => $payments->sum('amount'),
             'payment_count' => $payments->count(),
             'by_method' => $payments->groupBy('payment_method')
-                ->map(fn($p) => ['count' => $p->count(), 'total' => $p->sum('amount')]),
+                ->map(fn ($p) => ['count' => $p->count(), 'total' => $p->sum('amount')]),
         ];
     }
 

@@ -11,23 +11,25 @@
  * - Database should have test data
  */
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
-$app = require_once __DIR__ . '/bootstrap/app.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
-use App\Models\Order;
 use App\Models\MenuCategory;
 use App\Models\MenuItem;
+use App\Models\Order;
 use App\Models\Setting;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class PerformanceTest
 {
     private $results = [];
+
     private $passed = 0;
+
     private $failed = 0;
 
     public function run()
@@ -80,14 +82,14 @@ class PerformanceTest
             DB::disableQueryLog();
 
             if ($additionalQueries == 0) {
-                $this->pass("Eager loading working correctly (no N+1 queries)");
+                $this->pass('Eager loading working correctly (no N+1 queries)');
                 echo "  Initial queries: $queryCount\n";
                 echo "  Additional queries when accessing relations: $additionalQueries\n";
             } else {
                 $this->fail("N+1 query detected! Additional queries: $additionalQueries");
             }
         } else {
-            $this->skip("No orders found in database");
+            $this->skip('No orders found in database');
         }
 
         echo "\n";
@@ -110,7 +112,7 @@ class PerformanceTest
                 $indexes = DB::select("SELECT name FROM sqlite_master WHERE type='index' AND tbl_name=?", [$table]);
 
                 if (count($indexes) > 0) {
-                    echo "  ✓ Indexes found on '$table' table: " . count($indexes) . " indexes\n";
+                    echo "  ✓ Indexes found on '$table' table: ".count($indexes)." indexes\n";
                 } else {
                     echo "  ✗ No indexes found on '$table' table\n";
                     $indexesFound = false;
@@ -118,12 +120,12 @@ class PerformanceTest
             }
 
             if ($indexesFound) {
-                $this->pass("Database indexes configured");
+                $this->pass('Database indexes configured');
             } else {
-                $this->fail("Some tables missing indexes");
+                $this->fail('Some tables missing indexes');
             }
         } catch (\Exception $e) {
-            $this->fail("Error checking indexes: " . $e->getMessage());
+            $this->fail('Error checking indexes: '.$e->getMessage());
         }
 
         echo "\n";
@@ -140,7 +142,7 @@ class PerformanceTest
         try {
             // Clear menu cache first
             MenuCategory::clearMenuCache();
-            $this->pass("Cache can be cleared");
+            $this->pass('Cache can be cleared');
 
             // First call - should query database
             DB::enableQueryLog();
@@ -159,19 +161,19 @@ class PerformanceTest
             echo "  Second call queries: $queries2\n";
 
             if ($queries2 === 0) {
-                $this->pass("Menu caching working (second call used cache)");
+                $this->pass('Menu caching working (second call used cache)');
             } else {
-                $this->fail("Menu not cached properly");
+                $this->fail('Menu not cached properly');
             }
 
             // Verify cache key exists
             if (Cache::has(MenuCategory::CACHE_KEY)) {
-                $this->pass("Menu cache key exists");
+                $this->pass('Menu cache key exists');
             } else {
-                $this->fail("Menu cache key not found");
+                $this->fail('Menu cache key not found');
             }
         } catch (\Exception $e) {
-            $this->fail("Menu caching error: " . $e->getMessage());
+            $this->fail('Menu caching error: '.$e->getMessage());
         }
 
         echo "\n";
@@ -188,7 +190,7 @@ class PerformanceTest
         try {
             // Set a test setting
             Setting::set('test_key', 'test_value');
-            $this->pass("Setting can be created");
+            $this->pass('Setting can be created');
 
             // First get - should query database
             Cache::forget('setting.test_key');
@@ -208,9 +210,9 @@ class PerformanceTest
             echo "  Second get queries: $queries2\n";
 
             if ($value1 === 'test_value' && $queries2 === 0) {
-                $this->pass("Settings caching working correctly");
+                $this->pass('Settings caching working correctly');
             } else {
-                $this->fail("Settings caching not working properly");
+                $this->fail('Settings caching not working properly');
             }
 
             // Test cache invalidation
@@ -218,15 +220,15 @@ class PerformanceTest
             $newValue = Setting::get('test_key');
 
             if ($newValue === 'new_value') {
-                $this->pass("Settings cache invalidation working");
+                $this->pass('Settings cache invalidation working');
             } else {
-                $this->fail("Settings cache not invalidated on update");
+                $this->fail('Settings cache not invalidated on update');
             }
 
             // Cleanup
             Setting::where('key', 'test_key')->delete();
         } catch (\Exception $e) {
-            $this->fail("Settings caching error: " . $e->getMessage());
+            $this->fail('Settings caching error: '.$e->getMessage());
         }
 
         echo "\n";
@@ -251,23 +253,23 @@ class PerformanceTest
                 $sql = $queries[0]['query'];
                 // Check if SELECT * is NOT used
                 if (strpos($sql, 'SELECT *') === false) {
-                    $this->pass("Queries use select() to limit columns");
-                    echo "  Query: " . substr($sql, 0, 80) . "...\n";
+                    $this->pass('Queries use select() to limit columns');
+                    echo '  Query: '.substr($sql, 0, 80)."...\n";
                 } else {
-                    $this->fail("Query still using SELECT *");
+                    $this->fail('Query still using SELECT *');
                 }
             }
 
             // Test pagination exists
             $orders = Order::paginate(10);
             if ($orders->lastPage() >= 1) {
-                $this->pass("Pagination implemented");
-                echo "  Items per page: " . $orders->perPage() . "\n";
+                $this->pass('Pagination implemented');
+                echo '  Items per page: '.$orders->perPage()."\n";
             } else {
-                $this->skip("Pagination test inconclusive (not enough data)");
+                $this->skip('Pagination test inconclusive (not enough data)');
             }
         } catch (\Exception $e) {
-            $this->fail("Query optimization test error: " . $e->getMessage());
+            $this->fail('Query optimization test error: '.$e->getMessage());
         }
 
         echo "\n";
@@ -285,9 +287,9 @@ class PerformanceTest
         echo "  Current cache driver: $cacheDriver\n";
 
         if ($cacheDriver === 'redis') {
-            $this->pass("Redis cache configured (PRODUCTION READY)");
-        } else if ($cacheDriver === 'database') {
-            $this->skip("Using database cache (OK for development)");
+            $this->pass('Redis cache configured (PRODUCTION READY)');
+        } elseif ($cacheDriver === 'database') {
+            $this->skip('Using database cache (OK for development)');
             echo "  💡 Recommendation: Use Redis for production (CACHE_STORE=redis)\n";
         } else {
             $this->fail("Unexpected cache driver: $cacheDriver");
@@ -297,7 +299,7 @@ class PerformanceTest
         echo "  Current session driver: $sessionDriver\n";
 
         if ($sessionDriver === 'redis') {
-            $this->pass("Redis sessions configured (PRODUCTION READY)");
+            $this->pass('Redis sessions configured (PRODUCTION READY)');
         } else {
             $this->skip("Using $sessionDriver for sessions");
             echo "  💡 Recommendation: Use Redis for production (SESSION_DRIVER=redis)\n";
@@ -343,8 +345,8 @@ class PerformanceTest
         echo "=========================================\n";
         echo "  Test Summary\n";
         echo "=========================================\n\n";
-        echo "  Tests Passed: " . $this->passed . "\n";
-        echo "  Tests Failed: " . $this->failed . "\n";
+        echo '  Tests Passed: '.$this->passed."\n";
+        echo '  Tests Failed: '.$this->failed."\n";
         echo "\n";
 
         if ($this->failed === 0) {
@@ -367,5 +369,5 @@ class PerformanceTest
 }
 
 // Run tests
-$test = new PerformanceTest();
+$test = new PerformanceTest;
 $test->run();

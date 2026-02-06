@@ -4,11 +4,10 @@ namespace Tests\Feature;
 
 use App\Events\OrderCreated;
 use App\Events\OrderStatusUpdated;
-use App\Jobs\ProcessPayment;
 use App\Models\Guest;
 use App\Models\InventoryTransaction;
-use App\Models\MenuItem;
 use App\Models\MenuCategory;
+use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
@@ -29,13 +28,21 @@ class OrderWorkflowTest extends TestCase
     use RefreshDatabase;
 
     protected Staff $waiter;
+
     protected Staff $chef;
+
     protected Staff $manager;
+
     protected Table $table;
+
     protected Guest $guest;
+
     protected MenuCategory $category;
+
     protected MenuItem $menuItem;
+
     protected OrderService $orderService;
+
     protected PaymentService $paymentService;
 
     protected function setUp(): void
@@ -276,7 +283,7 @@ class OrderWorkflowTest extends TestCase
         $order = $this->orderService->createOrder($orderData);
 
         // Manually trigger the listener for testing since it's queued
-        $listener = new \App\Listeners\DeductInventoryStock();
+        $listener = new \App\Listeners\DeductInventoryStock;
         $listener->handle(new OrderCreated($order->fresh()));
 
         // Assert stock was deducted
@@ -336,7 +343,7 @@ class OrderWorkflowTest extends TestCase
         $order = $this->orderService->createOrder($orderData);
 
         // Manually trigger the listener for testing since it's queued
-        $listener = new \App\Listeners\DeductInventoryStock();
+        $listener = new \App\Listeners\DeductInventoryStock;
         $listener->handle(new OrderCreated($order->fresh()));
 
         // Assert stock fell below threshold

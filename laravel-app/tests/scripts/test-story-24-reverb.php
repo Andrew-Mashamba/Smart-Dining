@@ -16,12 +16,12 @@
  * 9. Event broadcasting
  */
 
-use Illuminate\Support\Facades\Event;
 use App\Events\OrderCreated;
 use App\Events\OrderStatusUpdated;
 use App\Models\Order;
 use App\Models\Table;
 use App\Models\User;
+use Illuminate\Support\Facades\Event;
 
 define('LARAVEL_START', microtime(true));
 
@@ -43,17 +43,21 @@ $colors = [
     'reset' => "\033[0m",
 ];
 
-function colorize($text, $color) {
+function colorize($text, $color)
+{
     global $colors;
-    return $colors[$color] . $text . $colors['reset'];
+
+    return $colors[$color].$text.$colors['reset'];
 }
 
-function testResult($name, $passed, $details = '') {
+function testResult($name, $passed, $details = '')
+{
     $status = $passed ? colorize('✓ PASS', 'green') : colorize('✗ FAIL', 'red');
     echo sprintf("%-60s %s\n", $name, $status);
     if ($details) {
-        echo "  " . colorize($details, 'cyan') . "\n";
+        echo '  '.colorize($details, 'cyan')."\n";
     }
+
     return $passed;
 }
 
@@ -65,18 +69,18 @@ $results = [];
 
 // Test 1: Verify Laravel Reverb package is installed
 echo colorize("1. Package Installation\n", 'yellow');
-echo colorize(str_repeat('─', 70) . "\n", 'yellow');
+echo colorize(str_repeat('─', 70)."\n", 'yellow');
 
 $composerJson = json_decode(file_get_contents(__DIR__.'/composer.json'), true);
 $results[] = testResult(
     'Laravel Reverb package installed',
     isset($composerJson['require']['laravel/reverb']),
-    'Version: ' . ($composerJson['require']['laravel/reverb'] ?? 'Not found')
+    'Version: '.($composerJson['require']['laravel/reverb'] ?? 'Not found')
 );
 
 // Test 2: Verify configuration files exist
-echo "\n" . colorize("2. Configuration Files\n", 'yellow');
-echo colorize(str_repeat('─', 70) . "\n", 'yellow');
+echo "\n".colorize("2. Configuration Files\n", 'yellow');
+echo colorize(str_repeat('─', 70)."\n", 'yellow');
 
 $results[] = testResult(
     'config/reverb.php exists',
@@ -89,42 +93,42 @@ $results[] = testResult(
 );
 
 // Test 3: Verify environment variables
-echo "\n" . colorize("3. Environment Variables\n", 'yellow');
-echo colorize(str_repeat('─', 70) . "\n", 'yellow');
+echo "\n".colorize("3. Environment Variables\n", 'yellow');
+echo colorize(str_repeat('─', 70)."\n", 'yellow');
 
 $results[] = testResult(
     'BROADCAST_CONNECTION=reverb',
     env('BROADCAST_CONNECTION') === 'reverb',
-    'Value: ' . env('BROADCAST_CONNECTION')
+    'Value: '.env('BROADCAST_CONNECTION')
 );
 
 $results[] = testResult(
     'REVERB_APP_ID is set',
-    !empty(env('REVERB_APP_ID')),
-    'Value: ' . env('REVERB_APP_ID')
+    ! empty(env('REVERB_APP_ID')),
+    'Value: '.env('REVERB_APP_ID')
 );
 
 $results[] = testResult(
     'REVERB_APP_KEY is set',
-    !empty(env('REVERB_APP_KEY')),
-    'Value: ' . env('REVERB_APP_KEY')
+    ! empty(env('REVERB_APP_KEY')),
+    'Value: '.env('REVERB_APP_KEY')
 );
 
 $results[] = testResult(
     'REVERB_APP_SECRET is set',
-    !empty(env('REVERB_APP_SECRET')),
-    'Value: ' . substr(env('REVERB_APP_SECRET'), 0, 5) . '...'
+    ! empty(env('REVERB_APP_SECRET')),
+    'Value: '.substr(env('REVERB_APP_SECRET'), 0, 5).'...'
 );
 
 // Test 4: Verify broadcasting configuration
-echo "\n" . colorize("4. Broadcasting Configuration\n", 'yellow');
-echo colorize(str_repeat('─', 70) . "\n", 'yellow');
+echo "\n".colorize("4. Broadcasting Configuration\n", 'yellow');
+echo colorize(str_repeat('─', 70)."\n", 'yellow');
 
 $broadcastConfig = config('broadcasting.connections.reverb');
 $results[] = testResult(
     'Reverb connection configured',
-    !empty($broadcastConfig),
-    'Driver: ' . ($broadcastConfig['driver'] ?? 'N/A')
+    ! empty($broadcastConfig),
+    'Driver: '.($broadcastConfig['driver'] ?? 'N/A')
 );
 
 $results[] = testResult(
@@ -134,22 +138,22 @@ $results[] = testResult(
 
 $results[] = testResult(
     'Reverb key configured',
-    !empty($broadcastConfig['key'])
+    ! empty($broadcastConfig['key'])
 );
 
 $results[] = testResult(
     'Reverb secret configured',
-    !empty($broadcastConfig['secret'])
+    ! empty($broadcastConfig['secret'])
 );
 
 $results[] = testResult(
     'Reverb app_id configured',
-    !empty($broadcastConfig['app_id'])
+    ! empty($broadcastConfig['app_id'])
 );
 
 // Test 5: Verify Event classes exist
-echo "\n" . colorize("5. Event Classes\n", 'yellow');
-echo colorize(str_repeat('─', 70) . "\n", 'yellow');
+echo "\n".colorize("5. Event Classes\n", 'yellow');
+echo colorize(str_repeat('─', 70)."\n", 'yellow');
 
 $results[] = testResult(
     'OrderCreated event exists',
@@ -186,8 +190,8 @@ $results[] = testResult(
 );
 
 // Test 8: Verify channel routes
-echo "\n" . colorize("6. Channel Routes\n", 'yellow');
-echo colorize(str_repeat('─', 70) . "\n", 'yellow');
+echo "\n".colorize("6. Channel Routes\n", 'yellow');
+echo colorize(str_repeat('─', 70)."\n", 'yellow');
 
 $channelsFile = __DIR__.'/routes/channels.php';
 $results[] = testResult(
@@ -217,25 +221,25 @@ $results[] = testResult(
 );
 
 // Test 9: Verify JavaScript dependencies
-echo "\n" . colorize("7. JavaScript Dependencies\n", 'yellow');
-echo colorize(str_repeat('─', 70) . "\n", 'yellow');
+echo "\n".colorize("7. JavaScript Dependencies\n", 'yellow');
+echo colorize(str_repeat('─', 70)."\n", 'yellow');
 
 $packageJson = json_decode(file_get_contents(__DIR__.'/package.json'), true);
 $results[] = testResult(
     'laravel-echo installed',
     isset($packageJson['devDependencies']['laravel-echo']),
-    'Version: ' . ($packageJson['devDependencies']['laravel-echo'] ?? 'Not found')
+    'Version: '.($packageJson['devDependencies']['laravel-echo'] ?? 'Not found')
 );
 
 $results[] = testResult(
     'pusher-js installed',
     isset($packageJson['devDependencies']['pusher-js']),
-    'Version: ' . ($packageJson['devDependencies']['pusher-js'] ?? 'Not found')
+    'Version: '.($packageJson['devDependencies']['pusher-js'] ?? 'Not found')
 );
 
 // Test 10: Verify Echo configuration
-echo "\n" . colorize("8. Echo Configuration\n", 'yellow');
-echo colorize(str_repeat('─', 70) . "\n", 'yellow');
+echo "\n".colorize("8. Echo Configuration\n", 'yellow');
+echo colorize(str_repeat('─', 70)."\n", 'yellow');
 
 $echoJsFile = __DIR__.'/resources/js/echo.js';
 $results[] = testResult(
@@ -265,8 +269,8 @@ $results[] = testResult(
 );
 
 // Test 11: Test event broadcasting (simulation)
-echo "\n" . colorize("9. Event Broadcasting Test\n", 'yellow');
-echo colorize(str_repeat('─', 70) . "\n", 'yellow');
+echo "\n".colorize("9. Event Broadcasting Test\n", 'yellow');
+echo colorize(str_repeat('─', 70)."\n", 'yellow');
 
 try {
     // Create test data
@@ -275,7 +279,7 @@ try {
 
     if ($table && $waiter) {
         $order = Order::create([
-            'order_number' => 'TEST-' . time(),
+            'order_number' => 'TEST-'.time(),
             'table_id' => $table->id,
             'waiter_id' => $waiter->id,
             'order_source' => 'pos',
@@ -297,7 +301,7 @@ try {
         $results[] = testResult(
             'OrderCreated broadcasts to channels',
             count($channels) > 0,
-            'Channels: ' . count($channels)
+            'Channels: '.count($channels)
         );
 
         // Test OrderStatusUpdated event
@@ -312,11 +316,11 @@ try {
         $results[] = testResult(
             'OrderStatusUpdated broadcasts to channels',
             count($statusChannels) > 0,
-            'Channels: ' . count($statusChannels)
+            'Channels: '.count($statusChannels)
         );
 
         // Dispatch events to test broadcasting
-        echo "  " . colorize("→ Dispatching OrderCreated event...", 'cyan') . "\n";
+        echo '  '.colorize('→ Dispatching OrderCreated event...', 'cyan')."\n";
         event($orderCreatedEvent);
 
         $results[] = testResult(
@@ -324,7 +328,7 @@ try {
             true
         );
 
-        echo "  " . colorize("→ Dispatching OrderStatusUpdated event...", 'cyan') . "\n";
+        echo '  '.colorize('→ Dispatching OrderStatusUpdated event...', 'cyan')."\n";
         event($orderStatusEvent);
 
         $results[] = testResult(
@@ -346,12 +350,12 @@ try {
     $results[] = testResult(
         'Event broadcasting test',
         false,
-        'Error: ' . $e->getMessage()
+        'Error: '.$e->getMessage()
     );
 }
 
 // Summary
-echo "\n" . colorize("═══════════════════════════════════════════════════════════════\n", 'blue');
+echo "\n".colorize("═══════════════════════════════════════════════════════════════\n", 'blue');
 echo colorize("Test Summary\n", 'yellow');
 echo colorize("═══════════════════════════════════════════════════════════════\n", 'blue');
 
@@ -364,7 +368,7 @@ echo sprintf("Passed: %s\n", colorize($passed, 'green'));
 echo sprintf("Failed: %s\n", colorize($total - $passed, 'red'));
 echo sprintf("Success Rate: %s%%\n", colorize($percentage, $percentage == 100 ? 'green' : 'yellow'));
 
-echo "\n" . colorize("═══════════════════════════════════════════════════════════════\n", 'blue');
+echo "\n".colorize("═══════════════════════════════════════════════════════════════\n", 'blue');
 
 if ($percentage == 100) {
     echo colorize("✓ All acceptance criteria met! Story 24 is complete.\n", 'green');
@@ -376,9 +380,9 @@ echo colorize("═════════════════════�
 
 // Additional instructions
 echo colorize("Next Steps:\n", 'yellow');
-echo "1. Start Reverb server: " . colorize("php artisan reverb:start\n", 'cyan');
-echo "2. Start Laravel app: " . colorize("php artisan serve\n", 'cyan');
-echo "3. Start frontend build: " . colorize("npm run dev\n", 'cyan');
+echo '1. Start Reverb server: '.colorize("php artisan reverb:start\n", 'cyan');
+echo '2. Start Laravel app: '.colorize("php artisan serve\n", 'cyan');
+echo '3. Start frontend build: '.colorize("npm run dev\n", 'cyan');
 echo "4. Test real-time updates in browser console\n";
 echo "\n";
 

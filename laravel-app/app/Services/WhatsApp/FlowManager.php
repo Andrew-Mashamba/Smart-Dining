@@ -5,17 +5,21 @@ namespace App\Services\WhatsApp;
 use App\Models\Guest;
 use App\Models\MenuItem;
 use App\Models\Table;
-use App\Services\Menu\MenuService;
 use App\Services\GuestSession\SessionService;
+use App\Services\Menu\MenuService;
 use App\Services\OrderManagement\OrderService;
 use Illuminate\Support\Facades\Log;
 
 class FlowManager
 {
     protected WhatsAppService $whatsappService;
+
     protected StateManager $stateManager;
+
     protected MenuService $menuService;
+
     protected SessionService $sessionService;
+
     protected OrderService $orderService;
 
     public function __construct(
@@ -34,11 +38,6 @@ class FlowManager
 
     /**
      * Process incoming message based on current state
-     *
-     * @param Guest $guest
-     * @param string $state
-     * @param array $messageData
-     * @return void
      */
     public function processMessage(Guest $guest, string $state, array $messageData): void
     {
@@ -67,17 +66,13 @@ class FlowManager
 
             $this->whatsappService->sendTextMessage(
                 $guest->phone_number,
-                "Sorry, something went wrong. Please try again or contact our staff."
+                'Sorry, something went wrong. Please try again or contact our staff.'
             );
         }
     }
 
     /**
      * Handle new guest (first interaction)
-     *
-     * @param Guest $guest
-     * @param array $messageData
-     * @return void
      */
     protected function handleNewGuest(Guest $guest, array $messageData): void
     {
@@ -110,6 +105,7 @@ class FlowManager
                 );
 
                 $this->stateManager->setState($guest, 'MENU_BROWSING');
+
                 return;
             }
         }
@@ -123,10 +119,6 @@ class FlowManager
 
     /**
      * Handle menu browsing state
-     *
-     * @param Guest $guest
-     * @param array $messageData
-     * @return void
      */
     protected function handleMenuBrowsing(Guest $guest, array $messageData): void
     {
@@ -139,7 +131,7 @@ class FlowManager
         } elseif ($buttonId === 'call_waiter') {
             $this->whatsappService->sendTextMessage(
                 $guest->phone_number,
-                "A waiter will be with you shortly! 👨‍🍳"
+                'A waiter will be with you shortly! 👨‍🍳'
             );
         } elseif ($listId) {
             // Handle category selection
@@ -147,16 +139,13 @@ class FlowManager
         } else {
             $this->whatsappService->sendTextMessage(
                 $guest->phone_number,
-                "Please select an option from the menu."
+                'Please select an option from the menu.'
             );
         }
     }
 
     /**
      * Send menu categories as interactive list
-     *
-     * @param Guest $guest
-     * @return void
      */
     protected function sendMenuCategories(Guest $guest): void
     {
@@ -167,15 +156,17 @@ class FlowManager
             $rows = [];
             foreach ($category['items'] as $item) {
                 $rows[] = [
-                    'id' => 'item_' . $item['id'],
+                    'id' => 'item_'.$item['id'],
                     'title' => $item['name'],
-                    'description' => 'TZS ' . number_format($item['price'], 0),
+                    'description' => 'TZS '.number_format($item['price'], 0),
                 ];
 
-                if (count($rows) >= 10) break; // WhatsApp limit per section
+                if (count($rows) >= 10) {
+                    break;
+                } // WhatsApp limit per section
             }
 
-            if (!empty($rows)) {
+            if (! empty($rows)) {
                 $sections[] = [
                     'title' => ucfirst($category['category']),
                     'rows' => $rows,
@@ -186,7 +177,7 @@ class FlowManager
         $this->whatsappService->sendListMessage(
             $guest->phone_number,
             "Here's our menu today! 📋\n\nTap below to browse by category.",
-            "View Menu",
+            'View Menu',
             $sections
         );
 
@@ -195,10 +186,6 @@ class FlowManager
 
     /**
      * Handle ordering state
-     *
-     * @param Guest $guest
-     * @param array $messageData
-     * @return void
      */
     protected function handleOrdering(Guest $guest, array $messageData): void
     {
@@ -212,10 +199,6 @@ class FlowManager
 
     /**
      * Add item to guest's cart
-     *
-     * @param Guest $guest
-     * @param int $itemId
-     * @return void
      */
     protected function addItemToCart(Guest $guest, int $itemId): void
     {
@@ -241,10 +224,6 @@ class FlowManager
 
     /**
      * Handle order placed state
-     *
-     * @param Guest $guest
-     * @param array $messageData
-     * @return void
      */
     protected function handleOrderPlaced(Guest $guest, array $messageData): void
     {
@@ -256,10 +235,6 @@ class FlowManager
 
     /**
      * Handle dining state
-     *
-     * @param Guest $guest
-     * @param array $messageData
-     * @return void
      */
     protected function handleDining(Guest $guest, array $messageData): void
     {
@@ -271,7 +246,7 @@ class FlowManager
         } else {
             $this->whatsappService->sendButtonMessage(
                 $guest->phone_number,
-                "Enjoying your meal? 😊",
+                'Enjoying your meal? 😊',
                 [
                     ['id' => 'request_bill', 'title' => 'Request Bill'],
                     ['id' => 'order_more', 'title' => 'Order More'],
@@ -282,24 +257,17 @@ class FlowManager
 
     /**
      * Handle billing state
-     *
-     * @param Guest $guest
-     * @param array $messageData
-     * @return void
      */
     protected function handleBilling(Guest $guest, array $messageData): void
     {
         $this->whatsappService->sendTextMessage(
             $guest->phone_number,
-            "Your bill is ready! Your waiter will assist you with payment."
+            'Your bill is ready! Your waiter will assist you with payment.'
         );
     }
 
     /**
      * Send bill to guest
-     *
-     * @param Guest $guest
-     * @return void
      */
     protected function sendBill(Guest $guest): void
     {
@@ -311,9 +279,9 @@ class FlowManager
 
             $billText = "📄 Your Bill\n\n";
             foreach ($summary['orders'] as $order) {
-                $billText .= "Order #{$order['order_id']}: TZS " . number_format($order['total_amount'], 0) . "\n";
+                $billText .= "Order #{$order['order_id']}: TZS ".number_format($order['total_amount'], 0)."\n";
             }
-            $billText .= "\nTotal: TZS " . number_format($summary['financial_summary']['total_spent'], 0);
+            $billText .= "\nTotal: TZS ".number_format($summary['financial_summary']['total_spent'], 0);
 
             $this->whatsappService->sendTextMessage($guest->phone_number, $billText);
         }
@@ -321,10 +289,6 @@ class FlowManager
 
     /**
      * Handle unknown state
-     *
-     * @param Guest $guest
-     * @param array $messageData
-     * @return void
      */
     protected function handleUnknownState(Guest $guest, array $messageData): void
     {
@@ -336,10 +300,6 @@ class FlowManager
 
     /**
      * Send category items
-     *
-     * @param Guest $guest
-     * @param string $categoryId
-     * @return void
      */
     protected function sendCategoryItems(Guest $guest, string $categoryId): void
     {

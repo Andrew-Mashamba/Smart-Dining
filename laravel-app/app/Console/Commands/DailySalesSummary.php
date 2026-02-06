@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\Order;
 use App\Models\User;
-use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Mail;
 
 class DailySalesSummary extends Command
 {
@@ -66,6 +66,7 @@ class DailySalesSummary extends Command
 
         if ($admins->isEmpty()) {
             $this->warn('No admin users found to send the report to.');
+
             return 0;
         }
 
@@ -83,7 +84,7 @@ class DailySalesSummary extends Command
                     'topItems' => $topItems,
                 ], function ($message) use ($admin, $date) {
                     $message->to($admin->email)
-                        ->subject('Daily Sales Summary - ' . $date->toDateString());
+                        ->subject('Daily Sales Summary - '.$date->toDateString());
                 });
 
                 $this->info("Sent report to {$admin->email}");
@@ -97,10 +98,10 @@ class DailySalesSummary extends Command
             ['Metric', 'Value'],
             [
                 ['Total Orders', $totalOrders],
-                ['Total Revenue', '$' . number_format($totalRevenue, 2)],
+                ['Total Revenue', '$'.number_format($totalRevenue, 2)],
                 ['Completed Orders', $completedOrders],
                 ['Cancelled Orders', $cancelledOrders],
-                ['Average Order Value', '$' . number_format($averageOrderValue, 2)],
+                ['Average Order Value', '$'.number_format($averageOrderValue, 2)],
             ]
         );
 

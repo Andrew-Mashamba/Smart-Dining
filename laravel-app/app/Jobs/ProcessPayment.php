@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Events\PaymentReceived;
 use App\Models\Payment;
 use App\Services\Payment\PaymentService;
-use App\Events\PaymentReceived;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 

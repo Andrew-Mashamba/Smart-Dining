@@ -2,15 +2,15 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Guest;
-use App\Models\Table;
-use App\Models\Staff;
 use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
+use App\Models\Staff;
+use App\Models\Table;
 use App\Models\Tip;
+use Illuminate\Database\Seeder;
 
 class TestReceiptSeeder extends Seeder
 {
@@ -159,8 +159,8 @@ class TestReceiptSeeder extends Seeder
         ]);
 
         $this->command->info('Test order created successfully!');
-        $this->command->info('Order ID: ' . $order->id);
-        $this->command->info('Order Number: ' . $order->order_number);
-        $this->command->info('You can test the receipt at: /api/orders/' . $order->id . '/receipt');
+        $this->command->info('Order ID: '.$order->id);
+        $this->command->info('Order Number: '.$order->order_number);
+        $this->command->info('You can test the receipt at: /api/orders/'.$order->id.'/receipt');
     }
 }

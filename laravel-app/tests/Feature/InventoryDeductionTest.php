@@ -3,15 +3,13 @@
 namespace Tests\Feature;
 
 use App\Events\OrderCreated;
-use App\Listeners\DeductInventoryStock;
-use App\Models\MenuItem;
 use App\Models\MenuCategory;
+use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Staff;
 use App\Models\Table;
 use App\Models\User;
-use App\Models\Staff;
-use App\Models\InventoryTransaction;
 use App\Notifications\LowStockAlert;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
@@ -23,9 +21,13 @@ class InventoryDeductionTest extends TestCase
     use RefreshDatabase;
 
     protected $manager;
+
     protected $waiter;
+
     protected $table;
+
     protected $category;
+
     protected $menuItem;
 
     protected function setUp(): void
@@ -262,7 +264,7 @@ class InventoryDeductionTest extends TestCase
                 'menu_item_id' => $this->menuItem->id,
                 'quantity' => 5, // Exceeds available stock
                 'special_instructions' => null,
-            ]
+            ],
         ]);
     }
 

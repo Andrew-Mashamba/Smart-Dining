@@ -11,6 +11,7 @@ class Users extends Component
     use WithPagination;
 
     public $search = '';
+
     public $perPage = 10;
 
     protected $queryString = ['search'];
@@ -39,16 +40,16 @@ class Users extends Component
         $users = User::query()
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%')
-                      ->orWhere('email', 'like', '%' . $this->search . '%')
-                      ->orWhere('role', 'like', '%' . $this->search . '%');
+                    $q->where('name', 'like', '%'.$this->search.'%')
+                        ->orWhere('email', 'like', '%'.$this->search.'%')
+                        ->orWhere('role', 'like', '%'.$this->search.'%');
                 });
             })
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
 
         return view('livewire.users', [
-            'users' => $users
+            'users' => $users,
         ])->layout('layouts.app-layout');
     }
 }

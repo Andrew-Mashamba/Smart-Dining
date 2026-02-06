@@ -2,14 +2,13 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -69,7 +68,6 @@ class Handler extends ExceptionHandler
      * Render an exception into an HTTP response.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Throwable  $e
      * @return \Symfony\Component\HttpFoundation\Response
      *
      * @throws \Throwable
@@ -88,7 +86,6 @@ class Handler extends ExceptionHandler
      * Handle API exceptions and return JSON responses.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Throwable  $e
      * @return \Illuminate\Http\JsonResponse
      */
     protected function handleApiException($request, Throwable $e)
@@ -163,7 +160,6 @@ class Handler extends ExceptionHandler
      * Convert an authentication exception into a response.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Illuminate\Auth\AuthenticationException  $exception
      * @return \Symfony\Component\HttpFoundation\Response
      */
     protected function unauthenticated($request, AuthenticationException $exception)

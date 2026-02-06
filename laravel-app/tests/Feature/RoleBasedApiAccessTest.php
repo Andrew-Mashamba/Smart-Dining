@@ -2,12 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Models\Staff;
+use App\Models\Guest;
+use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\MenuItem;
+use App\Models\Staff;
 use App\Models\Table;
-use App\Models\Guest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -31,13 +31,21 @@ class RoleBasedApiAccessTest extends TestCase
     use RefreshDatabase;
 
     protected Staff $waiter;
+
     protected Staff $chef;
+
     protected Staff $bartender;
+
     protected Staff $manager;
+
     protected Staff $admin;
+
     protected Table $table;
+
     protected Guest $guest;
+
     protected MenuItem $kitchenItem;
+
     protected MenuItem $barItem;
 
     protected function setUp(): void
@@ -74,8 +82,8 @@ class RoleBasedApiAccessTest extends TestCase
                     [
                         'menu_item_id' => $this->kitchenItem->id,
                         'quantity' => 2,
-                    ]
-                ]
+                    ],
+                ],
             ]);
 
         $response->assertStatus(201)
@@ -116,7 +124,7 @@ class RoleBasedApiAccessTest extends TestCase
                 'order_id' => $order->id,
                 'payment_method' => 'cash',
                 'amount' => 50.00,
-                'tendered' => 60.00
+                'tendered' => 60.00,
             ]);
 
         $response->assertStatus(201);
@@ -129,7 +137,7 @@ class RoleBasedApiAccessTest extends TestCase
 
         $response = $this->actingAs($this->waiter, 'sanctum')
             ->patchJson("/api/orders/{$order->id}/status", [
-                'status' => 'cancelled'
+                'status' => 'cancelled',
             ]);
 
         $response->assertStatus(403)
@@ -153,7 +161,7 @@ class RoleBasedApiAccessTest extends TestCase
         $orderItem = OrderItem::factory()->create([
             'order_id' => $order->id,
             'menu_item_id' => $this->kitchenItem->id,
-            'prep_status' => 'pending'
+            'prep_status' => 'pending',
         ]);
 
         $response = $this->actingAs($this->chef, 'sanctum')
@@ -170,7 +178,7 @@ class RoleBasedApiAccessTest extends TestCase
         $orderItem = OrderItem::factory()->create([
             'order_id' => $order->id,
             'menu_item_id' => $this->barItem->id,
-            'prep_status' => 'pending'
+            'prep_status' => 'pending',
         ]);
 
         $response = $this->actingAs($this->chef, 'sanctum')
@@ -189,8 +197,8 @@ class RoleBasedApiAccessTest extends TestCase
                 'guest_id' => $this->guest->id,
                 'waiter_id' => $this->chef->id,
                 'items' => [
-                    ['menu_item_id' => $this->kitchenItem->id, 'quantity' => 1]
-                ]
+                    ['menu_item_id' => $this->kitchenItem->id, 'quantity' => 1],
+                ],
             ]);
 
         $response->assertStatus(403);
@@ -213,7 +221,7 @@ class RoleBasedApiAccessTest extends TestCase
         $orderItem = OrderItem::factory()->create([
             'order_id' => $order->id,
             'menu_item_id' => $this->barItem->id,
-            'prep_status' => 'pending'
+            'prep_status' => 'pending',
         ]);
 
         $response = $this->actingAs($this->bartender, 'sanctum')
@@ -230,7 +238,7 @@ class RoleBasedApiAccessTest extends TestCase
         $orderItem = OrderItem::factory()->create([
             'order_id' => $order->id,
             'menu_item_id' => $this->kitchenItem->id,
-            'prep_status' => 'pending'
+            'prep_status' => 'pending',
         ]);
 
         $response = $this->actingAs($this->bartender, 'sanctum')
@@ -249,7 +257,7 @@ class RoleBasedApiAccessTest extends TestCase
             ->postJson('/api/payments', [
                 'order_id' => $order->id,
                 'payment_method' => 'cash',
-                'amount' => 50.00
+                'amount' => 50.00,
             ]);
 
         $response->assertStatus(403);
@@ -264,8 +272,8 @@ class RoleBasedApiAccessTest extends TestCase
                 'guest_id' => $this->guest->id,
                 'waiter_id' => $this->manager->id,
                 'items' => [
-                    ['menu_item_id' => $this->kitchenItem->id, 'quantity' => 1]
-                ]
+                    ['menu_item_id' => $this->kitchenItem->id, 'quantity' => 1],
+                ],
             ]);
 
         $response->assertStatus(201);
@@ -290,7 +298,7 @@ class RoleBasedApiAccessTest extends TestCase
 
         $response = $this->actingAs($this->manager, 'sanctum')
             ->patchJson("/api/orders/{$order->id}/status", [
-                'status' => 'preparing'
+                'status' => 'preparing',
             ]);
 
         $response->assertStatus(200);
@@ -303,7 +311,7 @@ class RoleBasedApiAccessTest extends TestCase
 
         $response = $this->actingAs($this->manager, 'sanctum')
             ->postJson("/api/orders/{$order->id}/cancel", [
-                'reason' => 'Test cancellation'
+                'reason' => 'Test cancellation',
             ]);
 
         $response->assertSuccessful();
@@ -314,7 +322,7 @@ class RoleBasedApiAccessTest extends TestCase
     {
         $response = $this->actingAs($this->manager, 'sanctum')
             ->putJson("/api/menu/{$this->kitchenItem->id}/availability", [
-                'available' => false
+                'available' => false,
             ]);
 
         $response->assertStatus(200);
@@ -330,8 +338,8 @@ class RoleBasedApiAccessTest extends TestCase
                 'guest_id' => $this->guest->id,
                 'waiter_id' => $this->admin->id,
                 'items' => [
-                    ['menu_item_id' => $this->kitchenItem->id, 'quantity' => 1]
-                ]
+                    ['menu_item_id' => $this->kitchenItem->id, 'quantity' => 1],
+                ],
             ]);
 
         $response->assertStatus(201);
@@ -345,7 +353,7 @@ class RoleBasedApiAccessTest extends TestCase
         // Test menu management
         $response = $this->actingAs($this->admin, 'sanctum')
             ->putJson("/api/menu/{$this->kitchenItem->id}/availability", [
-                'available' => true
+                'available' => true,
             ]);
 
         $response->assertStatus(200);
@@ -368,7 +376,7 @@ class RoleBasedApiAccessTest extends TestCase
                 'table_id' => $this->table->id,
                 'guest_id' => $this->guest->id,
                 'waiter_id' => $this->chef->id,
-                'items' => []
+                'items' => [],
             ]);
 
         $response->assertStatus(403)

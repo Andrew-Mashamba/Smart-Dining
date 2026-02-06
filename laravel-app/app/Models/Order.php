@@ -50,7 +50,7 @@ class Order extends Model
 
         static::created(function ($order) {
             // Generate order_number after the order is created and has an ID
-            $order->order_number = 'ORD-' . date('Ymd') . '-' . str_pad($order->id, 4, '0', STR_PAD_LEFT);
+            $order->order_number = 'ORD-'.date('Ymd').'-'.str_pad($order->id, 4, '0', STR_PAD_LEFT);
             $order->saveQuietly(); // Use saveQuietly to prevent firing events again
         });
     }

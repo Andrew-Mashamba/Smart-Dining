@@ -40,7 +40,7 @@ class TableController extends Controller
     {
         $table = Table::with(['orders' => function ($query) {
             $query->whereNotIn('status', ['completed', 'cancelled'])
-                  ->with(['items.menuItem', 'guest']);
+                ->with(['items.menuItem', 'guest']);
         }])->findOrFail($id);
 
         return response()->json(new TableResource($table));

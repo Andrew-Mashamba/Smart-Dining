@@ -2,25 +2,20 @@
 
 namespace App\Services\OrderManagement;
 
-use App\Models\Order;
-use App\Models\Guest;
-use App\Models\Table;
-use App\Models\Staff;
-use App\Models\OrderItem;
-use App\Models\MenuItem;
-use App\Models\Setting;
 use App\Events\OrderCreated;
 use App\Events\OrderStatusUpdated;
-use Illuminate\Support\Facades\DB;
+use App\Models\MenuItem;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Setting;
+use App\Models\Table;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class OrderService
 {
     /**
      * Create a new order
-     *
-     * @param array $data
-     * @return Order
      */
     public function createOrder(array $data): Order
     {
@@ -57,10 +52,6 @@ class OrderService
 
     /**
      * Add items to an order
-     *
-     * @param Order $order
-     * @param array $items
-     * @return void
      */
     public function addItems(Order $order, array $items): void
     {
@@ -93,9 +84,6 @@ class OrderService
 
     /**
      * Remove an item from an order
-     *
-     * @param OrderItem $orderItem
-     * @return void
      */
     public function removeItem(OrderItem $orderItem): void
     {
@@ -111,16 +99,12 @@ class OrderService
 
     /**
      * Update order status
-     *
-     * @param Order $order
-     * @param string $status
-     * @return void
      */
     public function updateOrderStatus(Order $order, string $status): void
     {
         $validTransitions = $this->getValidStatusTransitions($order->status);
 
-        if (!in_array($status, $validTransitions)) {
+        if (! in_array($status, $validTransitions)) {
             throw new \Exception("Cannot transition from {$order->status} to {$status}");
         }
 
@@ -133,9 +117,6 @@ class OrderService
 
     /**
      * Calculate order totals
-     *
-     * @param Order $order
-     * @return array
      */
     public function calculateTotals(Order $order): array
     {
@@ -161,10 +142,6 @@ class OrderService
 
     /**
      * Cancel an order
-     *
-     * @param Order $order
-     * @param string $reason
-     * @return void
      */
     public function cancelOrder(Order $order, string $reason): void
     {
@@ -174,7 +151,7 @@ class OrderService
 
         $order->update([
             'status' => 'cancelled',
-            'notes' => ($order->notes ?? '') . "\nCancellation reason: " . $reason,
+            'notes' => ($order->notes ?? '')."\nCancellation reason: ".$reason,
         ]);
 
         // Note: Items remain in their current prep_status as the migration
@@ -184,9 +161,6 @@ class OrderService
 
     /**
      * Get valid status transitions for current status
-     *
-     * @param string $currentStatus
-     * @return array
      */
     protected function getValidStatusTransitions(string $currentStatus): array
     {
@@ -205,9 +179,6 @@ class OrderService
 
     /**
      * Get order summary with items
-     *
-     * @param Order $order
-     * @return array
      */
     public function getOrderSummary(Order $order): array
     {
@@ -244,9 +215,6 @@ class OrderService
 
     /**
      * Get orders by status
-     *
-     * @param string $status
-     * @return Collection
      */
     public function getOrdersByStatus(string $status): Collection
     {

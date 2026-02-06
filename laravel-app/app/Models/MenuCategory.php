@@ -14,6 +14,7 @@ class MenuCategory extends Model
      * Cache key for menu data
      */
     const CACHE_KEY = 'menu_categories_with_items';
+
     /**
      * The attributes that are mass assignable.
      *

@@ -2,14 +2,14 @@
 
 namespace Database\Seeders;
 
+use App\Models\Guest;
+use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Table;
-use App\Models\Guest;
 use App\Models\Staff;
-use App\Models\MenuItem;
-use Illuminate\Database\Seeder;
+use App\Models\Table;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class OrderSeeder extends Seeder
 {
@@ -27,6 +27,7 @@ class OrderSeeder extends Seeder
 
         if ($tables->isEmpty() || $guests->isEmpty() || $waiters->isEmpty() || $menuItems->isEmpty()) {
             $this->command->error('Error: Required data not found. Please run other seeders first.');
+
             return;
         }
 
@@ -96,7 +97,7 @@ class OrderSeeder extends Seeder
 
                 // Determine prep_status based on order status
                 // Valid values: pending, received, preparing, ready
-                $prepStatus = match($status) {
+                $prepStatus = match ($status) {
                     'pending' => 'pending',
                     'preparing' => rand(0, 1) ? 'preparing' : 'received',
                     'ready' => 'ready',

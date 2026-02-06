@@ -6,9 +6,9 @@
  * This script verifies that all required components exist and are properly configured.
  */
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
-$app = require_once __DIR__ . '/bootstrap/app.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
 $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
 echo "=== Story 41: Automated Inventory Deduction - Component Verification ===\n\n";
@@ -61,8 +61,8 @@ echo "\n4. LowStockAlert notification\n";
 if (class_exists('App\Notifications\LowStockAlert')) {
     echo "   ✓ app/Notifications/LowStockAlert.php exists\n";
 
-    $notification = new App\Notifications\LowStockAlert(new App\Models\MenuItem());
-    $channels = $notification->via(new App\Models\User());
+    $notification = new App\Notifications\LowStockAlert(new App\Models\MenuItem);
+    $channels = $notification->via(new App\Models\User);
 
     if (in_array('database', $channels)) {
         echo "   ✓ Uses 'database' channel\n";
@@ -231,7 +231,7 @@ if (file_exists($listenerPath)) {
 }
 
 // Summary
-echo "\n" . str_repeat("=", 70) . "\n";
+echo "\n".str_repeat('=', 70)."\n";
 if ($allPassed) {
     echo "✓ ALL TESTS PASSED!\n";
     echo "\nStory 41 Implementation Summary:\n";

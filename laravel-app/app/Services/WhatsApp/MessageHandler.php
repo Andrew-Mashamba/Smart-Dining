@@ -3,14 +3,14 @@
 namespace App\Services\WhatsApp;
 
 use App\Models\Guest;
-use App\Services\WhatsApp\FlowManager;
-use App\Services\WhatsApp\StateManager;
 use Illuminate\Support\Facades\Log;
 
 class MessageHandler
 {
     protected WhatsAppService $whatsappService;
+
     protected FlowManager $flowManager;
+
     protected StateManager $stateManager;
 
     public function __construct(
@@ -25,10 +25,6 @@ class MessageHandler
 
     /**
      * Handle incoming WhatsApp message
-     *
-     * @param array $message
-     * @param array $context
-     * @return void
      */
     public function handle(array $message, array $context): void
     {
@@ -37,8 +33,9 @@ class MessageHandler
         $timestamp = $message['timestamp'] ?? null;
         $type = $message['type'] ?? 'unknown';
 
-        if (!$from) {
+        if (! $from) {
             Log::warning('WhatsApp message received without sender');
+
             return;
         }
 
@@ -68,10 +65,6 @@ class MessageHandler
 
     /**
      * Get or create guest by phone number
-     *
-     * @param string $phoneNumber
-     * @param array $context
-     * @return Guest
      */
     protected function getOrCreateGuest(string $phoneNumber, array $context): Guest
     {
@@ -83,7 +76,7 @@ class MessageHandler
             ]
         );
 
-        if (!$guest->wasRecentlyCreated) {
+        if (! $guest->wasRecentlyCreated) {
             $guest->update(['last_visit_at' => now()]);
         }
 
@@ -92,10 +85,6 @@ class MessageHandler
 
     /**
      * Extract message data based on type
-     *
-     * @param array $message
-     * @param string $type
-     * @return array
      */
     protected function extractMessageData(array $message, string $type): array
     {

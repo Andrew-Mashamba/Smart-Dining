@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('menu_items', function (Blueprint $table) {
             // Add unit column after stock_quantity
-            if (!Schema::hasColumn('menu_items', 'unit')) {
+            if (! Schema::hasColumn('menu_items', 'unit')) {
                 $table->enum('unit', ['pieces', 'kg', 'liters', 'ml', 'grams'])->default('pieces')->after('stock_quantity');
             }
         });
