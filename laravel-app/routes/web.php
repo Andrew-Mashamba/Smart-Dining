@@ -9,6 +9,7 @@ use App\Livewire\Dashboard;
 use App\Livewire\Reports;
 use App\Livewire\SalesReports;
 use App\Livewire\StaffReports;
+use App\Livewire\InventoryReports;
 use App\Livewire\Users;
 use App\Livewire\StaffManagement;
 use App\Livewire\MenuManagement;
@@ -64,6 +65,9 @@ Route::middleware(['auth:web'])->group(function () {
 
     // Staff Reports Livewire component route (admin and manager only)
     Route::get('/reports/staff', StaffReports::class)->middleware(['auth', 'role:manager,admin'])->name('reports.staff');
+
+    // Inventory Reports Livewire component route (admin and manager only)
+    Route::get('/reports/inventory', InventoryReports::class)->middleware(['auth', 'role:manager,admin'])->name('reports.inventory');
 
     // Menu Management Livewire component route
     Route::get('/menu', MenuManagement::class)->middleware(['auth', 'role:admin,manager'])->name('menu');

@@ -33,10 +33,14 @@ class ReverbBroadcastTest extends TestCase
 
         // Create an order
         $order = Order::create([
+            'order_number' => 'ORD-' . now()->format('YmdHis') . '-' . $waiter->id,
             'waiter_id' => $waiter->id,
             'table_id' => $table->id,
+            'order_source' => 'pos',
             'status' => 'pending',
-            'total_amount' => 0.00,
+            'subtotal' => 0.00,
+            'tax' => 0.00,
+            'total' => 0.00,
         ]);
 
         // Dispatch the event manually for testing
@@ -61,10 +65,14 @@ class ReverbBroadcastTest extends TestCase
             'status' => 'available',
         ]);
         $order = Order::create([
+            'order_number' => 'ORD-' . now()->format('YmdHis') . '-' . $waiter->id . '-1',
             'waiter_id' => $waiter->id,
             'table_id' => $table->id,
+            'order_source' => 'pos',
             'status' => 'pending',
-            'total_amount' => 0.00,
+            'subtotal' => 0.00,
+            'tax' => 0.00,
+            'total' => 0.00,
         ]);
 
         $event = new OrderCreated($order);
@@ -92,10 +100,14 @@ class ReverbBroadcastTest extends TestCase
             'status' => 'available',
         ]);
         $order = Order::create([
+            'order_number' => 'ORD-' . now()->format('YmdHis') . '-' . $waiter->id . '-2',
             'waiter_id' => $waiter->id,
             'table_id' => $table->id,
+            'order_source' => 'pos',
             'status' => 'pending',
-            'total_amount' => 0.00,
+            'subtotal' => 0.00,
+            'tax' => 0.00,
+            'total' => 0.00,
         ]);
 
         // Dispatch the event manually
@@ -122,10 +134,14 @@ class ReverbBroadcastTest extends TestCase
             'status' => 'available',
         ]);
         $order = Order::create([
+            'order_number' => 'ORD-' . now()->format('YmdHis') . '-' . $waiter->id . '-3',
             'waiter_id' => $waiter->id,
             'table_id' => $table->id,
+            'order_source' => 'pos',
             'status' => 'pending',
-            'total_amount' => 0.00,
+            'subtotal' => 0.00,
+            'tax' => 0.00,
+            'total' => 0.00,
         ]);
 
         $event = new OrderStatusUpdated($order, 'pending', 'preparing');
