@@ -183,6 +183,10 @@ class ApiOrdersTest extends TestCase
      */
     public function test_unauthenticated_request_fails(): void
     {
+        // Create required data to ensure database is in a valid state
+        $table = Table::factory()->create();
+        $guest = Guest::factory()->create();
+
         // Test accessing menu endpoint (doesn't require auth) returns 200
         $response = $this->getJson('/api/menu');
         $response->assertStatus(200);
@@ -196,8 +200,8 @@ class ApiOrdersTest extends TestCase
 
         // Test creating order without authentication returns 401
         $response = $this->postJson('/api/orders', [
-            'table_id' => 1,
-            'guest_id' => 1,
+            'table_id' => $table->id,
+            'guest_id' => $guest->id,
             'items' => [],
         ]);
         $response->assertStatus(401);

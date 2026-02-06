@@ -27,7 +27,7 @@ class TableResource extends JsonResource
                         'id' => $order->id,
                         'order_number' => $order->order_number,
                         'status' => $order->status,
-                        'total_amount' => (float) $order->total_amount,
+                        'total_amount' => (float) $order->total,
                     ];
                 });
             }),
