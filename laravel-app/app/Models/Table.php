@@ -20,6 +20,17 @@ class Table extends Model
         'location',
         'capacity',
         'status',
+        'qr_code',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'capacity' => 'integer',
+        'status' => 'string',
     ];
 
     /**
@@ -33,7 +44,7 @@ class Table extends Model
     /**
      * Get all guest sessions for the table.
      */
-    public function sessions(): HasMany
+    public function guest_sessions(): HasMany
     {
         return $this->hasMany(GuestSession::class);
     }
