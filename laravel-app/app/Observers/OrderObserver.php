@@ -3,39 +3,35 @@
 namespace App\Observers;
 
 use App\Models\Order;
-use App\Http\Controllers\WhatsAppController;
+use App\Services\WhatsAppService;
 use Illuminate\Support\Facades\Log;
 
 class OrderObserver
 {
+    protected $whatsappService;
+
+    public function __construct(WhatsAppService $whatsappService)
+    {
+        $this->whatsappService = $whatsappService;
+    }
+
     /**
      * Handle the Order "updated" event.
+     * This will send WhatsApp notifications when order status changes
      */
     public function updated(Order $order): void
     {
         // Check if status was changed
-        if ($order->isDirty('status')) {
-            $newStatus = $order->status;
-            $oldStatus = $order->getOriginal('status');
-
-            Log::info('Order status changed', [
-                'order_id' => $order->id,
-                'order_number' => $order->order_number,
-                'old_status' => $oldStatus,
-                'new_status' => $newStatus,
-                'order_source' => $order->order_source,
-            ]);
-
-            // Send WhatsApp notification if order was placed via WhatsApp
-            if ($order->order_source === 'whatsapp' && $order->guest) {
+        if ($order->wasChanged('status')) {
+            // Only send notifications for WhatsApp orders
+            if ($order->order_source === 'whatsapp') {
+                $newStatus = $order->status;
+                
                 try {
-                    $whatsappController = app(WhatsAppController::class);
-                    $whatsappController->notifyStatusChange($order, $newStatus);
+                    $this->whatsappService->sendOrderStatusUpdate($order, $newStatus);
+                    Log::info("WhatsApp status notification sent for order {$order->id}, status: {$newStatus}");
                 } catch (\Exception $e) {
-                    Log::error('Failed to send WhatsApp status notification', [
-                        'order_id' => $order->id,
-                        'error' => $e->getMessage(),
-                    ]);
+                    Log::error("Failed to send WhatsApp notification for order {$order->id}: " . $e->getMessage());
                 }
             }
         }
