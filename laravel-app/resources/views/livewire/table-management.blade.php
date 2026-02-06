@@ -123,8 +123,10 @@
                 <!-- QR Code Display -->
                 @if($table->qr_code)
                     <div class="p-4 bg-white flex justify-center">
-                        <div class="w-32 h-32">
-                            {!! $table->qr_code !!}
+                        <div class="w-48 h-48">
+                            <img src="{{ asset('storage/' . $table->qr_code) }}"
+                                 alt="QR Code for {{ $table->name }}"
+                                 class="w-full h-full object-contain">
                         </div>
                     </div>
                 @endif
@@ -154,14 +156,36 @@
                     </div>
 
                     <!-- Action Buttons -->
-                    <button
-                        wire:click="generateQrCode({{ $table->id }})"
-                        class="w-full px-4 py-2 text-sm font-semibold rounded transition-colors
-                            {{ $table->status === 'occupied' ? 'bg-gray-800 text-white hover:bg-gray-700' : 'bg-gray-900 text-white hover:bg-gray-800' }}
-                        "
-                    >
-                        {{ $table->qr_code ? 'Regenerate QR Code' : 'Generate QR Code' }}
-                    </button>
+                    @if(!$table->qr_code)
+                        <button
+                            wire:click="generateQrCode({{ $table->id }})"
+                            class="w-full px-4 py-2 text-sm font-semibold rounded transition-colors
+                                {{ $table->status === 'occupied' ? 'bg-gray-800 text-white hover:bg-gray-700' : 'bg-gray-900 text-white hover:bg-gray-800' }}
+                            "
+                        >
+                            Generate QR Code
+                        </button>
+                    @else
+                        <div class="flex gap-2">
+                            <button
+                                wire:click="regenerateQrCode({{ $table->id }})"
+                                class="flex-1 px-4 py-2 text-sm font-semibold rounded transition-colors
+                                    {{ $table->status === 'occupied' ? 'bg-gray-800 text-white hover:bg-gray-700' : 'bg-gray-900 text-white hover:bg-gray-800' }}
+                                "
+                            >
+                                Regenerate QR
+                            </button>
+                            <a
+                                href="{{ asset('storage/' . $table->qr_code) }}"
+                                download="table_{{ $table->name }}_qr.png"
+                                class="flex-1 px-4 py-2 text-sm font-semibold rounded transition-colors text-center
+                                    {{ $table->status === 'occupied' ? 'bg-gray-800 text-white hover:bg-gray-700' : 'bg-green-600 text-white hover:bg-green-700' }}
+                                "
+                            >
+                                Download QR
+                            </a>
+                        </div>
+                    @endif
 
                     <div class="flex gap-2">
                         <button

@@ -183,10 +183,13 @@
 </head>
 <body>
     <div class="receipt-container">
-        <!-- Header -->
+        <!-- Header with Logo -->
         <div class="header">
-            <h1>Sea Cliff Smart Dining</h1>
-            <p>Official Receipt</p>
+            <h1>SeaCliff POS</h1>
+            <p>Restaurant Management System</p>
+            <p style="margin-top: 5px; font-size: 10px;">123 Ocean Drive, Coastal City | Phone: (555) 123-4567</p>
+            <p style="font-size: 10px;">Email: info@seacliffpos.com | www.seacliffpos.com</p>
+            <p style="margin-top: 10px; font-weight: bold;">OFFICIAL RECEIPT</p>
         </div>
 
         <!-- Order Information -->

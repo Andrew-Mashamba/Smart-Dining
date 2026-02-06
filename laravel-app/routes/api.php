@@ -37,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('orders/{id}/items', [OrderController::class, 'addItems']);
     Route::post('orders/{id}/serve', [OrderController::class, 'markAsServed']);
     Route::post('orders/{id}/cancel', [OrderController::class, 'cancel']);
+    Route::get('orders/{id}/receipt', [OrderController::class, 'generateReceipt']);
 
     // Tables
     Route::get('tables', [TableController::class, 'index']);

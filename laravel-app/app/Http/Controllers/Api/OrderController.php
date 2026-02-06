@@ -9,6 +9,7 @@ use App\Services\OrderManagement\OrderDistributionService;
 use App\Events\OrderCreated;
 use App\Events\OrderStatusChanged;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class OrderController extends Controller
 {
@@ -179,5 +180,31 @@ class OrderController extends Controller
         return response()->json([
             'message' => 'Order cancelled successfully',
         ]);
+    }
+
+    /**
+     * Generate and download receipt PDF for an order
+     */
+    public function generateReceipt($orderId)
+    {
+        // Load order with all necessary relationships
+        $order = Order::with([
+            'orderItems.menuItem',
+            'table',
+            'waiter',
+            'payments',
+            'tip'
+        ])->findOrFail($orderId);
+
+        // Generate PDF from the receipt blade template
+        $pdf = Pdf::loadView('receipts.order-receipt', compact('order'));
+
+        // Set PDF options for thermal printer compatibility
+        $pdf->setPaper([0, 0, 226.77, 841.89], 'portrait'); // 80mm width
+        $pdf->setOption('isHtml5ParserEnabled', true);
+        $pdf->setOption('isRemoteEnabled', true);
+
+        // Return PDF download with filename based on order number
+        return $pdf->download('receipt-' . $order->order_number . '.pdf');
     }
 }

@@ -3,9 +3,10 @@
 namespace App\Livewire;
 
 use App\Models\Table;
+use App\Services\QRCodeService;
 use Livewire\Component;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TableManagement extends Component
 {
@@ -132,23 +133,39 @@ class TableManagement extends Component
      */
     public function generateQrCode($tableId)
     {
+        $qrCodeService = new QRCodeService();
+        $qrCodeService->generateTableQR($tableId);
+
+        session()->flash('message', 'QR Code generated successfully.');
+    }
+
+    /**
+     * Regenerate QR code for a table
+     */
+    public function regenerateQrCode($tableId)
+    {
+        $qrCodeService = new QRCodeService();
+        $qrCodeService->regenerateTableQR($tableId);
+
+        session()->flash('message', 'QR Code regenerated successfully.');
+    }
+
+    /**
+     * Download QR code for a table
+     */
+    public function downloadQrCode($tableId): StreamedResponse
+    {
         $table = Table::findOrFail($tableId);
 
-        // Generate unique session token
-        $sessionToken = Str::random(32);
+        if (!$table->qr_code) {
+            session()->flash('error', 'No QR code available for this table.');
+            return response()->streamDownload(function () {}, '');
+        }
 
-        // Generate URL with session token pointing to guest ordering page
-        $url = url('/guest/order?table=' . $table->id . '&token=' . $sessionToken);
+        $filePath = Storage::disk('public')->path($table->qr_code);
+        $fileName = "table_{$table->name}_qr.png";
 
-        // Generate QR code as SVG and store it
-        $qrCode = QrCode::size(300)->generate($url);
-
-        // Update table with QR code
-        $table->update([
-            'qr_code' => $qrCode,
-        ]);
-
-        session()->flash('message', 'QR Code generated successfully for ' . $table->name);
+        return response()->download($filePath, $fileName);
     }
 
     /**
