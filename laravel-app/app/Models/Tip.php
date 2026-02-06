@@ -17,10 +17,9 @@ class Tip extends Model
      */
     protected $fillable = [
         'order_id',
-        'payment_id',
         'waiter_id',
         'amount',
-        'method',
+        'tip_method',
     ];
 
     /**
@@ -41,15 +40,7 @@ class Tip extends Model
     }
 
     /**
-     * Get the payment for this tip.
-     */
-    public function payment(): BelongsTo
-    {
-        return $this->belongsTo(Payment::class);
-    }
-
-    /**
-     * Get the waiter for this tip.
+     * Get the waiter (staff member) for this tip.
      */
     public function waiter(): BelongsTo
     {
