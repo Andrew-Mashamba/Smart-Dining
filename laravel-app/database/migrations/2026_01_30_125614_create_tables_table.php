@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('tables', function (Blueprint $table) {
             $table->id();
             $table->string('name')->comment('Table identifier (e.g., Table 1, Bar Seat 3)');
-            $table->enum('location', ['indoor', 'outdoor', 'bar'])->default('indoor');
+            $table->string('location')->comment('Table location in restaurant');
             $table->integer('capacity')->comment('Number of seats');
             $table->enum('status', ['available', 'occupied', 'reserved'])->default('available');
+            $table->string('qr_code')->nullable()->comment('QR code for table self-service');
             $table->timestamps();
 
             // Indexes
