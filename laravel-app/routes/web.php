@@ -23,22 +23,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Protected routes
 Route::middleware(['auth:web'])->group(function () {
 
-    // Common dashboard route - redirects to role-specific dashboard
-    Route::get('/dashboard', function () {
-        $user = auth()->user();
-
-        // Redirect based on user role
-        if ($user->hasRole('admin') || $user->hasRole('manager')) {
-            return redirect()->route('manager.dashboard');
-        } elseif ($user->hasRole('chef')) {
-            return redirect()->route('kitchen.display');
-        } elseif ($user->hasRole('bartender')) {
-            return redirect()->route('bar.display');
-        }
-
-        // Default fallback
-        return redirect()->route('login');
-    })->name('dashboard');
+    // Dashboard Livewire component route
+    Route::get('/dashboard', Dashboard::class)->middleware('auth')->name('dashboard');
 
     // Manager Portal (admin and manager access)
     Route::middleware(['role:admin,manager'])->prefix('manager')->name('manager.')->group(function () {

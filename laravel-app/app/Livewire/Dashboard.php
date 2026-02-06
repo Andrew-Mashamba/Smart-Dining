@@ -16,6 +16,7 @@ class Dashboard extends Component
             'staff_count' => 0,
         ];
 
-        return view('livewire.dashboard', $metrics);
+        return view('livewire.dashboard', $metrics)
+            ->layout('layouts.app-layout');
     }
 }
