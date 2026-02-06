@@ -51,6 +51,14 @@ class GuestSession extends Model
     }
 
     /**
+     * Scope a query to only include active sessions.
+     */
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->whereNull('ended_at');
+    }
+
+    /**
      * Get the guest for this session.
      */
     public function guest(): BelongsTo
@@ -80,7 +88,6 @@ class GuestSession extends Model
     public function close(): void
     {
         $this->update([
-            'status' => 'closed',
             'ended_at' => now(),
         ]);
     }
@@ -90,6 +97,6 @@ class GuestSession extends Model
      */
     public function isActive(): bool
     {
-        return $this->status === 'active';
+        return $this->ended_at === null;
     }
 }

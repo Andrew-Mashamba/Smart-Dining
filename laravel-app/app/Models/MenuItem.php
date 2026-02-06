@@ -56,6 +56,14 @@ class MenuItem extends Model
     }
 
     /**
+     * Get all inventory transactions for this menu item.
+     */
+    public function inventoryTransactions(): HasMany
+    {
+        return $this->hasMany(InventoryTransaction::class);
+    }
+
+    /**
      * Scope to get only available items.
      */
     public function scopeAvailable($query)

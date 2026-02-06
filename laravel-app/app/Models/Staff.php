@@ -71,6 +71,14 @@ class Staff extends Authenticatable
     }
 
     /**
+     * Get all inventory transactions created by this staff member.
+     */
+    public function inventoryTransactions(): HasMany
+    {
+        return $this->hasMany(InventoryTransaction::class, 'created_by');
+    }
+
+    /**
      * Check if staff is a waiter.
      */
     public function isWaiter(): bool
