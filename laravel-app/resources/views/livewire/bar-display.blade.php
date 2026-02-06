@@ -42,9 +42,12 @@
 >
     <!-- Bar Display Header Info -->
     <div class="mb-6 flex items-center justify-between">
-        <div>
-            <h2 class="text-3xl font-bold text-gray-900">Active Drink Orders</h2>
-            <p class="text-gray-600 mt-1">{{ $orders->count() }} orders in queue</p>
+        <div class="flex items-center gap-2">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900">Active Drink Orders</h2>
+                <p class="text-gray-600 mt-1">{{ $orders->count() }} orders in queue</p>
+            </div>
+            <x-help-tooltip text="View all drink orders in real-time. Mark items as 'Preparing' when you start making them, and 'Completed' when drinks are ready for service. The display auto-refreshes every 5 seconds." position="right" />
         </div>
         <div class="text-right">
             <div class="text-sm text-gray-600">Auto-refresh every 5 seconds</div>

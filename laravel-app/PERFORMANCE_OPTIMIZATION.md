@@ -93,6 +93,7 @@ For production environments, configure Redis for caching and sessions in `.env`:
 ```env
 # Enable Redis for cache and sessions
 CACHE_STORE=redis
+CACHE_DRIVER=redis
 SESSION_DRIVER=redis
 
 # Redis connection settings
@@ -100,6 +101,8 @@ REDIS_CLIENT=phpredis
 REDIS_HOST=127.0.0.1
 REDIS_PASSWORD=null
 REDIS_PORT=6379
+REDIS_CACHE_DB=1
+REDIS_PREFIX=hospitality_
 ```
 
 **Note:** Ensure Redis is installed and running on your server.

@@ -1,7 +1,10 @@
 <div>
     <!-- Page Header -->
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Inventory Management</h1>
+        <div class="flex items-center gap-2">
+            <h1 class="text-2xl font-bold text-gray-900">Inventory Management</h1>
+            <x-help-tooltip text="Track stock levels for all menu items. Items with low stock are highlighted in red. Use the action button to adjust quantities when you receive or use inventory." position="right" />
+        </div>
         <p class="text-gray-600 mt-1">Monitor stock levels and manage inventory transactions</p>
     </div>
 

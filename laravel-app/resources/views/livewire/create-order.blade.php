@@ -1,7 +1,10 @@
 <div>
     <!-- Page Header -->
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">New Order</h1>
+        <div class="flex items-center gap-2">
+            <h1 class="text-2xl font-bold text-gray-900">New Order</h1>
+            <x-help-tooltip text="Select items from the menu, add them to the cart, choose a table, and place the order. Orders are automatically sent to the kitchen/bar." position="right" />
+        </div>
         <p class="mt-1 text-sm text-gray-600">Create a new order for your customers</p>
     </div>
 
@@ -87,7 +90,10 @@
 
                     <!-- Table Selection -->
                     <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Select Table</label>
+                        <div class="flex items-center gap-2 mb-2">
+                            <label class="block text-sm font-medium text-gray-700">Select Table</label>
+                            <x-help-tooltip text="Choose the table number for this order. Only available tables are shown." position="right" />
+                        </div>
                         <select
                             wire:model="selectedTableId"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent {{ $errors->has('selectedTableId') ? 'border-red-500' : '' }}"

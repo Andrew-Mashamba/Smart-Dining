@@ -2,7 +2,10 @@
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white shadow-sm sm:rounded-lg">
             <div class="p-6">
-                <h2 class="text-2xl font-semibold text-gray-900 mb-6">Application Settings</h2>
+                <div class="flex items-center gap-2 mb-6">
+                    <h2 class="text-2xl font-semibold text-gray-900">Application Settings</h2>
+                    <x-help-tooltip text="Configure business information, tax rates, payment methods, and other system settings. Changes are saved immediately and affect all operations." position="right" />
+                </div>
 
                 @if (session()->has('message'))
                     <div class="mb-4 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded">

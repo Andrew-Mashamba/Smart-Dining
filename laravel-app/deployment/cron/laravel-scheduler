@@ -1,0 +1,14 @@
+# Laravel Task Scheduler
+# This cron job runs the Laravel scheduler every minute
+# The scheduler will then run all scheduled tasks defined in routes/console.php
+#
+# Installation:
+# 1. Copy this file to /etc/cron.d/laravel-scheduler
+# 2. Update the path to match your installation directory
+# 3. Ensure the www-data user has permission to run this
+# 4. Restart cron: sudo service cron restart
+#
+# Format: * * * * * user command
+# Minute (0-59) | Hour (0-23) | Day of Month (1-31) | Month (1-12) | Day of Week (0-7)
+
+* * * * * www-data cd /var/www/html/laravel-app && php artisan schedule:run >> /dev/null 2>&1

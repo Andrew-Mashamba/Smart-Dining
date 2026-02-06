@@ -25,19 +25,23 @@ class SalesReports extends Component
 
     /**
      * Get summary statistics for the date range
+     * Optimized to select only needed columns and use single query
      */
     public function getSummaryStats()
     {
-        $orders = Order::whereBetween('created_at', [
-            $this->start_date . ' 00:00:00',
-            $this->end_date . ' 23:59:59'
-        ])->where('status', '!=', 'cancelled');
+        $stats = Order::select(DB::raw('COUNT(*) as total_orders, SUM(total) as total_revenue, SUM(tax) as total_tax'))
+            ->whereBetween('created_at', [
+                $this->start_date . ' 00:00:00',
+                $this->end_date . ' 23:59:59'
+            ])
+            ->where('status', '!=', 'cancelled')
+            ->first();
 
         return [
-            'total_revenue' => $orders->sum('total'),
-            'total_orders' => $orders->count(),
-            'average_order_value' => $orders->count() > 0 ? $orders->sum('total') / $orders->count() : 0,
-            'total_tax' => $orders->sum('tax'),
+            'total_revenue' => (float) ($stats->total_revenue ?? 0),
+            'total_orders' => (int) ($stats->total_orders ?? 0),
+            'average_order_value' => $stats->total_orders > 0 ? $stats->total_revenue / $stats->total_orders : 0,
+            'total_tax' => (float) ($stats->total_tax ?? 0),
         ];
     }
 
@@ -146,10 +150,16 @@ class SalesReports extends Component
 
     /**
      * Export report to CSV
+     * Optimized with eager loading and column selection
      */
     public function exportCsv()
     {
-        $orders = Order::with(['orderItems.menuItem', 'payments'])
+        $orders = Order::select('id', 'order_number', 'total', 'tax', 'status', 'created_at')
+            ->with([
+                'orderItems:id,order_id,menu_item_id,quantity,unit_price,subtotal',
+                'orderItems.menuItem:id,name',
+                'payments:id,order_id,payment_method'
+            ])
             ->whereBetween('created_at', [
                 $this->start_date . ' 00:00:00',
                 $this->end_date . ' 23:59:59'

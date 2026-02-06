@@ -26,10 +26,12 @@ class StaffReports extends Component
 
     /**
      * Get all active waiters for the staff selector
+     * Optimized to select only needed columns
      */
     public function getWaiters()
     {
-        return Staff::where('role', 'waiter')
+        return Staff::select('id', 'name')
+            ->where('role', 'waiter')
             ->where('status', 'active')
             ->orderBy('name')
             ->get();
@@ -74,14 +76,14 @@ class StaffReports extends Component
 
         // Calculate additional metrics for each staff member
         $staffPerformance = $staffPerformance->map(function ($staff) {
-            // Get tip breakdown by method
-            $tipBreakdown = Tip::where('waiter_id', $staff->id)
+            // Get tip breakdown by method - optimized query with only needed columns
+            $tipBreakdown = Tip::select('tip_method')
+                ->selectRaw('SUM(amount) as total')
+                ->where('waiter_id', $staff->id)
                 ->whereBetween('created_at', [
                     $this->start_date . ' 00:00:00',
                     $this->end_date . ' 23:59:59'
                 ])
-                ->select('tip_method')
-                ->selectRaw('SUM(amount) as total')
                 ->groupBy('tip_method')
                 ->get()
                 ->pluck('total', 'tip_method')

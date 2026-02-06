@@ -504,7 +504,7 @@ class OrderWorkflowTest extends TestCase
         $order = Order::factory()->create([
             'waiter_id' => $this->waiter->id,
             'table_id' => $this->table->id,
-            'status' => 'confirmed',
+            'status' => 'pending',
         ]);
 
         $kitchenOrderItem = OrderItem::factory()->create([

@@ -44,7 +44,8 @@ class ReceiptPdfGenerationTest extends TestCase
 
         // Create a table
         $table = Table::create([
-            'table_number' => 'T-10',
+            'name' => 'T-10',
+            'location' => 'Main Floor',
             'capacity' => 4,
             'status' => 'occupied',
             'qr_code' => null,

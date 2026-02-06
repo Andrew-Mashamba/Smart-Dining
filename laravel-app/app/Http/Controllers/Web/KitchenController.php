@@ -19,7 +19,7 @@ class KitchenController extends Controller
     public function display()
     {
         $pendingItems = OrderItem::whereHas('menuItem', function ($query) {
-            $query->where('preparation_area', 'kitchen');
+            $query->where('prep_area', 'kitchen');
         })
         ->where('status', 'confirmed')
         ->with(['order.table', 'menuItem'])
@@ -27,7 +27,7 @@ class KitchenController extends Controller
         ->get();
 
         $preparingItems = OrderItem::whereHas('menuItem', function ($query) {
-            $query->where('preparation_area', 'kitchen');
+            $query->where('prep_area', 'kitchen');
         })
         ->where('status', 'preparing')
         ->with(['order.table', 'menuItem', 'preparedBy'])
@@ -35,7 +35,7 @@ class KitchenController extends Controller
         ->get();
 
         $readyItems = OrderItem::whereHas('menuItem', function ($query) {
-            $query->where('preparation_area', 'kitchen');
+            $query->where('prep_area', 'kitchen');
         })
         ->where('status', 'ready')
         ->with(['order.table', 'menuItem'])

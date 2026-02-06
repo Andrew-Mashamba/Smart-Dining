@@ -24,6 +24,9 @@ class MenuItemFactory extends Factory
             'prep_area' => fake()->randomElement(['kitchen', 'bar', 'both']),
             'prep_time_minutes' => fake()->numberBetween(5, 30),
             'status' => 'available',
+            'stock_quantity' => 100,
+            'unit' => 'pieces',
+            'low_stock_threshold' => 10,
         ];
     }
 }

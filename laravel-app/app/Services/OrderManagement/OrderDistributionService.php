@@ -20,11 +20,11 @@ class OrderDistributionService
         $order->load('items.menuItem');
 
         $kitchenItems = $order->items->filter(function ($item) {
-            return $item->menuItem->preparation_area === 'kitchen';
+            return $item->menuItem->prep_area === 'kitchen';
         });
 
         $barItems = $order->items->filter(function ($item) {
-            return $item->menuItem->preparation_area === 'bar';
+            return $item->menuItem->prep_area === 'bar';
         });
 
         $distribution = [];
@@ -102,7 +102,7 @@ class OrderDistributionService
         }
 
         $expectedArea = $staff->role === 'chef' ? 'kitchen' : 'bar';
-        $actualArea = $item->menuItem->preparation_area;
+        $actualArea = $item->menuItem->prep_area;
 
         if ($expectedArea !== $actualArea) {
             throw new \Exception("This item should be prepared in the {$actualArea}, not by a {$staff->role}");
@@ -167,7 +167,7 @@ class OrderDistributionService
     public function getPendingItems(string $prepArea): Collection
     {
         return OrderItem::whereHas('menuItem', function ($query) use ($prepArea) {
-            $query->where('preparation_area', $prepArea);
+            $query->where('prep_area', $prepArea);
         })
         ->whereIn('status', ['confirmed', 'preparing'])
         ->with(['order.table', 'menuItem'])

@@ -1,7 +1,10 @@
 <div class="p-6" wire:poll.5s>
     <!-- Page Header -->
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Table Management</h1>
+        <div class="flex items-center gap-2">
+            <h1 class="text-2xl font-bold text-gray-900">Table Management</h1>
+            <x-help-tooltip text="Create and manage restaurant tables. Each table gets a unique QR code that guests can scan to place orders. You can set capacity, location, and monitor table status (available, occupied, reserved)." position="right" />
+        </div>
         <p class="text-gray-600">Manage restaurant tables, generate QR codes, and monitor status</p>
     </div>
 

@@ -22,7 +22,7 @@ class MenuService
         }
 
         if (isset($filters['prep_area'])) {
-            $query->where('preparation_area', $filters['prep_area']);
+            $query->where('prep_area', $filters['prep_area']);
         }
 
         if (isset($filters['max_price'])) {
@@ -60,7 +60,7 @@ class MenuService
      */
     public function getItemsByPrepArea(string $prepArea): Collection
     {
-        return MenuItem::where('preparation_area', $prepArea)
+        return MenuItem::where('prep_area', $prepArea)
             ->where('is_available', true)
             ->orderBy('category')
             ->orderBy('name')
@@ -107,8 +107,8 @@ class MenuService
                             'name' => $item->name,
                             'description' => $item->description,
                             'price' => $item->price,
-                            'preparation_time' => $item->preparation_time,
-                            'preparation_area' => $item->preparation_area,
+                            'prep_time_minutes' => $item->prep_time_minutes,
+                            'prep_area' => $item->prep_area,
                         ];
                     }),
                 ];

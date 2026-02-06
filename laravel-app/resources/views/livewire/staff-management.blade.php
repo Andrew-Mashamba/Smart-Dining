@@ -1,7 +1,10 @@
 <div>
     <!-- Page Header -->
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Staff Management</h1>
+        <div class="flex items-center gap-2">
+            <h1 class="text-2xl font-bold text-gray-900">Staff Management</h1>
+            <x-help-tooltip text="Add and manage staff members. Assign roles (admin, manager, waiter, chef, bartender) to control access permissions. You can activate/deactivate staff accounts and edit their details." position="right" />
+        </div>
         <p class="text-gray-600 mt-1">Manage employees with role assignment and status controls</p>
     </div>
 

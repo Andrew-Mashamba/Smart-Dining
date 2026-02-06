@@ -1,7 +1,10 @@
 <div>
     <!-- Page Header -->
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Guest Management</h1>
+        <div class="flex items-center gap-2">
+            <h1 class="text-2xl font-bold text-gray-900">Guest Management</h1>
+            <x-help-tooltip text="Manage guest profiles and track customer information. View order history, loyalty points, and preferences. Guests can be created manually or automatically when they place orders via QR code." position="right" />
+        </div>
         <p class="text-gray-600 mt-1">View guest profiles, order history, and loyalty points</p>
     </div>
 

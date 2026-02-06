@@ -115,7 +115,8 @@ class RoleBasedApiAccessTest extends TestCase
             ->postJson('/api/payments', [
                 'order_id' => $order->id,
                 'payment_method' => 'cash',
-                'amount' => 50.00
+                'amount' => 50.00,
+                'tendered' => 60.00
             ]);
 
         $response->assertStatus(201);
@@ -285,11 +286,11 @@ class RoleBasedApiAccessTest extends TestCase
     /** @test */
     public function manager_can_update_order_status()
     {
-        $order = Order::factory()->create();
+        $order = Order::factory()->create(['status' => 'confirmed']);
 
         $response = $this->actingAs($this->manager, 'sanctum')
             ->patchJson("/api/orders/{$order->id}/status", [
-                'status' => 'confirmed'
+                'status' => 'preparing'
             ]);
 
         $response->assertStatus(200);

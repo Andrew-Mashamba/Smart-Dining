@@ -2,9 +2,12 @@
     <!-- Page Header -->
     <div class="mb-6">
         <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900">Process Payment</h1>
-                <p class="text-sm text-gray-600 mt-1">Complete payment for order {{ $order->order_number }}</p>
+            <div class="flex items-center gap-2">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Process Payment</h1>
+                    <p class="text-sm text-gray-600 mt-1">Complete payment for order {{ $order->order_number }}</p>
+                </div>
+                <x-help-tooltip text="Choose a payment method (cash, card, or Stripe), enter the amount, and optionally add a tip. Click 'Process Payment' to complete the transaction." position="right" />
             </div>
             <a href="{{ route('orders.show', $order->id) }}" class="px-4 py-2 bg-white border border-gray-300 text-gray-900 rounded-lg hover:bg-gray-50 transition-colors">
                 Back to Order

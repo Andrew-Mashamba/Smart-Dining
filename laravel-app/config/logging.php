@@ -58,6 +58,12 @@ return [
             'ignore_exceptions' => false,
         ],
 
+        'production' => [
+            'driver' => 'stack',
+            'channels' => ['daily', 'database', 'critical', 'slack', 'mail'],
+            'ignore_exceptions' => false,
+        ],
+
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
@@ -78,8 +84,19 @@ return [
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
             'username' => env('LOG_SLACK_USERNAME', 'Laravel Log'),
             'emoji' => env('LOG_SLACK_EMOJI', ':boom:'),
-            'level' => env('LOG_LEVEL', 'critical'),
+            'level' => env('LOG_SLACK_LEVEL', 'error'),
             'replace_placeholders' => true,
+        ],
+
+        'mail' => [
+            'driver' => 'monolog',
+            'handler' => \Monolog\Handler\NativeMailerHandler::class,
+            'handler_with' => [
+                'to' => env('MAIL_ERROR_TO', 'admin@example.com'),
+                'subject' => env('APP_NAME') . ' - Critical Error',
+                'from' => env('MAIL_FROM_ADDRESS'),
+            ],
+            'level' => 'critical',
         ],
 
         'critical' => [

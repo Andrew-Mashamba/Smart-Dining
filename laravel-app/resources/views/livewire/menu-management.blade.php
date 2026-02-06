@@ -1,7 +1,10 @@
 <div>
     <!-- Page Header -->
     <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Menu Management</h1>
+        <div class="flex items-center gap-2">
+            <h1 class="text-2xl font-bold text-gray-900">Menu Management</h1>
+            <x-help-tooltip text="Create categories to organize your menu, then add items to each category. Set prices, descriptions, and mark items as available or unavailable." position="right" />
+        </div>
         <p class="text-gray-600 mt-1">Manage menu categories and items</p>
     </div>
 

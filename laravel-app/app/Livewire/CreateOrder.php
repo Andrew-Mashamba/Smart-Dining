@@ -242,23 +242,37 @@ class CreateOrder extends Component
      */
     public function render()
     {
-        // Get all categories
-        $categories = MenuCategory::where('status', 'active')->get();
+        // Use cached menu categories with items for better performance
+        $cachedMenu = MenuCategory::getCachedMenu();
 
-        // Get available menu items with filtering
-        $menuItems = MenuItem::with('menuCategory')
-            ->available()
-            ->when($this->selectedCategoryId, function ($query) {
-                $query->where('category_id', $this->selectedCategoryId);
-            })
-            ->when($this->searchTerm, function ($query) {
-                $query->where('name', 'like', '%' . $this->searchTerm . '%');
-            })
+        // Filter categories and items based on search and category selection
+        $categories = $cachedMenu;
+
+        // Build menu items collection from cached data with filtering
+        $menuItems = collect();
+        foreach ($cachedMenu as $category) {
+            foreach ($category->menuItems as $item) {
+                // Apply category filter
+                if ($this->selectedCategoryId && $category->id != $this->selectedCategoryId) {
+                    continue;
+                }
+
+                // Apply search filter
+                if ($this->searchTerm && stripos($item->name, $this->searchTerm) === false) {
+                    continue;
+                }
+
+                $menuItems->push($item);
+            }
+        }
+
+        // Sort menu items by name
+        $menuItems = $menuItems->sortBy('name');
+
+        // Get tables with only needed columns for better performance
+        $tables = Table::select('id', 'name', 'status')
             ->orderBy('name')
             ->get();
-
-        // Get all tables
-        $tables = Table::orderBy('name')->get();
 
         return view('livewire.create-order', [
             'categories' => $categories,

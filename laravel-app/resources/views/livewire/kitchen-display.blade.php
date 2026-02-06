@@ -43,7 +43,10 @@
     <!-- Kitchen Display Header Info -->
     <div class="mb-6 flex items-center justify-between bg-white rounded-xl shadow-sm p-4">
         <div>
-            <h2 class="text-3xl font-bold text-gray-900">Active Kitchen Orders</h2>
+            <div class="flex items-center gap-2">
+                <h2 class="text-3xl font-bold text-gray-900">Active Kitchen Orders</h2>
+                <x-help-tooltip text="Orders appear here in real-time. Click 'Start Preparation' when you begin cooking, and 'Mark Complete' when the dish is ready for serving." position="right" />
+            </div>
             <p class="text-gray-600 mt-1">{{ $orders->count() }} {{ Str::plural('order', $orders->count()) }} in queue</p>
         </div>
         <div class="text-right">

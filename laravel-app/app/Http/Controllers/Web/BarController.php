@@ -19,7 +19,7 @@ class BarController extends Controller
     public function display()
     {
         $pendingItems = OrderItem::whereHas('menuItem', function ($query) {
-            $query->where('preparation_area', 'bar');
+            $query->where('prep_area', 'bar');
         })
         ->where('status', 'confirmed')
         ->with(['order.table', 'menuItem'])
@@ -27,7 +27,7 @@ class BarController extends Controller
         ->get();
 
         $preparingItems = OrderItem::whereHas('menuItem', function ($query) {
-            $query->where('preparation_area', 'bar');
+            $query->where('prep_area', 'bar');
         })
         ->where('status', 'preparing')
         ->with(['order.table', 'menuItem', 'preparedBy'])
@@ -35,7 +35,7 @@ class BarController extends Controller
         ->get();
 
         $readyItems = OrderItem::whereHas('menuItem', function ($query) {
-            $query->where('preparation_area', 'bar');
+            $query->where('prep_area', 'bar');
         })
         ->where('status', 'ready')
         ->with(['order.table', 'menuItem'])

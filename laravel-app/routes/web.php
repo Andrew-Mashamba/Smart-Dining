@@ -25,6 +25,7 @@ use App\Livewire\InventoryManagement;
 use App\Livewire\GuestOrder;
 use App\Livewire\SettingsManagement;
 use App\Http\Controllers\WhatsAppController;
+use App\Http\Controllers\HelpController;
 
 // Guest ordering route (public access via QR code)
 Route::get('/guest/order', GuestOrder::class)->name('guest.order');
@@ -108,6 +109,11 @@ Route::middleware(['auth:web'])->group(function () {
 
     // Dashboard Livewire component route
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
+
+    // Help and Documentation routes
+    Route::get('/help', [HelpController::class, 'index'])->name('help.index');
+    Route::get('/help/{filename}', [HelpController::class, 'show'])->name('help.show');
+    Route::get('/help/{filename}/pdf', [HelpController::class, 'exportPdf'])->name('help.pdf');
 
     // Users Livewire component route (admin and manager only)
     Route::get('/users', Users::class)->middleware(['role:admin,manager'])->name('users');
