@@ -25,6 +25,7 @@ class MenuItem extends Model
         'prep_time_minutes',
         'status',
         'stock_quantity',
+        'unit',
         'low_stock_threshold',
     ];
 

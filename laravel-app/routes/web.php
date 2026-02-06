@@ -32,6 +32,11 @@ Route::get('/guest/order', GuestOrder::class)->name('guest.order');
 Route::get('/webhooks/whatsapp', [WhatsAppController::class, 'verify'])->name('whatsapp.verify');
 Route::post('/webhooks/whatsapp', [WhatsAppController::class, 'webhook'])->name('whatsapp.webhook');
 
+// Test broadcast route (development only)
+Route::get('/test-broadcast', function () {
+    return view('test-broadcast');
+})->name('test.broadcast');
+
 // Root route: Redirect guests to login, authenticated users to dashboard
 Route::get('/', function () {
     if (auth()->check()) {
@@ -92,6 +97,10 @@ Route::middleware(['auth:web'])->group(function () {
 
     // Process Payment Livewire component route (authenticated users)
     Route::get('/orders/{order}/payment', ProcessPayment::class)->middleware(['auth'])->name('orders.payment');
+
+    // Stripe payment routes (authenticated users)
+    Route::get('/payments/stripe/{order}', [App\Http\Controllers\Web\StripePaymentWebController::class, 'show'])->name('payments.stripe.form');
+    Route::get('/payments/stripe/success', [App\Http\Controllers\Web\StripePaymentWebController::class, 'success'])->name('payments.stripe.success');
 
     // Kitchen Display System Livewire component route (chef, manager, and admin access)
     Route::get('/kitchen', KitchenDisplay::class)->middleware(['auth', 'role:chef,manager,admin'])->name('kitchen');

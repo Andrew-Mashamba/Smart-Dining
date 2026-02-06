@@ -55,6 +55,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('payments/{id}/confirm', [PaymentController::class, 'confirm']);
     Route::get('orders/{orderId}/bill', [PaymentController::class, 'getBill']);
 
+    // Stripe payment
+    Route::post('payments/stripe/create-intent', [App\Http\Controllers\StripePaymentController::class, 'createIntent']);
+    Route::post('payments/stripe/confirm', [App\Http\Controllers\StripePaymentController::class, 'confirm']);
+
     // Tips
     Route::post('tips', [TipController::class, 'store']);
     Route::get('orders/{orderId}/tip-suggestions', [TipController::class, 'suggestions']);
@@ -77,4 +81,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::prefix('webhooks')->group(function () {
     Route::get('whatsapp', [App\Http\Controllers\WhatsApp\WebhookController::class, 'verify']);
     Route::post('whatsapp', [App\Http\Controllers\WhatsApp\WebhookController::class, 'handle']);
+
+    // Stripe webhook (signature verification handled in controller)
+    Route::post('stripe', [App\Http\Controllers\StripeWebhookController::class, 'handle']);
 });
