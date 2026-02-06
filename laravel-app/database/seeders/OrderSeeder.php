@@ -75,6 +75,9 @@ class OrderSeeder extends Seeder
                 'waiter_id' => $waiters->random()->id,
                 'order_source' => $orderSources[array_rand($orderSources)],
                 'status' => $status,
+                'subtotal' => 0, // Will be updated after adding items
+                'tax' => 0,
+                'total' => 0,
                 'special_instructions' => $specialInstructions[array_rand($specialInstructions)],
                 'created_at' => $createdAt,
                 'updated_at' => $createdAt,
@@ -92,12 +95,13 @@ class OrderSeeder extends Seeder
                 $orderSubtotal += $subtotal;
 
                 // Determine prep_status based on order status
+                // Valid values: pending, received, preparing, ready
                 $prepStatus = match($status) {
                     'pending' => 'pending',
-                    'preparing' => rand(0, 1) ? 'preparing' : 'pending',
+                    'preparing' => rand(0, 1) ? 'preparing' : 'received',
                     'ready' => 'ready',
-                    'served', 'paid' => 'completed',
-                    'cancelled' => 'cancelled',
+                    'served', 'paid' => 'ready',
+                    'cancelled' => 'pending',
                     default => 'pending',
                 };
 
