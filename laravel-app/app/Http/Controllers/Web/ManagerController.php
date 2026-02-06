@@ -8,6 +8,7 @@ use App\Models\Table;
 use App\Models\Staff;
 use App\Models\Payment;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ManagerController extends Controller
 {
@@ -37,5 +38,32 @@ class ManagerController extends Controller
             'staffOnDuty',
             'recentOrders'
         ));
+    }
+
+    /**
+     * Generate and download PDF receipt for an order.
+     *
+     * @param int $orderId
+     * @return \Illuminate\Http\Response
+     */
+    public function generateReceipt($orderId)
+    {
+        // Load order with all necessary relationships
+        $order = Order::with([
+            'orderItems.menuItem',
+            'table',
+            'waiter',
+            'payments',
+            'tip'
+        ])->findOrFail($orderId);
+
+        // Generate PDF from the receipt blade template
+        $pdf = Pdf::loadView('receipts.order-receipt', compact('order'));
+
+        // Set paper size for thermal printer (80mm width)
+        $pdf->setPaper([0, 0, 226.77, 841.89], 'portrait'); // 80mm x 297mm (A4 height)
+
+        // Return PDF as download
+        return $pdf->download('receipt-' . $order->order_number . '.pdf');
     }
 }

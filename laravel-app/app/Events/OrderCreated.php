@@ -51,7 +51,7 @@ class OrderCreated implements ShouldBroadcast
             'order_id' => $this->order->id,
             'table' => $this->order->table->name,
             'status' => $this->order->status,
-            'items_count' => $this->order->items->count(),
+            'items_count' => $this->order->orderItems->count(),
         ];
     }
 }

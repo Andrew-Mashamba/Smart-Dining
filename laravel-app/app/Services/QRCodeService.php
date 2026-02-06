@@ -34,6 +34,7 @@ class QRCodeService
         $qrCode = QrCode::format('png')
             ->size(400)
             ->errorCorrection('H')
+            ->margin(2)
             ->generate($url);
 
         // Define the file path

@@ -56,7 +56,7 @@ class OrderStatusUpdated implements ShouldBroadcast
             'table' => $this->order->table->name,
             'old_status' => $this->oldStatus,
             'new_status' => $this->newStatus,
-            'updated_at' => $this->order->updated_at->toISOString(),
+            'updated_at' => $this->order->updated_at?->toISOString() ?? now()->toISOString(),
         ];
     }
 }

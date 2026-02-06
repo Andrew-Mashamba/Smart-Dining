@@ -85,6 +85,7 @@ Route::middleware(['auth:web'])->group(function () {
     // Manager Portal (admin and manager access)
     Route::middleware(['role:admin,manager'])->prefix('manager')->name('manager.')->group(function () {
         Route::get('/dashboard', [ManagerController::class, 'dashboard'])->name('dashboard');
+        Route::get('/orders/{orderId}/receipt', [ManagerController::class, 'generateReceipt'])->name('orders.receipt');
     });
 
     // Kitchen Display System (chef access)

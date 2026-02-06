@@ -228,7 +228,7 @@
         @if($order->table)
         <div class="info-row">
             <span class="info-label">Table:</span>
-            <span>{{ $order->table->table_number }}</span>
+            <span>{{ $order->table->name }}</span>
         </div>
         @endif
         @if($order->waiter)
