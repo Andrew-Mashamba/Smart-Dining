@@ -14,6 +14,7 @@ use App\Livewire\CreateOrder;
 use App\Livewire\OrdersList;
 use App\Livewire\OrderDetails;
 use App\Livewire\KitchenDisplay;
+use App\Livewire\BarDisplay;
 
 // Root route: Redirect guests to login, authenticated users to dashboard
 Route::get('/', function () {
@@ -57,6 +58,9 @@ Route::middleware(['auth:web'])->group(function () {
 
     // Kitchen Display System Livewire component route (chef, manager, and admin access)
     Route::get('/kitchen', KitchenDisplay::class)->middleware(['auth', 'role:chef,manager,admin'])->name('kitchen');
+
+    // Bar Display System Livewire component route (bartender, manager, and admin access)
+    Route::get('/bar', BarDisplay::class)->middleware(['auth', 'role:bartender,manager,admin'])->name('bar');
 
     // Manager Portal (admin and manager access)
     Route::middleware(['role:admin,manager'])->prefix('manager')->name('manager.')->group(function () {

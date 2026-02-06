@@ -10,7 +10,7 @@ use Livewire\Component;
 use Livewire\Attributes\On;
 use Carbon\Carbon;
 
-class KitchenDisplay extends Component
+class BarDisplay extends Component
 {
     /**
      * Track if fullscreen mode is enabled (managed by Alpine.js)
@@ -19,9 +19,9 @@ class KitchenDisplay extends Component
 
     /**
      * Listen to OrderCreated event from Echo channel
-     * This will trigger when a new order is created
+     * This will trigger when a new order is created with bar items
      */
-    #[On('echo:kitchen,OrderCreated')]
+    #[On('echo:bar,OrderCreated')]
     public function handleNewOrder($data)
     {
         // Refresh the component to show new order
@@ -31,7 +31,7 @@ class KitchenDisplay extends Component
     /**
      * Listen to OrderItemUpdated event
      */
-    #[On('echo:kitchen,OrderItemUpdated')]
+    #[On('echo:bar,OrderItemUpdated')]
     public function handleOrderItemUpdate($data)
     {
         // Auto-refresh when items are updated
@@ -57,22 +57,23 @@ class KitchenDisplay extends Component
         $orderItem->prep_status = $status;
         $orderItem->save();
 
-        // Broadcast the update to other kitchen displays
+        // Broadcast the update to other bar displays
         broadcast(new OrderItemUpdated($orderItem))->toOthers();
 
         session()->flash('message', 'Item status updated to ' . $status);
     }
 
     /**
-     * Get all pending kitchen orders grouped by order_id
-     * Orders with items that have prep_status in ['pending', 'received', 'preparing']
+     * Get all pending bar orders grouped by order_id
+     * Orders with items that have prep_area in ['bar', 'both'] and
+     * prep_status in ['pending', 'received', 'preparing']
      */
-    protected function getKitchenOrders()
+    protected function getBarOrders()
     {
-        // Get all order items for kitchen that are not ready yet
+        // Get all order items for bar that are not ready yet
         $orderItems = OrderItem::with(['order.table', 'menuItem'])
             ->whereHas('menuItem', function ($query) {
-                $query->where('prep_area', 'kitchen');
+                $query->whereIn('prep_area', ['bar', 'both']);
             })
             ->whereIn('prep_status', ['pending', 'received', 'preparing'])
             ->get();
@@ -85,8 +86,8 @@ class KitchenDisplay extends Component
             $createdAt = Carbon::parse($order->created_at);
             $elapsedMinutes = $createdAt->diffInMinutes(now());
 
-            // Determine if order is high priority (older than 15 minutes)
-            $isHighPriority = $elapsedMinutes > 15;
+            // Determine if order is high priority (older than 10 minutes)
+            $isHighPriority = $elapsedMinutes > 10;
 
             return [
                 'order_id' => $order->id,
@@ -152,10 +153,10 @@ class KitchenDisplay extends Component
      */
     public function render()
     {
-        $orders = $this->getKitchenOrders();
+        $orders = $this->getBarOrders();
 
-        return view('livewire.kitchen-display', [
+        return view('livewire.bar-display', [
             'orders' => $orders,
-        ])->layout('layouts.kitchen-layout');
+        ])->layout('layouts.bar-layout');
     }
 }

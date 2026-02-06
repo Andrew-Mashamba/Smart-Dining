@@ -38,13 +38,13 @@
         });
     "
     wire:poll.5s
-    class="kitchen-display"
+    class="bar-display"
 >
-    <!-- Kitchen Display Header Info -->
-    <div class="mb-6 flex items-center justify-between bg-white rounded-xl shadow-sm p-4">
+    <!-- Bar Display Header Info -->
+    <div class="mb-6 flex items-center justify-between">
         <div>
-            <h2 class="text-3xl font-bold text-gray-900">Active Kitchen Orders</h2>
-            <p class="text-gray-600 mt-1">{{ $orders->count() }} {{ Str::plural('order', $orders->count()) }} in queue</p>
+            <h2 class="text-3xl font-bold text-gray-900">Active Drink Orders</h2>
+            <p class="text-gray-600 mt-1">{{ $orders->count() }} orders in queue</p>
         </div>
         <div class="text-right">
             <div class="text-sm text-gray-600">Auto-refresh every 5 seconds</div>
@@ -59,14 +59,14 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             <h3 class="mt-4 text-2xl font-semibold text-gray-900">All Caught Up!</h3>
-            <p class="mt-2 text-gray-600">No pending kitchen orders at the moment.</p>
+            <p class="mt-2 text-gray-600">No pending drink orders at the moment.</p>
         </div>
     @else
         <!-- Orders Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($orders as $order)
                 <div
-                    class="order-card rounded-xl shadow-sm border-2 {{ $order['is_high_priority'] ? 'border-gray-400 bg-gray-200' : 'bg-white border-gray-200' }} p-6 transition-all hover:shadow-lg"
+                    class="order-card bg-white rounded-xl shadow-sm border-2 {{ $order['is_high_priority'] ? 'border-gray-900 bg-gray-50' : 'border-gray-200' }} p-6 transition-all hover:shadow-lg"
                     wire:key="order-{{ $order['order_id'] }}"
                 >
                     <!-- Order Header -->
@@ -170,11 +170,11 @@
 
 <style>
     /* Ensure large text for visibility */
-    .kitchen-display h3 {
+    .bar-display h3 {
         font-size: 1.5rem;
     }
 
-    .kitchen-display h4 {
+    .bar-display h4 {
         font-size: 1.125rem;
     }
 

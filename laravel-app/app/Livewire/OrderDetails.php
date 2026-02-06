@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Tip;
 use Livewire\Component;
+use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class OrderDetails extends Component
@@ -118,23 +119,32 @@ class OrderDetails extends Component
             'payment_amount' => 'required|numeric|min:0.01',
         ]);
 
-        // Create payment
-        Payment::create([
-            'order_id' => $this->order->id,
-            'payment_method' => $this->payment_method,
-            'amount' => $this->payment_amount,
-            'status' => 'completed',
-        ]);
+        try {
+            DB::beginTransaction();
 
-        // Check if order is fully paid
-        $totalPaid = $this->order->payments()->where('status', 'completed')->sum('amount');
-        if ($totalPaid >= $this->order->total) {
-            $this->order->updateStatus('paid');
+            // Create payment
+            Payment::create([
+                'order_id' => $this->order->id,
+                'payment_method' => $this->payment_method,
+                'amount' => $this->payment_amount,
+                'status' => 'completed',
+            ]);
+
+            // Check if order is fully paid
+            $totalPaid = $this->order->payments()->where('status', 'completed')->sum('amount');
+            if ($totalPaid >= $this->order->total) {
+                $this->order->updateStatus('paid');
+            }
+
+            DB::commit();
+
+            $this->loadOrder();
+            $this->closePaymentModal();
+            session()->flash('success', 'Payment added successfully');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            session()->flash('error', 'Failed to add payment: ' . $e->getMessage());
         }
-
-        $this->loadOrder();
-        $this->closePaymentModal();
-        session()->flash('success', 'Payment added successfully');
     }
 
     /**
@@ -164,19 +174,23 @@ class OrderDetails extends Component
             'tip_method' => 'required|in:cash,card,mobile_money',
         ]);
 
-        // Create or update tip
-        Tip::updateOrCreate(
-            ['order_id' => $this->order->id],
-            [
-                'waiter_id' => $this->order->waiter_id,
-                'amount' => $this->tip_amount,
-                'tip_method' => $this->tip_method,
-            ]
-        );
+        try {
+            // Create or update tip
+            Tip::updateOrCreate(
+                ['order_id' => $this->order->id],
+                [
+                    'waiter_id' => $this->order->waiter_id,
+                    'amount' => $this->tip_amount,
+                    'tip_method' => $this->tip_method,
+                ]
+            );
 
-        $this->loadOrder();
-        $this->closeTipModal();
-        session()->flash('success', 'Tip added successfully');
+            $this->loadOrder();
+            $this->closeTipModal();
+            session()->flash('success', 'Tip added successfully');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to add tip: ' . $e->getMessage());
+        }
     }
 
     /**

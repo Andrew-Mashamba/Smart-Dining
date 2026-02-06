@@ -26,6 +26,7 @@ class ReverbBroadcastTest extends TestCase
         $waiter = User::factory()->create(['role' => 'waiter']);
         $table = Table::create([
             'name' => 'Table 1',
+            'location' => 'Main Dining',
             'capacity' => 4,
             'status' => 'available',
         ]);
@@ -55,6 +56,7 @@ class ReverbBroadcastTest extends TestCase
         $waiter = User::factory()->create(['role' => 'waiter']);
         $table = Table::create([
             'name' => 'Table 1',
+            'location' => 'Main Dining',
             'capacity' => 4,
             'status' => 'available',
         ]);
@@ -85,6 +87,7 @@ class ReverbBroadcastTest extends TestCase
         $waiter = User::factory()->create(['role' => 'waiter']);
         $table = Table::create([
             'name' => 'Table 1',
+            'location' => 'Main Dining',
             'capacity' => 4,
             'status' => 'available',
         ]);
@@ -112,10 +115,17 @@ class ReverbBroadcastTest extends TestCase
     public function test_order_status_updated_broadcasts_on_correct_channels(): void
     {
         $waiter = User::factory()->create(['role' => 'waiter']);
-        $table = Table::factory()->create();
-        $order = Order::factory()->create([
+        $table = Table::create([
+            'name' => 'Table 1',
+            'location' => 'Main Dining',
+            'capacity' => 4,
+            'status' => 'available',
+        ]);
+        $order = Order::create([
             'waiter_id' => $waiter->id,
             'table_id' => $table->id,
+            'status' => 'pending',
+            'total_amount' => 0.00,
         ]);
 
         $event = new OrderStatusUpdated($order, 'pending', 'preparing');
