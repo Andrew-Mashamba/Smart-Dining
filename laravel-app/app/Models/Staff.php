@@ -109,4 +109,23 @@ class Staff extends Authenticatable
     {
         return $this->role === 'manager';
     }
+
+    /**
+     * Check if staff is an admin.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if staff has a specific role.
+     *
+     * @param string $role
+     * @return bool
+     */
+    public function hasRole(string $role): bool
+    {
+        return $this->role === $role;
+    }
 }
