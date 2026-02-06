@@ -2,7 +2,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {{-- Reports Heading --}}
         <div class="mb-6">
-            <h1 class="text-lg font-bold text-gray-900">Reports</h1>
+            <div class="flex items-center gap-2">
+                <h1 class="text-lg font-bold text-gray-900">Reports</h1>
+                <x-help-tooltip text="Access various reports to analyze your business performance. View sales analytics, inventory levels, and staff performance metrics. Export reports to PDF or Excel for offline analysis." position="right" />
+            </div>
             <p class="text-gray-600 mt-1">Access comprehensive business intelligence and analytics</p>
         </div>
 

@@ -2,7 +2,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {{-- Page Heading --}}
         <div class="mb-6">
-            <h1 class="text-lg font-bold text-gray-900">Staff Performance Reports</h1>
+            <div class="flex items-center gap-2">
+                <h1 class="text-lg font-bold text-gray-900">Staff Performance Reports</h1>
+                <x-help-tooltip text="Track individual staff performance metrics including orders served, tips earned, average service time, and customer satisfaction ratings. Filter by date range or specific staff member." position="right" />
+            </div>
             <p class="text-gray-600 mt-1">Track waiter performance, orders served, tips earned, and efficiency metrics</p>
         </div>
 

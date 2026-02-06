@@ -2,7 +2,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {{-- Dashboard Heading --}}
         <div class="mb-6">
-            <h1 class="text-lg font-bold text-gray-900">Dashboard Overview</h1>
+            <div class="flex items-center">
+                <h1 class="text-lg font-bold text-gray-900">Dashboard Overview</h1>
+                <x-help-tooltip text="This dashboard updates automatically every 30 seconds to show real-time metrics. View today's performance, revenue trends, and operational status at a glance." position="right" />
+            </div>
             <p class="text-sm text-gray-600">Real-time business metrics and activity</p>
         </div>
 
@@ -93,7 +96,10 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             {{-- Revenue Chart --}}
             <div class="bg-white shadow-sm rounded-lg p-6">
-                <h2 class="text-gray-900 font-semibold mb-4">Revenue Trend (Last 7 Days)</h2>
+                <div class="flex items-center mb-4">
+                    <h2 class="text-gray-900 font-semibold">Revenue Trend (Last 7 Days)</h2>
+                    <x-help-tooltip text="Track your daily revenue performance over the past week. Hover over data points to see exact amounts for each day." position="right" />
+                </div>
                 <canvas id="revenueChart" class="w-full" style="height: 250px;"></canvas>
             </div>
 
@@ -148,7 +154,10 @@
             {{-- Low Stock Alerts Widget --}}
             <div class="bg-white shadow-sm rounded-lg p-6">
                 <h2 class="text-gray-900 font-semibold mb-4 flex justify-between items-center">
-                    <span>Low Stock Alerts</span>
+                    <div class="flex items-center">
+                        <span>Low Stock Alerts</span>
+                        <x-help-tooltip text="Items that have reached or fallen below their low stock threshold. Take action to reorder inventory to prevent stockouts." position="right" />
+                    </div>
                     @if($lowStockItems->count() > 0)
                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
                             {{ $lowStockItems->count() }}

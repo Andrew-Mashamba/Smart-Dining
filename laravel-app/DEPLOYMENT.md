@@ -1,6 +1,6 @@
 # Production Deployment Guide
 
-This guide covers the complete setup and deployment process for the SeaCliff Dining Laravel application in a production environment.
+This guide covers the complete process for deploying the SeaCliff Dining hospitality management system to a production environment.
 
 ## Table of Contents
 
@@ -9,45 +9,52 @@ This guide covers the complete setup and deployment process for the SeaCliff Din
 3. [Initial Server Setup](#initial-server-setup)
 4. [Application Deployment](#application-deployment)
 5. [Environment Configuration](#environment-configuration)
-6. [Queue Workers Setup](#queue-workers-setup)
-7. [Task Scheduling Setup](#task-scheduling-setup)
-8. [Database Backup](#database-backup)
-9. [WebSocket Server (Laravel Reverb)](#websocket-server-laravel-reverb)
-10. [SSL/HTTPS Configuration](#sslhttps-configuration)
-11. [File Permissions](#file-permissions)
-12. [Security Hardening](#security-hardening)
-13. [Monitoring & Logging](#monitoring--logging)
-14. [Post-Deployment Checklist](#post-deployment-checklist)
-15. [Troubleshooting](#troubleshooting)
-
----
+6. [Database Setup](#database-setup)
+7. [Queue Workers Setup](#queue-workers-setup)
+8. [Task Scheduler Setup](#task-scheduler-setup)
+9. [WebSocket Server (Reverb)](#websocket-server-reverb)
+10. [File Storage Configuration](#file-storage-configuration)
+11. [Security Hardening](#security-hardening)
+12. [SSL/TLS Certificate](#ssltls-certificate)
+13. [Backup Configuration](#backup-configuration)
+14. [Monitoring and Logging](#monitoring-and-logging)
+15. [Post-Deployment Checklist](#post-deployment-checklist)
+16. [Troubleshooting](#troubleshooting)
 
 ## Prerequisites
 
-- Domain name configured and pointing to your server
-- SSH access to your production server
-- Root or sudo access
-- Basic knowledge of Linux command line
+- Root or sudo access to the production server
+- Domain name pointing to your server IP
+- Basic knowledge of Linux server administration
+- SSH access to the server
 
 ## Server Requirements
 
 ### Minimum Specifications
 - **OS**: Ubuntu 22.04 LTS or later (recommended)
-- **CPU**: 2 cores minimum
+- **CPU**: 2+ cores
 - **RAM**: 4GB minimum (8GB recommended)
-- **Storage**: 40GB SSD minimum
-- **Network**: Stable internet connection
-
-### Required Software
+- **Storage**: 40GB+ SSD
 - **PHP**: 8.2 or higher
-- **Web Server**: Nginx or Apache
-- **Database**: PostgreSQL 14+ (recommended) or MySQL 8.0+
-- **Cache/Queue**: Redis 6.0+
-- **Process Manager**: Supervisor
-- **Node.js**: 18.x or later (for asset compilation)
-- **Composer**: 2.x
+- **Database**: PostgreSQL 14+ (MySQL 8+ also supported)
+- **Redis**: 7.0+
+- **Node.js**: 18+ LTS
+- **Supervisor**: For process management
 
----
+### Required PHP Extensions
+```bash
+php8.2-cli
+php8.2-fpm
+php8.2-pgsql (or php8.2-mysql)
+php8.2-redis
+php8.2-mbstring
+php8.2-xml
+php8.2-curl
+php8.2-zip
+php8.2-bcmath
+php8.2-gd
+php8.2-intl
+```
 
 ## Initial Server Setup
 
@@ -57,13 +64,16 @@ This guide covers the complete setup and deployment process for the SeaCliff Din
 sudo apt update && sudo apt upgrade -y
 ```
 
-### 2. Install Required Packages
+### 2. Install Required Software
 
 ```bash
-# Install PHP and extensions
-sudo apt install -y php8.2-fpm php8.2-cli php8.2-pgsql php8.2-mysql \
-    php8.2-redis php8.2-mbstring php8.2-xml php8.2-bcmath \
-    php8.2-curl php8.2-zip php8.2-gd php8.2-intl php8.2-soap
+# Install PHP 8.2 and extensions
+sudo apt install -y software-properties-common
+sudo add-apt-repository ppa:ondrej/php -y
+sudo apt update
+sudo apt install -y php8.2 php8.2-fpm php8.2-cli php8.2-common \
+    php8.2-pgsql php8.2-redis php8.2-mbstring php8.2-xml \
+    php8.2-curl php8.2-zip php8.2-bcmath php8.2-gd php8.2-intl
 
 # Install PostgreSQL
 sudo apt install -y postgresql postgresql-contrib
@@ -77,7 +87,7 @@ sudo apt install -y nginx
 # Install Supervisor
 sudo apt install -y supervisor
 
-# Install Node.js and npm
+# Install Node.js
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo apt install -y nodejs
 
@@ -86,77 +96,76 @@ curl -sS https://getcomposer.org/installer | php
 sudo mv composer.phar /usr/local/bin/composer
 ```
 
-### 3. Configure PostgreSQL
+### 3. Create Application User
 
 ```bash
-# Switch to postgres user
-sudo -u postgres psql
-
-# Create database and user
-CREATE DATABASE seacliff_dining_production;
-CREATE USER seacliff_user WITH ENCRYPTED PASSWORD 'your_secure_password';
-GRANT ALL PRIVILEGES ON DATABASE seacliff_dining_production TO seacliff_user;
-\q
+sudo useradd -m -s /bin/bash deploy
+sudo usermod -aG www-data deploy
 ```
 
-### 4. Configure Redis
+### 4. Setup Application Directory
 
 ```bash
-# Edit Redis configuration
-sudo nano /etc/redis/redis.conf
-
-# Set password (uncomment and modify)
-requirepass your_redis_password
-
-# Restart Redis
-sudo systemctl restart redis-server
-sudo systemctl enable redis-server
+sudo mkdir -p /var/www/html
+sudo chown -R deploy:www-data /var/www/html
 ```
-
----
 
 ## Application Deployment
 
-### 1. Create Application Directory
+### 1. Clone Repository
 
 ```bash
-sudo mkdir -p /var/www/html/laravel-app
-sudo chown -R $USER:www-data /var/www/html/laravel-app
+# Switch to deploy user
+sudo su - deploy
+
+# Clone the repository
+cd /var/www
+git clone <your-repository-url> html
+cd html
+
+# Checkout the production branch
+git checkout production
 ```
 
-### 2. Clone or Upload Application
-
-**Option A: Using Git**
-```bash
-cd /var/www/html
-git clone https://github.com/yourusername/laravel-app.git
-cd laravel-app
-```
-
-**Option B: Upload via SFTP**
-- Use an SFTP client to upload files to `/var/www/html/laravel-app`
-
-### 3. Install Dependencies
+### 2. Install Dependencies
 
 ```bash
-cd /var/www/html/laravel-app
-
 # Install PHP dependencies
-composer install --optimize-autoloader --no-dev
+composer install --no-dev --optimize-autoloader
 
 # Install Node dependencies and build assets
-npm install
+npm ci
 npm run build
 ```
 
----
+### 3. Set Proper Permissions
+
+```bash
+# Exit deploy user
+exit
+
+# Set ownership
+sudo chown -R deploy:www-data /var/www/html
+
+# Set directory permissions
+sudo find /var/www/html -type d -exec chmod 755 {} \;
+sudo find /var/www/html -type f -exec chmod 644 {} \;
+
+# Set writable permissions for storage and cache
+sudo chmod -R 775 /var/www/html/storage
+sudo chmod -R 775 /var/www/html/bootstrap/cache
+
+# Ensure web server can write to these directories
+sudo chgrp -R www-data /var/www/html/storage
+sudo chgrp -R www-data /var/www/html/bootstrap/cache
+```
 
 ## Environment Configuration
 
 ### 1. Create Production Environment File
 
 ```bash
-cd /var/www/html/laravel-app
+cd /var/www/html
 cp .env.production .env
 ```
 
@@ -168,268 +177,199 @@ php artisan key:generate
 
 ### 3. Configure Environment Variables
 
-Edit `.env` and update the following:
+Edit `.env` and update the following critical values:
 
 ```bash
-nano .env
-```
-
-**Critical Settings to Update:**
-
-```env
+# Application
 APP_NAME="SeaCliff Dining"
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://yourdomain.com
 
-# Database
+# Database (PostgreSQL example)
 DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
 DB_PORT=5432
 DB_DATABASE=seacliff_dining_production
-DB_USERNAME=seacliff_user
+DB_USERNAME=your_db_user
 DB_PASSWORD=your_secure_password
 
-# Redis
-REDIS_PASSWORD=your_redis_password
-
-# Session & Sanctum
+# Session Security
 SESSION_DOMAIN=.yourdomain.com
+SESSION_SECURE_COOKIE=true
+
+# Sanctum
 SANCTUM_STATEFUL_DOMAINS=yourdomain.com,www.yourdomain.com
 
 # Mail Configuration
 MAIL_MAILER=smtp
 MAIL_HOST=smtp.mailgun.org
 MAIL_PORT=587
-MAIL_USERNAME=your_mailgun_username
-MAIL_PASSWORD=your_mailgun_password
+MAIL_USERNAME=your_smtp_username
+MAIL_PASSWORD=your_smtp_password
 MAIL_FROM_ADDRESS=noreply@yourdomain.com
 MAIL_ERROR_TO=admin@yourdomain.com
 
-# Reverb WebSocket
-REVERB_APP_ID=your_app_id
-REVERB_APP_KEY=your_app_key
-REVERB_APP_SECRET=your_app_secret
-REVERB_HOST=yourdomain.com
-REVERB_SCHEME=wss
+# Redis
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=your_redis_password
+REDIS_PORT=6379
 
-# API Keys (add your production keys)
-WHATSAPP_API_TOKEN=your_production_token
-STRIPE_PUBLIC_KEY=your_production_key
-STRIPE_SECRET_KEY=your_production_secret
+# Reverb WebSocket
+REVERB_HOST=ws.yourdomain.com
+REVERB_PORT=443
+REVERB_SCHEME=https
+REVERB_SERVER_HOST=0.0.0.0
+REVERB_SERVER_PORT=8080
 
 # Logging
-LOG_SLACK_WEBHOOK_URL=your_slack_webhook_url
+LOG_CHANNEL=production
+LOG_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+
+# Backup
+BACKUP_NOTIFICATION_EMAIL=admin@yourdomain.com
 ```
 
-### 4. Run Migrations
+### 4. Secure the Environment File
 
 ```bash
+sudo chmod 600 /var/www/html/.env
+sudo chown deploy:www-data /var/www/html/.env
+```
+
+## Database Setup
+
+### 1. Create Database and User (PostgreSQL)
+
+```bash
+sudo -u postgres psql
+
+-- Create database
+CREATE DATABASE seacliff_dining_production;
+
+-- Create user
+CREATE USER your_db_user WITH PASSWORD 'your_secure_password';
+
+-- Grant privileges
+GRANT ALL PRIVILEGES ON DATABASE seacliff_dining_production TO your_db_user;
+
+-- Exit psql
+\q
+```
+
+### 2. Run Migrations
+
+```bash
+cd /var/www/html
 php artisan migrate --force
 ```
 
-### 5. Seed Database (if needed)
+### 3. Seed Database (if needed)
 
 ```bash
 php artisan db:seed --force
 ```
-
-### 6. Create Storage Link
-
-```bash
-php artisan storage:link
-```
-
-### 7. Cache Configuration
-
-```bash
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-```
-
----
 
 ## Queue Workers Setup
 
 ### 1. Copy Supervisor Configuration
 
 ```bash
-sudo cp supervisor-queue-worker.conf /etc/supervisor/conf.d/laravel-queue-worker.conf
+sudo cp /var/www/html/deployment/supervisor/laravel-worker.conf /etc/supervisor/conf.d/
+sudo cp /var/www/html/deployment/supervisor/laravel-reverb.conf /etc/supervisor/conf.d/
 ```
 
-### 2. Update Paths in Supervisor Config
+### 2. Update Supervisor Configuration
 
-```bash
-sudo nano /etc/supervisor/conf.d/laravel-worker.conf
-```
-
-Ensure the path matches your installation directory.
-
-### 3. Start Queue Workers
-
-```bash
-sudo supervisorctl reread
-sudo supervisorctl update
-sudo supervisorctl start laravel-worker:*
-```
-
-### 4. Verify Queue Workers
-
-```bash
-sudo supervisorctl status
-```
-
-You should see 4 worker processes running.
-
-### 5. Managing Queue Workers
-
-```bash
-# Restart workers
-sudo supervisorctl restart laravel-worker:*
-
-# Stop workers
-sudo supervisorctl stop laravel-worker:*
-
-# View logs
-tail -f /var/www/html/laravel-app/storage/logs/worker.log
-```
-
----
-
-## Task Scheduling Setup
-
-### 1. Edit Crontab
-
-```bash
-sudo crontab -e
-```
-
-### 2. Add Laravel Scheduler
-
-Add this line to the crontab:
-
-```cron
-* * * * * cd /var/www/html/laravel-app && php artisan schedule:run >> /dev/null 2>&1
-```
-
-### 3. Verify Scheduler is Working
-
-```bash
-# Check logs
-tail -f /var/www/html/laravel-app/storage/logs/laravel.log
-
-# Test scheduler manually
-php artisan schedule:run
-```
-
-### 4. Scheduled Tasks Overview
-
-The following tasks are automatically scheduled (defined in `routes/console.php`):
-
-- **Daily at 01:00**: Clean old backups
-- **Daily at 02:00**: Run database backup
-- **Daily at 03:00**: Clear expired sessions
-- **Daily at 04:00**: Optimize application (cache configs)
-- **Daily at 08:00**: Send daily sales summary email
-- **Weekly on Sunday at 01:00**: Clear old log files
-- **Every 5 minutes**: Update order statuses, monitor queue size
-- **Hourly (9 AM - 10 PM)**: Send reminder notifications
-
----
-
-## Database Backup
-
-### 1. Install Laravel Backup Package (Optional but Recommended)
-
-```bash
-composer require spatie/laravel-backup
-```
-
-### 2. Publish Configuration
-
-```bash
-php artisan vendor:publish --provider="Spatie\Backup\BackupServiceProvider"
-```
-
-### 3. Configure Backup
-
-Edit `config/backup.php`:
-
-```php
-'destination' => [
-    'disks' => [
-        'local',
-        's3', // Optional: backup to S3
-    ],
-],
-```
-
-### 4. Manual Backup
-
-```bash
-php artisan backup:run
-```
-
-### 5. Backup to S3 (Optional)
-
-If using S3, configure in `.env`:
-
-```env
-AWS_ACCESS_KEY_ID=your_key
-AWS_SECRET_ACCESS_KEY=your_secret
-AWS_DEFAULT_REGION=us-east-1
-AWS_BUCKET=your-backup-bucket
-```
-
----
-
-## WebSocket Server (Laravel Reverb)
-
-### 1. Start Reverb Server
-
-```bash
-php artisan reverb:start --host=0.0.0.0 --port=8080
-```
-
-### 2. Create Supervisor Config for Reverb
-
-```bash
-sudo nano /etc/supervisor/conf.d/laravel-reverb.conf
-```
-
-Add:
+Edit `/etc/supervisor/conf.d/laravel-worker.conf` if paths need adjustment:
 
 ```ini
-[program:laravel-reverb]
-process_name=%(program_name)s
-command=php /var/www/html/laravel-app/artisan reverb:start --host=0.0.0.0 --port=8080
+[program:laravel-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /var/www/html/artisan queue:work redis --sleep=3 --tries=3 --max-time=3600 --timeout=60
 autostart=true
 autorestart=true
 stopasgroup=true
 killasgroup=true
 user=www-data
-numprocs=1
+numprocs=4
 redirect_stderr=true
-stdout_logfile=/var/www/html/laravel-app/storage/logs/reverb.log
-stopwaitsecs=60
+stdout_logfile=/var/www/html/storage/logs/worker.log
+stopwaitsecs=3600
 ```
 
-### 3. Start Reverb with Supervisor
+### 3. Start Supervisor Services
 
 ```bash
+# Reload supervisor configuration
 sudo supervisorctl reread
 sudo supervisorctl update
-sudo supervisorctl start laravel-reverb
+
+# Start workers
+sudo supervisorctl start laravel-worker:*
+sudo supervisorctl start laravel-reverb:*
+
+# Check status
+sudo supervisorctl status
 ```
 
-### 4. Configure Nginx Proxy for WebSocket
+### 4. Manage Queue Workers
 
-Add to your Nginx server block:
+```bash
+# Restart workers after code deployment
+sudo supervisorctl restart laravel-worker:*
+
+# Stop workers
+sudo supervisorctl stop laravel-worker:*
+
+# View worker logs
+tail -f /var/www/html/storage/logs/worker.log
+```
+
+## Task Scheduler Setup
+
+### 1. Add Cron Entry
+
+```bash
+# Edit crontab for www-data user
+sudo crontab -u www-data -e
+
+# Add this line:
+* * * * * cd /var/www/html && php artisan schedule:run >> /dev/null 2>&1
+```
+
+### 2. Alternative: System-wide Cron
+
+```bash
+# Copy cron file to system cron directory
+sudo cp /var/www/html/deployment/cron/laravel-scheduler /etc/cron.d/
+
+# Set proper permissions
+sudo chmod 644 /etc/cron.d/laravel-scheduler
+sudo chown root:root /etc/cron.d/laravel-scheduler
+```
+
+### 3. Verify Scheduler
+
+```bash
+# Test scheduler manually
+cd /var/www/html
+php artisan schedule:list
+
+# Run scheduler manually to test
+php artisan schedule:run
+```
+
+## WebSocket Server (Reverb)
+
+### 1. Nginx Configuration for WebSocket
+
+Add to your Nginx site configuration:
 
 ```nginx
-# WebSocket proxy for Laravel Reverb
+# WebSocket proxy for Reverb
 location /app {
+    proxy_pass http://127.0.0.1:8080;
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "Upgrade";
@@ -437,13 +377,209 @@ location /app {
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_pass http://127.0.0.1:8080;
+    proxy_read_timeout 86400;
 }
 ```
 
----
+### 2. Start Reverb via Supervisor
 
-## SSL/HTTPS Configuration
+Reverb is automatically started via the supervisor configuration created earlier.
+
+```bash
+# Check Reverb status
+sudo supervisorctl status laravel-reverb
+
+# View Reverb logs
+tail -f /var/www/html/storage/logs/reverb.log
+```
+
+## File Storage Configuration
+
+### 1. Create Storage Link
+
+```bash
+cd /var/www/html
+php artisan storage:link
+```
+
+### 2. Set Storage Permissions
+
+```bash
+sudo chmod -R 775 /var/www/html/storage
+sudo chgrp -R www-data /var/www/html/storage
+```
+
+### 3. Optional: Configure S3 for File Storage
+
+Update `.env`:
+
+```bash
+FILESYSTEM_DISK=s3
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_secret_key
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=your-bucket-name
+```
+
+## Security Hardening
+
+### 1. Configure Firewall
+
+```bash
+# Install UFW
+sudo apt install -y ufw
+
+# Allow SSH
+sudo ufw allow 22/tcp
+
+# Allow HTTP and HTTPS
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+
+# Enable firewall
+sudo ufw enable
+```
+
+### 2. Secure Redis
+
+Edit `/etc/redis/redis.conf`:
+
+```bash
+# Bind to localhost only
+bind 127.0.0.1 ::1
+
+# Set a password
+requirepass your_redis_password
+
+# Disable dangerous commands
+rename-command FLUSHDB ""
+rename-command FLUSHALL ""
+rename-command CONFIG ""
+```
+
+Restart Redis:
+
+```bash
+sudo systemctl restart redis-server
+```
+
+### 3. Secure PostgreSQL
+
+Edit `/etc/postgresql/14/main/postgresql.conf`:
+
+```bash
+# Listen on localhost only
+listen_addresses = 'localhost'
+```
+
+Restart PostgreSQL:
+
+```bash
+sudo systemctl restart postgresql
+```
+
+### 4. Configure PHP-FPM Security
+
+Edit `/etc/php/8.2/fpm/php.ini`:
+
+```ini
+expose_php = Off
+display_errors = Off
+log_errors = On
+error_log = /var/log/php/error.log
+upload_max_filesize = 20M
+post_max_size = 20M
+max_execution_time = 60
+memory_limit = 256M
+```
+
+Restart PHP-FPM:
+
+```bash
+sudo systemctl restart php8.2-fpm
+```
+
+### 5. Nginx Security Configuration
+
+Create `/etc/nginx/sites-available/seacliff-dining`:
+
+```nginx
+server {
+    listen 80;
+    server_name yourdomain.com www.yourdomain.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name yourdomain.com www.yourdomain.com;
+    root /var/www/html/public;
+
+    index index.php index.html;
+
+    # SSL certificates (managed by certbot)
+    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+    add_header Content-Security-Policy "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';" always;
+
+    # Logging
+    access_log /var/log/nginx/seacliff-access.log;
+    error_log /var/log/nginx/seacliff-error.log;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+        fastcgi_hide_header X-Powered-By;
+    }
+
+    # WebSocket proxy for Reverb
+    location /app {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 86400;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}
+```
+
+Enable the site:
+
+```bash
+sudo ln -s /etc/nginx/sites-available/seacliff-dining /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+## SSL/TLS Certificate
 
 ### 1. Install Certbot
 
@@ -457,250 +593,184 @@ sudo apt install -y certbot python3-certbot-nginx
 sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
 ```
 
-### 3. Verify Auto-Renewal
+### 3. Auto-renewal
+
+Certbot automatically sets up renewal. Test it:
 
 ```bash
 sudo certbot renew --dry-run
 ```
 
-### 4. Configure Nginx for Laravel
+## Backup Configuration
+
+### 1. Install Laravel Backup Package
 
 ```bash
-sudo nano /etc/nginx/sites-available/laravel-app
+composer require spatie/laravel-backup
 ```
 
-Add:
-
-```nginx
-server {
-    listen 80;
-    listen [::]:80;
-    server_name yourdomain.com www.yourdomain.com;
-    return 301 https://$server_name$request_uri;
-}
-
-server {
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2;
-    server_name yourdomain.com www.yourdomain.com;
-
-    root /var/www/html/laravel-app/public;
-    index index.php index.html;
-
-    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
-
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_prefer_server_ciphers on;
-    ssl_ciphers HIGH:!aNULL:!MD5;
-
-    add_header X-Frame-Options "SAMEORIGIN";
-    add_header X-Content-Type-Options "nosniff";
-    add_header X-XSS-Protection "1; mode=block";
-    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
-
-    location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-        include fastcgi_params;
-    }
-
-    location ~ /\.(?!well-known).* {
-        deny all;
-    }
-
-    # WebSocket proxy
-    location /app {
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "Upgrade";
-        proxy_set_header Host $host;
-        proxy_pass http://127.0.0.1:8080;
-    }
-}
-```
-
-### 5. Enable Site and Restart Nginx
+### 2. Publish Configuration
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/laravel-app /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl restart nginx
+php artisan vendor:publish --provider="Spatie\Backup\BackupServiceProvider"
 ```
 
----
+### 3. Configure Backup
 
-## File Permissions
-
-### 1. Set Correct Ownership
+Edit `config/backup.php` or use environment variables in `.env`:
 
 ```bash
-cd /var/www/html/laravel-app
-sudo chown -R www-data:www-data .
+BACKUP_NOTIFICATION_EMAIL=admin@yourdomain.com
+BACKUP_DISK=local
 ```
 
-### 2. Set Directory Permissions
+### 4. Test Backup
 
 ```bash
-sudo find . -type d -exec chmod 755 {} \;
-sudo find . -type f -exec chmod 644 {} \;
+php artisan backup:run
 ```
 
-### 3. Set Writable Directories
+### 5. Backup Storage Location
+
+Backups are stored in `storage/app/backups/`. Consider:
+- Setting up S3 for remote backups
+- Creating off-server backup copies
+- Implementing 3-2-1 backup strategy
+
+### 6. Manual Database Backup Script
+
+Create `/var/www/html/deployment/scripts/backup-db.sh`:
 
 ```bash
-sudo chmod -R 775 storage bootstrap/cache
-sudo chown -R www-data:www-data storage bootstrap/cache
+#!/bin/bash
+DATE=$(date +%Y%m%d_%H%M%S)
+BACKUP_DIR="/var/www/html/storage/backups"
+mkdir -p $BACKUP_DIR
+
+# PostgreSQL backup
+pg_dump -U your_db_user seacliff_dining_production | gzip > $BACKUP_DIR/db_backup_$DATE.sql.gz
+
+# Keep only last 7 days of backups
+find $BACKUP_DIR -name "db_backup_*.sql.gz" -mtime +7 -delete
+
+echo "Backup completed: db_backup_$DATE.sql.gz"
 ```
 
-### 4. Verify Permissions
+Make executable:
 
 ```bash
-ls -la storage/
-ls -la bootstrap/cache/
+chmod +x /var/www/html/deployment/scripts/backup-db.sh
 ```
 
-Both directories should be owned by `www-data:www-data` and have `775` permissions.
+## Monitoring and Logging
 
----
+### 1. Configure Application Logging
 
-## Security Hardening
+The application is already configured to use the `production` log channel which includes:
+- Daily rotating logs
+- Database logging
+- Critical error file
+- Slack notifications for errors
+- Email notifications for critical errors
 
-### 1. Disable Directory Listing
-
-Already configured in Nginx config above.
-
-### 2. Hide Laravel Version
-
-Edit `public/index.php` - already secure by default in Laravel 11.
-
-### 3. Configure Firewall
-
-```bash
-sudo ufw allow 22/tcp    # SSH
-sudo ufw allow 80/tcp    # HTTP
-sudo ufw allow 443/tcp   # HTTPS
-sudo ufw enable
-```
-
-### 4. Secure PHP Configuration
-
-```bash
-sudo nano /etc/php/8.2/fpm/php.ini
-```
-
-Update:
-```ini
-expose_php = Off
-display_errors = Off
-log_errors = On
-```
-
-### 5. Restart PHP-FPM
-
-```bash
-sudo systemctl restart php8.2-fpm
-```
-
-### 6. Enable Security Headers
-
-Already configured in Nginx above:
-- X-Frame-Options
-- X-Content-Type-Options
-- X-XSS-Protection
-- Strict-Transport-Security (HSTS)
-
----
-
-## Monitoring & Logging
-
-### 1. Log Locations
+### 2. Monitor Log Files
 
 ```bash
 # Application logs
-/var/www/html/laravel-app/storage/logs/
+tail -f /var/www/html/storage/logs/laravel.log
 
-# Nginx logs
-/var/log/nginx/access.log
-/var/log/nginx/error.log
+# Critical errors
+tail -f /var/www/html/storage/logs/critical.log
 
-# PHP-FPM logs
-/var/log/php8.2-fpm.log
+# Worker logs
+tail -f /var/www/html/storage/logs/worker.log
 
-# Queue worker logs
-/var/www/html/laravel-app/storage/logs/worker.log
+# Nginx access logs
+tail -f /var/log/nginx/seacliff-access.log
 
-# Reverb logs
-/var/www/html/laravel-app/storage/logs/reverb.log
+# Nginx error logs
+tail -f /var/log/nginx/seacliff-error.log
 ```
 
-### 2. Configure Slack Notifications
+### 3. Optional: Install Sentry
 
-In `.env`:
-```env
-LOG_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
-LOG_SLACK_CHANNEL=#production-errors
-LOG_SLACK_USERNAME=Laravel-Production
-LOG_SLACK_LEVEL=error
-```
-
-### 3. Configure Email Alerts
-
-Critical errors will be emailed to:
-```env
-MAIL_ERROR_TO=admin@yourdomain.com
-```
-
-### 4. Setup Sentry (Optional)
+Update `.env`:
 
 ```bash
-composer require sentry/sentry-laravel
-```
-
-In `.env`:
-```env
-SENTRY_LARAVEL_DSN=your_sentry_dsn
+SENTRY_LARAVEL_DSN=https://your-sentry-dsn@sentry.io/project-id
 SENTRY_TRACES_SAMPLE_RATE=0.1
 ```
 
-### 5. Monitor Queue Size
+### 4. System Monitoring
 
-The scheduler automatically monitors queue size every 5 minutes and logs if it exceeds 100 jobs.
-
----
+Consider installing:
+- **Prometheus + Grafana**: For metrics and dashboards
+- **New Relic**: APM and monitoring
+- **Datadog**: Infrastructure monitoring
+- **UptimeRobot**: Uptime monitoring
 
 ## Post-Deployment Checklist
 
-- [ ] `.env` file configured with production values
-- [ ] `APP_KEY` generated and set
-- [ ] `APP_DEBUG=false` in production
-- [ ] Database migrated successfully
-- [ ] Storage link created (`php artisan storage:link`)
-- [ ] File permissions set correctly (storage and bootstrap/cache writable)
-- [ ] Queue workers running (verify with `supervisorctl status`)
-- [ ] Cron job configured for scheduler
-- [ ] SSL certificate installed and HTTPS working
-- [ ] HTTPS forced in AppServiceProvider
-- [ ] WebSocket server (Reverb) running
-- [ ] Redis configured and running
-- [ ] Backup scheduled and tested
-- [ ] Logging configured (Slack/email for critical errors)
-- [ ] Configuration cached (`php artisan config:cache`)
-- [ ] Routes cached (`php artisan route:cache`)
-- [ ] Views cached (`php artisan view:cache`)
-- [ ] Firewall configured
-- [ ] Security headers configured
-- [ ] API keys updated (Stripe, WhatsApp, etc.)
-- [ ] Domain DNS pointing to server
-- [ ] Test all critical functionality
-- [ ] Monitor logs for errors
+After deployment, verify the following:
 
----
+### Application
+
+- [ ] Application is accessible via HTTPS
+- [ ] HTTP redirects to HTTPS
+- [ ] SSL certificate is valid
+- [ ] All pages load correctly
+- [ ] Assets (CSS, JS, images) load properly
+- [ ] Forms submit correctly
+- [ ] Login/authentication works
+
+### Configuration
+
+- [ ] `.env` file has `APP_ENV=production`
+- [ ] `.env` file has `APP_DEBUG=false`
+- [ ] `APP_KEY` is generated and set
+- [ ] Database connection works
+- [ ] Redis connection works
+- [ ] Mail configuration tested
+
+### Queue & Scheduler
+
+- [ ] Queue workers are running (`supervisorctl status`)
+- [ ] Queue jobs are processing
+- [ ] Scheduler cron is configured
+- [ ] Scheduled tasks are running
+
+### WebSocket
+
+- [ ] Reverb server is running
+- [ ] WebSocket connections work
+- [ ] Real-time features function correctly
+
+### Storage
+
+- [ ] Storage link created (`php artisan storage:link`)
+- [ ] File uploads work
+- [ ] Storage directories are writable
+
+### Security
+
+- [ ] Firewall is enabled and configured
+- [ ] Only necessary ports are open
+- [ ] Redis is password-protected
+- [ ] Database is secured
+- [ ] Environment file is secured (600 permissions)
+
+### Backup
+
+- [ ] Backup package installed and configured
+- [ ] Manual backup tested
+- [ ] Automated backups scheduled
+- [ ] Backup notifications configured
+
+### Monitoring
+
+- [ ] Log files are being written
+- [ ] Error notifications work (Slack/Email)
+- [ ] Monitoring tools configured (optional)
 
 ## Troubleshooting
 
@@ -714,152 +784,133 @@ sudo supervisorctl status
 sudo supervisorctl restart laravel-worker:*
 
 # Check worker logs
-tail -f storage/logs/worker.log
+tail -f /var/www/html/storage/logs/worker.log
 
-# Verify Redis connection
+# Check Redis connection
 redis-cli ping
 ```
 
 ### Scheduler Not Running
 
 ```bash
-# Check crontab
-sudo crontab -l
+# Verify cron entry
+sudo crontab -u www-data -l
 
-# Manually run scheduler
-php artisan schedule:run
+# Run scheduler manually
+cd /var/www/html
+php artisan schedule:run -v
 
-# Check logs
-tail -f storage/logs/laravel.log
+# Check scheduler log (if logging enabled)
+tail -f /var/www/html/storage/logs/scheduler.log
+```
+
+### Permission Issues
+
+```bash
+# Reset permissions
+sudo chown -R deploy:www-data /var/www/html
+sudo chmod -R 775 /var/www/html/storage
+sudo chmod -R 775 /var/www/html/bootstrap/cache
 ```
 
 ### 500 Internal Server Error
 
 ```bash
 # Check Laravel logs
-tail -f storage/logs/laravel.log
+tail -f /var/www/html/storage/logs/laravel.log
 
-# Check Nginx error logs
-sudo tail -f /var/log/nginx/error.log
+# Check Nginx error log
+tail -f /var/log/nginx/seacliff-error.log
 
-# Check PHP-FPM logs
-sudo tail -f /var/log/php8.2-fpm.log
+# Check PHP-FPM log
+tail -f /var/log/php8.2-fpm.log
 
-# Verify permissions
-ls -la storage/
-ls -la bootstrap/cache/
-
-# Clear and recache
+# Clear caches
 php artisan config:clear
 php artisan cache:clear
-php artisan config:cache
+php artisan route:clear
+php artisan view:clear
 ```
 
-### WebSocket Connection Failed
-
-```bash
-# Check Reverb is running
-sudo supervisorctl status laravel-reverb
-
-# Check Reverb logs
-tail -f storage/logs/reverb.log
-
-# Verify Nginx WebSocket proxy configuration
-sudo nginx -t
-
-# Test WebSocket connection
-wscat -c wss://yourdomain.com/app/your_app_key
-```
-
-### Permission Denied Errors
-
-```bash
-# Fix storage permissions
-sudo chmod -R 775 storage bootstrap/cache
-sudo chown -R www-data:www-data storage bootstrap/cache
-
-# Clear cache
-php artisan cache:clear
-php artisan config:clear
-```
-
-### Database Connection Failed
+### Database Connection Issues
 
 ```bash
 # Test database connection
 php artisan tinker
->>> DB::connection()->getPdo();
+> DB::connection()->getPdo();
 
-# Check PostgreSQL is running
+# Check PostgreSQL status
 sudo systemctl status postgresql
 
-# Verify credentials in .env match database
+# Check connection from Laravel
+php artisan migrate:status
 ```
 
----
-
-## Updating the Application
-
-### 1. Put Application in Maintenance Mode
+### WebSocket Not Connecting
 
 ```bash
-php artisan down
+# Check Reverb status
+sudo supervisorctl status laravel-reverb
+
+# Check Reverb logs
+tail -f /var/www/html/storage/logs/reverb.log
+
+# Test WebSocket endpoint
+curl -i -N -H "Connection: Upgrade" -H "Upgrade: websocket" \
+  -H "Host: yourdomain.com" -H "Origin: https://yourdomain.com" \
+  https://yourdomain.com/app
 ```
 
-### 2. Pull Latest Changes
+### Clear All Caches
 
 ```bash
-git pull origin main
-```
-
-### 3. Update Dependencies
-
-```bash
-composer install --optimize-autoloader --no-dev
-npm install
-npm run build
-```
-
-### 4. Run Migrations
-
-```bash
-php artisan migrate --force
-```
-
-### 5. Clear and Rebuild Cache
-
-```bash
-php artisan config:clear
-php artisan cache:clear
+cd /var/www/html
+php artisan optimize:clear
+composer dump-autoload
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 ```
 
-### 6. Restart Services
+## Deployment Updates
+
+When deploying code updates:
 
 ```bash
+# 1. Put application in maintenance mode
+php artisan down
+
+# 2. Pull latest code
+git pull origin production
+
+# 3. Install/update dependencies
+composer install --no-dev --optimize-autoloader
+npm ci && npm run build
+
+# 4. Run migrations
+php artisan migrate --force
+
+# 5. Clear and rebuild caches
+php artisan optimize:clear
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# 6. Restart queue workers
 sudo supervisorctl restart laravel-worker:*
-sudo supervisorctl restart laravel-reverb
-sudo systemctl reload php8.2-fpm
-```
 
-### 7. Bring Application Back Online
-
-```bash
+# 7. Bring application back online
 php artisan up
 ```
-
----
 
 ## Support and Resources
 
 - **Laravel Documentation**: https://laravel.com/docs
 - **Laravel Deployment**: https://laravel.com/docs/deployment
-- **Forge (Automated Deployment)**: https://forge.laravel.com
+- **Forge (Managed Hosting)**: https://forge.laravel.com
 - **Envoyer (Zero-Downtime Deployment)**: https://envoyer.io
 
 ---
 
-**Last Updated**: February 2026
+**Last Updated**: 2024-02-06
 **Version**: 1.0.0

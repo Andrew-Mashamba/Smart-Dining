@@ -2,7 +2,10 @@
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">Orders Management</h1>
+            <div class="flex items-center gap-2">
+                <h1 class="text-2xl font-bold text-gray-900">Orders Management</h1>
+                <x-help-tooltip text="View and manage all orders in the system. Search by order number, filter by status or date, and view detailed order information. Click on an order to see full details." position="right" />
+            </div>
             <p class="text-sm text-gray-600 mt-1">View, search, and manage all orders</p>
         </div>
     </div>

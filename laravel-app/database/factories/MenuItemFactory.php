@@ -29,4 +29,24 @@ class MenuItemFactory extends Factory
             'low_stock_threshold' => 10,
         ];
     }
+
+    /**
+     * Indicate that the menu item is unavailable.
+     */
+    public function unavailable(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'unavailable',
+        ]);
+    }
+
+    /**
+     * Indicate that the menu item has low stock.
+     */
+    public function lowStock(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'stock_quantity' => 5,
+        ]);
+    }
 }

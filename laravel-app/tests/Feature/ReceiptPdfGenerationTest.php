@@ -52,22 +52,32 @@ class ReceiptPdfGenerationTest extends TestCase
         ]);
 
         // Create menu items
+        $category = \App\Models\MenuCategory::factory()->create();
+
         $menuItem1 = MenuItem::create([
             'name' => 'Grilled Salmon',
             'description' => 'Fresh grilled salmon',
             'price' => 250.00,
-            'category' => 'main',
-            'prep_location' => 'kitchen',
-            'is_available' => true,
+            'category_id' => $category->id,
+            'prep_area' => 'kitchen',
+            'prep_time_minutes' => 15,
+            'status' => 'available',
+            'stock_quantity' => 10,
+            'unit' => 'pieces',
+            'low_stock_threshold' => 5,
         ]);
 
         $menuItem2 = MenuItem::create([
             'name' => 'Caesar Salad',
             'description' => 'Classic Caesar salad',
             'price' => 85.00,
-            'category' => 'starter',
-            'prep_location' => 'kitchen',
-            'is_available' => true,
+            'category_id' => $category->id,
+            'prep_area' => 'kitchen',
+            'prep_time_minutes' => 10,
+            'status' => 'available',
+            'stock_quantity' => 15,
+            'unit' => 'pieces',
+            'low_stock_threshold' => 5,
         ]);
 
         // Create an order
