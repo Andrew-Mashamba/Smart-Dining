@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateOrderRequest extends FormRequest
+class UpdateTableStatusRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,7 @@ class UpdateOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => 'required|in:pending,confirmed,preparing,ready,served,completed,cancelled',
-            'notes' => 'nullable|string|max:500',
+            'status' => 'required|in:available,occupied,reserved',
         ];
     }
 
@@ -35,8 +34,8 @@ class UpdateOrderRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'status.required' => 'Order status is required',
-            'status.in' => 'Invalid order status provided',
+            'status.required' => 'Table status is required',
+            'status.in' => 'Invalid table status. Must be available, occupied, or reserved',
         ];
     }
 }

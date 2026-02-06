@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateTableStatusRequest;
+use App\Http\Resources\TableResource;
 use App\Models\Table;
 use Illuminate\Http\Request;
 
@@ -26,7 +28,7 @@ class TableController extends Controller
         $tables = $query->orderBy('name')->get();
 
         return response()->json([
-            'tables' => $tables,
+            'tables' => TableResource::collection($tables),
             'total' => $tables->count(),
         ]);
     }
@@ -41,25 +43,23 @@ class TableController extends Controller
                   ->with(['items.menuItem', 'guest']);
         }])->findOrFail($id);
 
-        return response()->json($table);
+        return response()->json(new TableResource($table));
     }
 
     /**
      * Update table status
      */
-    public function updateStatus(Request $request, $id)
+    public function updateStatus(UpdateTableStatusRequest $request, $id)
     {
-        $request->validate([
-            'status' => 'required|in:available,occupied,reserved',
-        ]);
+        $validated = $request->validated();
 
         $table = Table::findOrFail($id);
 
-        $table->update(['status' => $request->status]);
+        $table->update(['status' => $validated['status']]);
 
         return response()->json([
             'message' => 'Table status updated successfully',
-            'table' => $table,
+            'table' => new TableResource($table),
         ]);
     }
 }

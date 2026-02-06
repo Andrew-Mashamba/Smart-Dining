@@ -87,38 +87,38 @@
         if (typeof window.Echo !== 'undefined') {
             // Kitchen Channel
             Echo.private('kitchen')
-                .listen('.Illuminate\\Events\\OrderCreated', (e) => {
+                .listen('OrderCreated', (e) => {
                     console.log('Kitchen - OrderCreated:', e);
                     addEvent('kitchen-events', `New Order #${e.order_id} - Table: ${e.table}`, 'success');
                 })
-                .listen('.Illuminate\\Events\\OrderStatusUpdated', (e) => {
+                .listen('OrderStatusUpdated', (e) => {
                     console.log('Kitchen - OrderStatusUpdated:', e);
                     addEvent('kitchen-events', `Order #${e.order_id} - ${e.old_status} → ${e.new_status}`, 'info');
                 });
 
             // Bar Channel
             Echo.private('bar')
-                .listen('.Illuminate\\Events\\OrderCreated', (e) => {
+                .listen('OrderCreated', (e) => {
                     console.log('Bar - OrderCreated:', e);
                     addEvent('bar-events', `New Order #${e.order_id} - Table: ${e.table}`, 'success');
                 })
-                .listen('.Illuminate\\Events\\OrderStatusUpdated', (e) => {
+                .listen('OrderStatusUpdated', (e) => {
                     console.log('Bar - OrderStatusUpdated:', e);
                     addEvent('bar-events', `Order #${e.order_id} - ${e.old_status} → ${e.new_status}`, 'info');
                 });
 
-            // Dashboard Channel
-            Echo.private('dashboard')
-                .listen('.Illuminate\\Events\\OrderCreated', (e) => {
+            // Dashboard Channel (using 'orders' channel as per events)
+            Echo.private('orders')
+                .listen('OrderCreated', (e) => {
                     console.log('Dashboard - OrderCreated:', e);
                     addEvent('dashboard-events', `New Order #${e.order_id} - Table: ${e.table}`, 'success');
                 })
-                .listen('.Illuminate\\Events\\OrderStatusUpdated', (e) => {
+                .listen('OrderStatusUpdated', (e) => {
                     console.log('Dashboard - OrderStatusUpdated:', e);
                     addEvent('dashboard-events', `Order #${e.order_id} - ${e.old_status} → ${e.new_status}`, 'info');
                 });
 
-            console.log('Echo initialized and listening on kitchen, bar, and dashboard channels');
+            console.log('Echo initialized and listening on kitchen, bar, and orders channels');
         } else {
             console.error('Echo is not initialized. Check your Echo configuration.');
         }

@@ -49,6 +49,16 @@ class OrderService
      */
     public function addItems(Order $order, array $items): void
     {
+        // Validate stock availability for all items before creating order items
+        foreach ($items as $item) {
+            $menuItem = MenuItem::findOrFail($item['menu_item_id']);
+
+            if ($menuItem->stock_quantity < $item['quantity']) {
+                throw new \Exception("Insufficient stock for {$menuItem->name}. Only {$menuItem->stock_quantity} {$menuItem->unit} available.");
+            }
+        }
+
+        // Create order items after validation passes
         foreach ($items as $item) {
             $menuItem = MenuItem::findOrFail($item['menu_item_id']);
 

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreOrderRequest;
+use App\Http\Requests\UpdateOrderStatusRequest;
 use App\Models\Order;
 use App\Services\OrderManagement\OrderService;
 use App\Services\OrderManagement\OrderDistributionService;
@@ -53,20 +55,9 @@ class OrderController extends Controller
     /**
      * Create a new order
      */
-    public function store(Request $request)
+    public function store(StoreOrderRequest $request)
     {
-        $validated = $request->validate([
-            'guest_id' => 'required|exists:guests,id',
-            'table_id' => 'required|exists:tables,id',
-            'waiter_id' => 'required|exists:staff,id',
-            'session_id' => 'nullable|exists:guest_sessions,id',
-            'order_source' => 'in:whatsapp,pos,web',
-            'notes' => 'nullable|string',
-            'items' => 'required|array|min:1',
-            'items.*.menu_item_id' => 'required|exists:menu_items,id',
-            'items.*.quantity' => 'required|integer|min:1',
-            'items.*.special_instructions' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $order = $this->orderService->createOrder($validated);
 
@@ -93,16 +84,14 @@ class OrderController extends Controller
     /**
      * Update order status
      */
-    public function updateStatus(Request $request, $id)
+    public function updateStatus(UpdateOrderStatusRequest $request, $id)
     {
-        $request->validate([
-            'status' => 'required|in:pending,confirmed,preparing,ready,served,completed,cancelled',
-        ]);
+        $validated = $request->validated();
 
         $order = Order::findOrFail($id);
         $previousStatus = $order->status;
 
-        $this->orderService->updateOrderStatus($order, $request->status);
+        $this->orderService->updateOrderStatus($order, $validated['status']);
 
         event(new OrderStatusChanged($order, $previousStatus));
 

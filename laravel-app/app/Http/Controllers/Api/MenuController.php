@@ -31,6 +31,29 @@ class MenuController extends Controller
     }
 
     /**
+     * Get menu items (optionally filtered by category)
+     */
+    public function items(Request $request)
+    {
+        $request->validate([
+            'category_id' => 'nullable|exists:menu_categories,id',
+        ]);
+
+        $query = \App\Models\MenuItem::query()->where('available', true);
+
+        if ($request->has('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        $items = $query->with('category')->get();
+
+        return response()->json([
+            'items' => \App\Http\Resources\MenuItemResource::collection($items),
+            'total' => $items->count(),
+        ]);
+    }
+
+    /**
      * Get menu items by category
      */
     public function categories()

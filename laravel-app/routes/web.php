@@ -32,6 +32,9 @@ Route::get('/guest/order', GuestOrder::class)->name('guest.order');
 Route::get('/webhooks/whatsapp', [WhatsAppController::class, 'verify'])->name('whatsapp.verify');
 Route::post('/webhooks/whatsapp', [WhatsAppController::class, 'webhook'])->name('whatsapp.webhook');
 
+// Stripe webhook route (public access for Stripe API, signature verification in controller)
+Route::post('/webhooks/stripe', [App\Http\Controllers\StripeWebhookController::class, 'handle'])->name('stripe.webhook');
+
 // Test broadcast route (development only)
 Route::get('/test-broadcast', function () {
     return view('test-broadcasting');

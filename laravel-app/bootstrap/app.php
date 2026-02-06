@@ -29,8 +29,12 @@ return Application::configure(basePath: dirname(__DIR__))
         // Exempt WhatsApp and Stripe webhooks from CSRF protection
         $middleware->validateCsrfTokens(except: [
             'webhooks/whatsapp',
+            'webhooks/stripe',
             'api/webhooks/stripe',
         ]);
+
+        // API rate limiting: 60 requests per minute
+        $middleware->throttleApi('60,1');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

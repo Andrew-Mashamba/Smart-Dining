@@ -11,7 +11,7 @@ class StoreOrderRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,37 @@ class StoreOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'guest_id' => 'required|exists:guests,id',
+            'table_id' => 'required|exists:tables,id',
+            'waiter_id' => 'required|exists:staff,id',
+            'session_id' => 'nullable|exists:guest_sessions,id',
+            'order_source' => 'nullable|in:whatsapp,pos,web',
+            'notes' => 'nullable|string|max:500',
+            'items' => 'required|array|min:1',
+            'items.*.menu_item_id' => 'required|exists:menu_items,id',
+            'items.*.quantity' => 'required|integer|min:1|max:100',
+            'items.*.special_instructions' => 'nullable|string|max:200',
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'guest_id.required' => 'Guest information is required',
+            'guest_id.exists' => 'The selected guest does not exist',
+            'table_id.required' => 'Table selection is required',
+            'table_id.exists' => 'The selected table does not exist',
+            'items.required' => 'At least one item must be added to the order',
+            'items.min' => 'At least one item must be added to the order',
+            'items.*.menu_item_id.required' => 'Menu item is required for each order item',
+            'items.*.menu_item_id.exists' => 'One or more selected menu items do not exist',
+            'items.*.quantity.required' => 'Quantity is required for each item',
+            'items.*.quantity.min' => 'Quantity must be at least 1',
         ];
     }
 }

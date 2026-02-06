@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateOrderRequest extends FormRequest
+class UpdateOrderStatusRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,7 +23,6 @@ class UpdateOrderRequest extends FormRequest
     {
         return [
             'status' => 'required|in:pending,confirmed,preparing,ready,served,completed,cancelled',
-            'notes' => 'nullable|string|max:500',
         ];
     }
 

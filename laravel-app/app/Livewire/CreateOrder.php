@@ -7,6 +7,7 @@ use App\Models\MenuCategory;
 use App\Models\Table;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Events\OrderCreated;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 
@@ -58,9 +59,20 @@ class CreateOrder extends Component
         $existingIndex = $this->findCartItemIndex($menuItemId);
 
         if ($existingIndex !== null) {
+            // Check stock availability before incrementing
+            $newQuantity = $this->cart[$existingIndex]['quantity'] + 1;
+            if ($menuItem->stock_quantity < $newQuantity) {
+                session()->flash('error', "Cannot add more {$menuItem->name}. Only {$menuItem->stock_quantity} {$menuItem->unit} available.");
+                return;
+            }
             // Increment quantity if already in cart
             $this->cart[$existingIndex]['quantity']++;
         } else {
+            // Check stock availability before adding to cart
+            if ($menuItem->stock_quantity < 1) {
+                session()->flash('error', "{$menuItem->name} is out of stock.");
+                return;
+            }
             // Add new item to cart
             $this->cart[] = [
                 'menu_item_id' => $menuItem->id,
@@ -93,6 +105,14 @@ class CreateOrder extends Component
     {
         if (isset($this->cart[$index])) {
             $quantity = max(1, intval($quantity)); // Ensure minimum quantity of 1
+
+            // Check stock availability
+            $menuItem = MenuItem::find($this->cart[$index]['menu_item_id']);
+            if ($menuItem && $menuItem->stock_quantity < $quantity) {
+                session()->flash('error', "Cannot add more {$menuItem->name}. Only {$menuItem->stock_quantity} {$menuItem->unit} available.");
+                return;
+            }
+
             $this->cart[$index]['quantity'] = $quantity;
             $this->calculateTotals();
         }
@@ -156,6 +176,19 @@ class CreateOrder extends Component
         try {
             DB::beginTransaction();
 
+            // Validate stock availability for all items in cart before creating order
+            foreach ($this->cart as $cartItem) {
+                $menuItem = MenuItem::find($cartItem['menu_item_id']);
+
+                if (!$menuItem) {
+                    throw new \Exception("Menu item not found.");
+                }
+
+                if ($menuItem->stock_quantity < $cartItem['quantity']) {
+                    throw new \Exception("Sorry, {$menuItem->name} is out of stock. Only {$menuItem->stock_quantity} {$menuItem->unit} available.");
+                }
+            }
+
             // Create order
             $order = Order::create([
                 'table_id' => $this->selectedTableId,
@@ -183,6 +216,9 @@ class CreateOrder extends Component
             // Update table status to occupied
             $table = Table::findOrFail($this->selectedTableId);
             $table->markAsOccupied();
+
+            // Broadcast OrderCreated event for inventory deduction and notifications
+            event(new OrderCreated($order->load(['orderItems.menuItem', 'table'])));
 
             DB::commit();
 

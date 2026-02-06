@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginRequest;
 use App\Models\Staff;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -13,17 +14,13 @@ class AuthController extends Controller
     /**
      * Login staff member and generate API token
      */
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-            'device_name' => 'string|nullable',
-        ]);
+        $validated = $request->validated();
 
-        $staff = Staff::where('email', $request->email)->first();
+        $staff = Staff::where('email', $validated['email'])->first();
 
-        if (!$staff || !Hash::check($request->password, $staff->password)) {
+        if (!$staff || !Hash::check($validated['password'], $staff->password)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
@@ -39,7 +36,7 @@ class AuthController extends Controller
 
         $abilities = $this->getAbilitiesByRole($staff->role);
         $token = $staff->createToken(
-            $request->device_name ?? 'default',
+            $validated['device_name'] ?? 'default',
             $abilities
         )->plainTextToken;
 

@@ -78,7 +78,7 @@
 <script src="https://js.stripe.com/v3/"></script>
 <script>
     // Set Stripe public key from config
-    window.stripePublicKey = '{{ config('services.stripe.public_key') }}';
+    window.stripePublicKey = '{{ config('stripe.public_key') }}';
     window.appName = '{{ config('app.name') }}';
 </script>
 @vite(['resources/js/stripe.js'])

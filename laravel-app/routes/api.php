@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Public menu routes
 Route::get('menu', [MenuController::class, 'index']);
+Route::get('menu/items', [MenuController::class, 'items']);
 Route::get('menu/categories', [MenuController::class, 'categories']);
 Route::get('menu/popular', [MenuController::class, 'popular']);
 Route::get('menu/search', [MenuController::class, 'search']);
@@ -33,7 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('orders', [OrderController::class, 'index']);
     Route::post('orders', [OrderController::class, 'store']);
     Route::get('orders/{id}', [OrderController::class, 'show']);
-    Route::put('orders/{id}/status', [OrderController::class, 'updateStatus']);
+    Route::patch('orders/{id}/status', [OrderController::class, 'updateStatus']);
     Route::post('orders/{id}/items', [OrderController::class, 'addItems']);
     Route::post('orders/{id}/serve', [OrderController::class, 'markAsServed']);
     Route::post('orders/{id}/cancel', [OrderController::class, 'cancel']);
@@ -42,7 +43,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Tables
     Route::get('tables', [TableController::class, 'index']);
     Route::get('tables/{id}', [TableController::class, 'show']);
-    Route::put('tables/{id}/status', [TableController::class, 'updateStatus']);
+    Route::patch('tables/{id}/status', [TableController::class, 'updateStatus']);
 
     // Order Items (for kitchen/bar)
     Route::get('order-items/pending', [OrderItemController::class, 'pending']);
@@ -50,6 +51,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('order-items/{id}/done', [OrderItemController::class, 'markDone']);
 
     // Payments
+    Route::get('payments', [PaymentController::class, 'index']);
     Route::post('payments', [PaymentController::class, 'store']);
     Route::get('payments/{id}', [PaymentController::class, 'show']);
     Route::post('payments/{id}/confirm', [PaymentController::class, 'confirm']);
@@ -83,5 +85,5 @@ Route::prefix('webhooks')->group(function () {
     Route::post('whatsapp', [App\Http\Controllers\WhatsApp\WebhookController::class, 'handle']);
 
     // Stripe webhook (signature verification handled in controller)
-    Route::post('stripe', [App\Http\Controllers\StripeWebhookController::class, 'handle']);
+    Route::post('stripe', [App\Http\Controllers\Api\StripeWebhookController::class, 'handle']);
 });
