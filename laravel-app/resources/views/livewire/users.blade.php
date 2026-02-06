@@ -18,7 +18,7 @@
                     type="text"
                     wire:model.live="search"
                     placeholder="Search by name, email, or role..."
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent placeholder-text-gray-600"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent placeholder:text-gray-600"
                 />
             </div>
             <div class="flex items-center gap-2">
