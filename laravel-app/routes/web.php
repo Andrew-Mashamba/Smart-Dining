@@ -19,10 +19,10 @@ use App\Livewire\KitchenDisplay;
 use App\Livewire\BarDisplay;
 use App\Livewire\GuestManagement;
 use App\Livewire\InventoryManagement;
-use App\Http\Controllers\GuestOrderController;
+use App\Livewire\GuestOrder;
 
 // Guest ordering route (public access via QR code)
-Route::get('/guest/order', [GuestOrderController::class, 'index'])->name('guest.order');
+Route::get('/guest/order', GuestOrder::class)->name('guest.order');
 
 // Root route: Redirect guests to login, authenticated users to dashboard
 Route::get('/', function () {

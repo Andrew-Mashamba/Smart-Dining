@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "54c2a4cbcd64ad90d0f503f93330b609",
+    "content-hash": "497e89539edaec58108d79d91b3a920b",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -1566,6 +1566,64 @@
             "time": "2025-08-22T14:27:06+00:00"
         },
         {
+            "name": "khanamiryan/qrcode-detector-decoder",
+            "version": "2.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/khanamiryan/php-qrcode-detector-decoder.git",
+                "reference": "17c570bb39f641cc1c4c41a46177ac491393a01d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/khanamiryan/php-qrcode-detector-decoder/zipball/17c570bb39f641cc1c4c41a46177ac491393a01d",
+                "reference": "17c570bb39f641cc1c4c41a46177ac491393a01d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.5 | ^8.0 | ^9.0",
+                "rector/rector": "^1.0.4",
+                "symplify/easy-coding-standard": "^11.0",
+                "vimeo/psalm": "^4.24"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "lib/Common/customFunctions.php"
+                ],
+                "psr-4": {
+                    "Zxing\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT",
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Ashot Khanamiryan",
+                    "email": "a.khanamiryan@gmail.com",
+                    "homepage": "https://github.com/khanamiryan",
+                    "role": "Developer"
+                }
+            ],
+            "description": "QR code decoder / reader",
+            "homepage": "https://github.com/khanamiryan/php-qrcode-detector-decoder/",
+            "keywords": [
+                "barcode",
+                "qr",
+                "zxing"
+            ],
+            "support": {
+                "issues": "https://github.com/khanamiryan/php-qrcode-detector-decoder/issues",
+                "source": "https://github.com/khanamiryan/php-qrcode-detector-decoder/tree/2.0.3"
+            },
+            "time": "2025-06-10T08:44:02+00:00"
+        },
+        {
             "name": "laravel/fortify",
             "version": "v1.21.1",
             "source": {
@@ -3109,6 +3167,69 @@
             "time": "2026-01-02T08:56:05+00:00"
         },
         {
+            "name": "myclabs/php-enum",
+            "version": "1.8.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/myclabs/php-enum.git",
+                "reference": "e7be26966b7398204a234f8673fdad5ac6277802"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/myclabs/php-enum/zipball/e7be26966b7398204a234f8673fdad5ac6277802",
+                "reference": "e7be26966b7398204a234f8673fdad5ac6277802",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^7.3 || ^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5",
+                "squizlabs/php_codesniffer": "1.*",
+                "vimeo/psalm": "^4.6.2 || ^5.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MyCLabs\\Enum\\": "src/"
+                },
+                "classmap": [
+                    "stubs/Stringable.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP Enum contributors",
+                    "homepage": "https://github.com/myclabs/php-enum/graphs/contributors"
+                }
+            ],
+            "description": "PHP Enum implementation",
+            "homepage": "https://github.com/myclabs/php-enum",
+            "keywords": [
+                "enum"
+            ],
+            "support": {
+                "issues": "https://github.com/myclabs/php-enum/issues",
+                "source": "https://github.com/myclabs/php-enum/tree/1.8.5"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/mnapoli",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/myclabs/php-enum",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2025-01-14T11:49:03+00:00"
+        },
+        {
             "name": "nesbot/carbon",
             "version": "3.11.1",
             "source": {
@@ -3212,6 +3333,67 @@
                 }
             ],
             "time": "2026-01-29T09:26:29+00:00"
+        },
+        {
+            "name": "netflie/whatsapp-cloud-api",
+            "version": "2.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/netflie/whatsapp-cloud-api.git",
+                "reference": "3c3aea95cac49658eef8c1e361af35fd0567427c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/netflie/whatsapp-cloud-api/zipball/3c3aea95cac49658eef8c1e361af35fd0567427c",
+                "reference": "3c3aea95cac49658eef8c1e361af35fd0567427c",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.0",
+                "myclabs/php-enum": "^1.8",
+                "php": "^7.4 || ^8.0 || ^8.1",
+                "vlucas/phpdotenv": "^5.4"
+            },
+            "require-dev": {
+                "fakerphp/faker": "^1.19",
+                "friendsofphp/php-cs-fixer": "^3.13",
+                "phpspec/prophecy-phpunit": "^2.0",
+                "phpstan/phpstan": "^1.9",
+                "phpunit/phpunit": "^9.0",
+                "symfony/var-dumper": "^5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Netflie\\WhatsAppCloudApi\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Álex Albarca",
+                    "email": "alex@albarca.es"
+                },
+                {
+                    "name": "Álex Albarca",
+                    "email": "alex@netflie.es"
+                }
+            ],
+            "description": "The first PHP SDK to send and receive messages using a cloud-hosted version of the WhatsApp Business Platform",
+            "support": {
+                "issues": "https://github.com/netflie/whatsapp-cloud-api/issues",
+                "source": "https://github.com/netflie/whatsapp-cloud-api/tree/2.2.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/aalbarca",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-08-28T10:43:39+00:00"
         },
         {
             "name": "nette/schema",

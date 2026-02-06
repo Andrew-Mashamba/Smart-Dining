@@ -30,12 +30,15 @@ class QRCodeService
         // Generate the URL for the guest ordering page with session token
         $url = url("/guest/order?token={$guestSession->session_token}");
 
-        // Generate QR code as PNG
-        $qrCode = QrCode::format('png')
+        // Generate QR code as SVG first (works without Imagick)
+        $svgQrCode = QrCode::format('svg')
             ->size(400)
             ->errorCorrection('H')
             ->margin(2)
             ->generate($url);
+
+        // Convert SVG to PNG using GD
+        $pngData = $this->convertSvgToPng($svgQrCode, 400, 400);
 
         // Define the file path
         $fileName = "{$tableId}.png";
@@ -44,8 +47,8 @@ class QRCodeService
         // Ensure the qrcodes directory exists
         Storage::disk('public')->makeDirectory('qrcodes');
 
-        // Save the QR code to storage
-        Storage::disk('public')->put($filePath, $qrCode);
+        // Save the PNG QR code to storage
+        Storage::disk('public')->put($filePath, $pngData);
 
         // Update the table with the QR code path
         $table->update([
@@ -118,5 +121,49 @@ class QRCodeService
         }
 
         return false;
+    }
+
+    /**
+     * Convert SVG to PNG using GD library.
+     * This is a workaround since simple-qrcode PNG format requires Imagick.
+     *
+     * @param string $svgContent
+     * @param int $width
+     * @param int $height
+     * @return string PNG binary data
+     */
+    private function convertSvgToPng(string $svgContent, int $width, int $height): string
+    {
+        // Create a white background image
+        $image = imagecreatetruecolor($width, $height);
+        $white = imagecolorallocate($image, 255, 255, 255);
+        imagefill($image, 0, 0, $white);
+
+        // Parse SVG and draw QR code
+        // Extract rect elements from SVG (QR code modules)
+        preg_match_all('/<rect[^>]*x="([^"]*)"[^>]*y="([^"]*)"[^>]*width="([^"]*)"[^>]*height="([^"]*)"[^>]*fill="([^"]*)"/', $svgContent, $matches, PREG_SET_ORDER);
+
+        $black = imagecolorallocate($image, 0, 0, 0);
+
+        foreach ($matches as $match) {
+            $x = floatval($match[1]);
+            $y = floatval($match[2]);
+            $w = floatval($match[3]);
+            $h = floatval($match[4]);
+            $fill = $match[5];
+
+            // Only draw black rectangles (QR code modules)
+            if (stripos($fill, '#000') !== false || stripos($fill, 'black') !== false || $fill === 'rgb(0,0,0)') {
+                imagefilledrectangle($image, (int)$x, (int)$y, (int)($x + $w), (int)($y + $h), $black);
+            }
+        }
+
+        // Capture PNG output
+        ob_start();
+        imagepng($image);
+        $pngData = ob_get_clean();
+        imagedestroy($image);
+
+        return $pngData;
     }
 }
