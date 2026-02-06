@@ -30,53 +30,74 @@ Route::get('menu/{id}', [MenuController::class, 'show']);
 // Protected routes (require authentication)
 Route::middleware('auth:sanctum')->group(function () {
 
-    // Orders
+    // Waiter routes: can create orders, view own orders, process payments
+    Route::middleware(['api.role:waiter,manager,admin'])->group(function () {
+        Route::post('orders', [OrderController::class, 'store']);
+        Route::post('orders/{id}/items', [OrderController::class, 'addItems']);
+        Route::post('orders/{id}/serve', [OrderController::class, 'markAsServed']);
+        Route::patch('tables/{id}/status', [TableController::class, 'updateStatus']);
+
+        // Payments (waiter, manager, admin)
+        Route::post('payments', [PaymentController::class, 'store']);
+        Route::post('payments/{id}/confirm', [PaymentController::class, 'confirm']);
+        Route::post('payments/stripe/create-intent', [App\Http\Controllers\StripePaymentController::class, 'createIntent']);
+        Route::post('payments/stripe/confirm', [App\Http\Controllers\StripePaymentController::class, 'confirm']);
+
+        // Tips (waiter, manager, admin)
+        Route::post('tips', [TipController::class, 'store']);
+        Route::get('orders/{orderId}/tip-suggestions', [TipController::class, 'suggestions']);
+
+        // Guests (waiter, manager, admin)
+        Route::get('guests/phone/{phone}', [GuestController::class, 'findByPhone']);
+        Route::post('guests', [GuestController::class, 'store']);
+    });
+
+    // Chef routes: can view kitchen orders, update item prep_status (kitchen items only)
+    Route::middleware(['api.role:chef,manager,admin'])->group(function () {
+        Route::get('order-items/pending', [OrderItemController::class, 'pending']);
+        Route::post('order-items/{id}/received', [OrderItemController::class, 'markReceived']);
+        Route::post('order-items/{id}/done', [OrderItemController::class, 'markDone']);
+    });
+
+    // Bartender routes: can view bar orders, update item prep_status (bar items only)
+    // (shares same endpoints as chef, validation happens in controller)
+    Route::middleware(['api.role:bartender,manager,admin'])->group(function () {
+        Route::get('order-items/pending', [OrderItemController::class, 'pending']);
+        Route::post('order-items/{id}/received', [OrderItemController::class, 'markReceived']);
+        Route::post('order-items/{id}/done', [OrderItemController::class, 'markDone']);
+    });
+
+    // Orders - accessible by waiters, chefs, bartenders, managers, admins
     Route::get('orders', [OrderController::class, 'index']);
-    Route::post('orders', [OrderController::class, 'store']);
     Route::get('orders/{id}', [OrderController::class, 'show']);
-    Route::patch('orders/{id}/status', [OrderController::class, 'updateStatus']);
-    Route::post('orders/{id}/items', [OrderController::class, 'addItems']);
-    Route::post('orders/{id}/serve', [OrderController::class, 'markAsServed']);
-    Route::post('orders/{id}/cancel', [OrderController::class, 'cancel']);
     Route::get('orders/{id}/receipt', [OrderController::class, 'generateReceipt']);
-
-    // Tables
-    Route::get('tables', [TableController::class, 'index']);
-    Route::get('tables/{id}', [TableController::class, 'show']);
-    Route::patch('tables/{id}/status', [TableController::class, 'updateStatus']);
-
-    // Order Items (for kitchen/bar)
-    Route::get('order-items/pending', [OrderItemController::class, 'pending']);
-    Route::post('order-items/{id}/received', [OrderItemController::class, 'markReceived']);
-    Route::post('order-items/{id}/done', [OrderItemController::class, 'markDone']);
-
-    // Payments
-    Route::get('payments', [PaymentController::class, 'index']);
-    Route::post('payments', [PaymentController::class, 'store']);
-    Route::get('payments/{id}', [PaymentController::class, 'show']);
-    Route::post('payments/{id}/confirm', [PaymentController::class, 'confirm']);
     Route::get('orders/{orderId}/bill', [PaymentController::class, 'getBill']);
 
-    // Stripe payment
-    Route::post('payments/stripe/create-intent', [App\Http\Controllers\StripePaymentController::class, 'createIntent']);
-    Route::post('payments/stripe/confirm', [App\Http\Controllers\StripePaymentController::class, 'confirm']);
+    // Order status updates - managers and admins only
+    Route::middleware(['api.role:manager,admin'])->group(function () {
+        Route::patch('orders/{id}/status', [OrderController::class, 'updateStatus']);
+        Route::post('orders/{id}/cancel', [OrderController::class, 'cancel']);
+    });
 
-    // Tips
-    Route::post('tips', [TipController::class, 'store']);
-    Route::get('orders/{orderId}/tip-suggestions', [TipController::class, 'suggestions']);
+    // Tables - accessible by all authenticated staff
+    Route::get('tables', [TableController::class, 'index']);
+    Route::get('tables/{id}', [TableController::class, 'show']);
 
-    // Guests
-    Route::get('guests/phone/{phone}', [GuestController::class, 'findByPhone']);
-    Route::post('guests', [GuestController::class, 'store']);
+    // Payments view - accessible by all authenticated staff
+    Route::get('payments', [PaymentController::class, 'index']);
+    Route::get('payments/{id}', [PaymentController::class, 'show']);
 
-    // Menu management (admin/manager only)
-    Route::put('menu/{id}/availability', [MenuController::class, 'updateAvailability']);
-    Route::get('menu/stats', [MenuController::class, 'stats']);
+    // Manager and Admin only routes
+    Route::middleware(['api.role:manager,admin'])->group(function () {
+        // Menu management
+        Route::put('menu/{id}/availability', [MenuController::class, 'updateAvailability']);
+        Route::get('menu/stats', [MenuController::class, 'stats']);
 
-    // QR Codes (admin/manager only)
-    Route::get('qr-codes/tables/{tableId}', [App\Http\Controllers\WhatsApp\QRCodeController::class, 'show']);
-    Route::post('qr-codes/tables/{tableId}/generate', [App\Http\Controllers\WhatsApp\QRCodeController::class, 'generate']);
-    Route::post('qr-codes/generate-all', [App\Http\Controllers\WhatsApp\QRCodeController::class, 'generateAll']);
+        // QR Codes
+        Route::get('qr-codes/tables/{tableId}', [App\Http\Controllers\WhatsApp\QRCodeController::class, 'show']);
+        Route::post('qr-codes/tables/{tableId}/generate', [App\Http\Controllers\WhatsApp\QRCodeController::class, 'generate']);
+        Route::post('qr-codes/generate-all', [App\Http\Controllers\WhatsApp\QRCodeController::class, 'generateAll']);
+    });
 });
 
 // WhatsApp webhook routes (no authentication required)

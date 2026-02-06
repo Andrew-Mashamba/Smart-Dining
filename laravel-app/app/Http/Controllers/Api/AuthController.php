@@ -100,15 +100,49 @@ class AuthController extends Controller
 
     /**
      * Get token abilities based on staff role
+     *
+     * Token abilities provide granular permission control for Sanctum API tokens.
+     * These can be checked using $user->tokenCan('ability') in controllers.
      */
     protected function getAbilitiesByRole(string $role): array
     {
         $abilities = [
+            // Admin: Full access including staff management
             'admin' => ['*'],
+
+            // Manager: Full access to all operational endpoints
             'manager' => ['*'],
-            'waiter' => ['orders:create', 'orders:view', 'orders:update', 'tables:view', 'payments:create', 'tips:create'],
-            'chef' => ['orders:view', 'order-items:update'],
-            'bartender' => ['orders:view', 'order-items:update'],
+
+            // Waiter: Can create orders, view own orders, process payments
+            'waiter' => [
+                'orders:create',
+                'orders:view',
+                'orders:view-own',
+                'orders:update',
+                'tables:view',
+                'tables:update',
+                'payments:create',
+                'payments:process',
+                'tips:create',
+                'menu:view',
+                'guests:manage',
+            ],
+
+            // Chef: Can view kitchen orders and update prep status for kitchen items only
+            'chef' => [
+                'orders:view',
+                'order-items:view',
+                'order-items:update-kitchen',
+                'menu:view',
+            ],
+
+            // Bartender: Can view bar orders and update prep status for bar items only
+            'bartender' => [
+                'orders:view',
+                'order-items:view',
+                'order-items:update-bar',
+                'menu:view',
+            ],
         ];
 
         return $abilities[$role] ?? [];

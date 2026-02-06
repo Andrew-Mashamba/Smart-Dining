@@ -26,10 +26,23 @@ class OrderController extends Controller
 
     /**
      * Get all orders with filters
+     *
+     * Waiters can only view their own orders.
+     * Chefs and bartenders can view orders relevant to their prep area.
+     * Managers and admins can view all orders.
      */
     public function index(Request $request)
     {
+        $staff = $request->user();
         $query = Order::with(['items.menuItem', 'guest', 'table', 'waiter']);
+
+        // Waiters can only see their own orders
+        if ($staff->role === 'waiter') {
+            $query->where('waiter_id', $staff->id);
+        }
+
+        // Chefs and bartenders see all orders (they'll filter by prep_area via order-items)
+        // No additional filtering needed here
 
         if ($request->has('status')) {
             $query->where('status', $request->status);
@@ -73,10 +86,21 @@ class OrderController extends Controller
 
     /**
      * Get a specific order
+     *
+     * Waiters can only view their own orders.
+     * Managers and admins can view all orders.
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $order = Order::with(['items.menuItem', 'guest', 'table', 'waiter', 'payments'])->findOrFail($id);
+        $staff = $request->user();
+
+        // Waiters can only view their own orders
+        if ($staff->role === 'waiter' && $order->waiter_id !== $staff->id) {
+            return response()->json([
+                'message' => 'Insufficient permissions',
+            ], 403);
+        }
 
         return response()->json($this->orderService->getOrderSummary($order));
     }
