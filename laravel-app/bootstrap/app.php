@@ -26,9 +26,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo('/login');
         $middleware->redirectUsersTo('/dashboard');
 
-        // Exempt WhatsApp webhook from CSRF protection
+        // Exempt WhatsApp and Stripe webhooks from CSRF protection
         $middleware->validateCsrfTokens(except: [
             'webhooks/whatsapp',
+            'api/webhooks/stripe',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

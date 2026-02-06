@@ -34,8 +34,8 @@ Route::post('/webhooks/whatsapp', [WhatsAppController::class, 'webhook'])->name(
 
 // Test broadcast route (development only)
 Route::get('/test-broadcast', function () {
-    return view('test-broadcast');
-})->name('test.broadcast');
+    return view('test-broadcasting');
+})->middleware(['auth:web'])->name('test.broadcast');
 
 // Root route: Redirect guests to login, authenticated users to dashboard
 Route::get('/', function () {
