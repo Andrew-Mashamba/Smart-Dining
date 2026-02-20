@@ -1,15 +1,22 @@
 package com.seacliff.pos.ui.activities
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayout
 import com.seacliff.pos.databinding.ActivityOrdersBinding
+import com.seacliff.pos.service.PosFirebaseMessagingService
 import com.seacliff.pos.ui.adapters.OrderListAdapter
 import com.seacliff.pos.ui.viewmodel.OrderViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class OrdersActivity : AppCompatActivity() {
@@ -17,6 +24,16 @@ class OrdersActivity : AppCompatActivity() {
     private lateinit var binding: ActivityOrdersBinding
     private val orderViewModel: OrderViewModel by viewModels()
     private lateinit var orderAdapter: OrderListAdapter
+
+    // Broadcast receiver for FCM order updates
+    private val orderUpdateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val orderId = intent.getStringExtra("order_id")
+            Timber.d("Received order update broadcast: orderId=$orderId")
+            // Refresh the order list
+            orderViewModel.syncAndLoadOrders()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +44,8 @@ class OrdersActivity : AppCompatActivity() {
         setupRecyclerView()
         setupTabs()
         observeViewModel()
+
+        orderViewModel.syncAndLoadOrders()
     }
 
     private fun setupToolbar() {
@@ -39,7 +58,9 @@ class OrdersActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         orderAdapter = OrderListAdapter { order ->
-            // Navigate to order details
+            val intent = Intent(this, OrderDetailsActivity::class.java)
+            intent.putExtra("ORDER_ID", order.id)
+            startActivity(intent)
         }
 
         binding.rvOrders.apply {
@@ -48,8 +69,7 @@ class OrdersActivity : AppCompatActivity() {
         }
 
         binding.swipeRefresh.setOnRefreshListener {
-            orderViewModel.loadTodayOrders()
-            binding.swipeRefresh.isRefreshing = false
+            orderViewModel.syncAndLoadOrders()
         }
     }
 
@@ -66,7 +86,7 @@ class OrdersActivity : AppCompatActivity() {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 val status = tab?.text.toString().lowercase()
                 if (status == "all") {
-                    orderViewModel.loadTodayOrders()
+                    orderViewModel.loadAllOrders()
                 } else {
                     orderViewModel.loadOrdersByStatus(status)
                 }
@@ -79,9 +99,30 @@ class OrdersActivity : AppCompatActivity() {
 
     private fun observeViewModel() {
         orderViewModel.orders.observe(this) { orders ->
+            timber.log.Timber.d("OrdersActivity received ${orders.size} orders")
             orderAdapter.submitList(orders)
             binding.tvEmpty.visibility = if (orders.isEmpty()) View.VISIBLE else View.GONE
         }
+        orderViewModel.syncRefreshing.observe(this) { refreshing ->
+            binding.swipeRefresh.isRefreshing = refreshing
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Register broadcast receiver for FCM order updates
+        LocalBroadcastManager.getInstance(this)
+            .registerReceiver(
+                orderUpdateReceiver,
+                IntentFilter(PosFirebaseMessagingService.ACTION_ORDER_UPDATED)
+            )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Unregister broadcast receiver
+        LocalBroadcastManager.getInstance(this)
+            .unregisterReceiver(orderUpdateReceiver)
     }
 
     override fun onSupportNavigateUp(): Boolean {

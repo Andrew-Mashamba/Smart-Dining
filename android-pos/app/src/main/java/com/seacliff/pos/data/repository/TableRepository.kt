@@ -3,9 +3,11 @@ package com.seacliff.pos.data.repository
 import com.seacliff.pos.data.local.dao.TableDao
 import com.seacliff.pos.data.local.entity.TableEntity
 import com.seacliff.pos.data.remote.api.ApiService
+import com.seacliff.pos.data.remote.dto.TableDto
 import com.seacliff.pos.data.remote.dto.UpdateStatusRequest
 import com.seacliff.pos.util.Resource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -16,49 +18,45 @@ class TableRepository @Inject constructor(
     private val tableDao: TableDao
 ) {
 
+    /**
+     * Convert TableDto from API to TableEntity for local storage.
+     * Table names come from the backend; for local-only use, seed/migration use nomenclature T0021, BT03, OT008.
+     */
+    private fun TableDto.toEntity(): TableEntity {
+        return TableEntity(
+            id = this.id,
+            name = this.name,
+            location = this.location ?: "indoor",
+            capacity = this.capacity,
+            status = this.status,
+            createdAt = null,
+            updatedAt = null
+        )
+    }
+
     fun getTables(forceRefresh: Boolean = false): Flow<Resource<List<TableEntity>>> = flow {
         try {
             emit(Resource.Loading())
 
-            // Load from local database first
-            if (!forceRefresh) {
-                val localTables = tableDao.getAllTables()
-                localTables.collect { tables ->
-                    if (tables.isNotEmpty()) {
-                        emit(Resource.Success(tables))
-                    }
-                }
-            }
-
-            // Fetch from API
-            val response = apiService.getTables()
-
-            if (response.isSuccessful && response.body() != null) {
-                val tables = response.body()!!
-
-                // Save to local database
-                tableDao.insertTables(tables)
-
-                emit(Resource.Success(tables))
-            } else {
-                // Return cached data on API failure
-                val localTables = tableDao.getAllTables()
-                localTables.collect { tables ->
-                    emit(Resource.Success(tables))
-                }
-            }
-        } catch (e: Exception) {
-            // On error, try to return cached data
+            // Try to fetch from API and store in DB (sync is also done by SyncWorker)
             try {
-                val localTables = tableDao.getAllTables()
-                localTables.collect { tables ->
-                    if (tables.isNotEmpty()) {
-                        emit(Resource.Success(tables))
-                    } else {
-                        emit(Resource.Error("Failed to load tables: ${e.localizedMessage}"))
-                    }
+                val response = apiService.getTables()
+                if (response.isSuccessful && response.body() != null) {
+                    val tableResponse = response.body()!!
+                    val tables = tableResponse.tables.map { it.toEntity() }
+                    tableDao.insertTables(tables)
                 }
-            } catch (cacheException: Exception) {
+            } catch (_: Exception) {
+                // API not available; use whatever is in DB
+            }
+
+            val localTables = tableDao.getAllTables().first()
+            emit(Resource.Success(localTables))
+        } catch (e: Exception) {
+            try {
+                val localTables = tableDao.getAllTables().first()
+                emit(Resource.Success(localTables))
+            } catch (_: Exception) {
                 emit(Resource.Error("Failed to load tables: ${e.localizedMessage}"))
             }
         }
@@ -66,6 +64,10 @@ class TableRepository @Inject constructor(
 
     fun getTablesByStatus(status: String): Flow<List<TableEntity>> {
         return tableDao.getTablesByStatus(status)
+    }
+
+    fun getTablesByLocation(location: String): Flow<List<TableEntity>> {
+        return tableDao.getTablesByLocation(location)
     }
 
     suspend fun updateTableStatus(tableId: Long, status: String): Resource<Unit> {
@@ -80,12 +82,14 @@ class TableRepository @Inject constructor(
                 tableDao.updateTableStatus(tableId, status)
                 Resource.Success(Unit)
             } else {
+                // Update locally for offline support
+                tableDao.updateTableStatus(tableId, status)
                 Resource.Error("Failed to update table status")
             }
         } catch (e: Exception) {
             // Update locally anyway for offline support
             tableDao.updateTableStatus(tableId, status)
-            Resource.Error("Error: ${e.localizedMessage}")
+            Resource.Success(Unit) // Return success since local update worked
         }
     }
 }

@@ -15,9 +15,10 @@ import com.seacliff.pos.data.local.entity.*
         MenuItemEntity::class,
         OrderEntity::class,
         OrderItemEntity::class,
-        PaymentEntity::class
+        PaymentEntity::class,
+        TipEntity::class
     ],
-    version = 1,
+    version = 7,
     exportSchema = false
 )
 @TypeConverters(DateConverter::class)
@@ -29,6 +30,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun orderDao(): OrderDao
     abstract fun orderItemDao(): OrderItemDao
     abstract fun paymentDao(): PaymentDao
+    abstract fun tipDao(): TipDao
 
     companion object {
         const val DATABASE_NAME = "seacliff_pos_db"

@@ -1,37 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary Colors -->
-    <color name="primary">#1976D2</color>
-    <color name="primary_dark">#1565C0</color>
-    <color name="primary_light">#BBDEFB</color>
-    <color name="accent">#FF9800</color>
+    <!-- Monochrome Design System - SeaCliff POS -->
 
-    <!-- Status Colors -->
-    <color name="status_available">#4CAF50</color>
-    <color name="status_occupied">#F44336</color>
-    <color name="status_reserved">#FF9800</color>
+    <!-- Primary Background -->
+    <color name="background_primary">#FAFAFA</color>
+    <color name="background_secondary">#EBEBEB</color>
 
-    <color name="status_pending">#FFC107</color>
-    <color name="status_confirmed">#2196F3</color>
-    <color name="status_preparing">#FF9800</color>
-    <color name="status_ready">#8BC34A</color>
-    <color name="status_served">#4CAF50</color>
-    <color name="status_completed">#009688</color>
-    <color name="status_cancelled">#F44336</color>
+    <!-- Surface Colors -->
+    <color name="surface_white">#FFFFFF</color>
+    <color name="surface_elevated">#F5F5F5</color>
+    <color name="surface_variant">#F5F5F5</color>
 
-    <!-- Common Colors -->
+    <!-- Text Colors -->
+    <color name="text_primary">#1A1A1A</color>
+    <color name="text_secondary">#666666</color>
+    <color name="text_tertiary">#999999</color>
+    <color name="text_disabled">#BDBDBD</color>
+
+    <!-- Icon Background -->
+    <color name="icon_background">#1A1A1A</color>
+    <color name="icon_tint_white">#FFFFFF</color>
+
+    <!-- Dividers & Borders -->
+    <color name="divider">#E0E0E0</color>
+    <color name="border_light">#EEEEEE</color>
+    <color name="border">#999999</color>
+
+    <!-- Status Colors (Monochrome variants) -->
+    <color name="status_pending">#757575</color>
+    <color name="status_confirmed">#5A5A5A</color>
+    <color name="status_preparing">#4A4A4A</color>
+    <color name="status_ready">#424242</color>
+    <color name="status_served">#9E9E9E</color>
+    <color name="status_completed">#BDBDBD</color>
+    <color name="status_cancelled">#757575</color>
+
+    <!-- Table Status (Monochrome) -->
+    <color name="status_available">#9E9E9E</color>
+    <color name="status_occupied">#424242</color>
+    <color name="status_reserved">#757575</color>
+
+    <!-- Error Color -->
+    <color name="error">#D32F2F</color>
+
+    <!-- Overlay & Shadow -->
+    <color name="overlay_dark">#80000000</color>
+    <color name="shadow_light">#10000000</color>
+    <color name="shadow_card">#0F000000</color>
+    <color name="overlay_chip">#141A1A1A</color>
+
+    <!-- Legacy Compatibility -->
+    <color name="primary">#1A1A1A</color>
+    <color name="primary_dark">#000000</color>
+    <color name="primary_light">#424242</color>
+    <color name="accent">#666666</color>
+    <color name="background">#FAFAFA</color>
+    <color name="card_background">#FFFFFF</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="gray">#9E9E9E</color>
     <color name="gray_light">#F5F5F5</color>
     <color name="gray_dark">#424242</color>
-
-    <!-- Background -->
-    <color name="background">#FAFAFA</color>
-    <color name="card_background">#FFFFFF</color>
-
-    <!-- Text -->
-    <color name="text_primary">#212121</color>
-    <color name="text_secondary">#757575</color>
     <color name="text_hint">#BDBDBD</color>
+
+    <!-- Launcher Icon -->
+    <color name="ic_launcher_background">#1A1A1A</color>
 </resources>

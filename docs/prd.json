@@ -1,0 +1,654 @@
+{
+  "project": {
+    "name": "Sea Cliff Smart Dining & WhatsApp Ordering System",
+    "description": "A comprehensive hospitality management system with WhatsApp integration, POS functionality, and real-time order management for restaurants. Enables guest ordering via QR/WhatsApp, waiter POS (web + Android), kitchen display, bar display, manager dashboard, and multi-channel payments.",
+    "version": "1.0.0",
+    "design_system": "Monochrome design (gray/white); tablet-friendly staff portals; mobile-first guest and Android POS.",
+    "tech_stack": {
+      "tier": "Full-stack hospitality platform",
+      "backend": "Laravel 11.x (PHP 8.2+)",
+      "frontend_web": "Livewire 4.x + Alpine.js + Tailwind CSS",
+      "mobile": "Native Android (Kotlin, MVVM, Room, Hilt)",
+      "database": ["MySQL 8.0+", "PostgreSQL 14+"],
+      "cache_queue": "Redis 7.x",
+      "realtime": "Laravel Reverb / Pusher",
+      "auth": "Laravel Sanctum (API), Fortify/Jetstream (web)",
+      "payments": "Stripe; extensible for Pesapal, M-Pesa",
+      "integrations": ["WhatsApp Business API", "QR code generation"]
+    }
+  },
+  "product": {
+    "problem_statement": {
+      "guests": [
+        "Faster service and less waiting",
+        "Transparent billing",
+        "Convenient payment options"
+      ],
+      "staff": [
+        "Fewer order errors",
+        "Centralized orders from POS and WhatsApp",
+        "Clear accountability (assigned waiter)"
+      ],
+      "management": [
+        "Visibility into live operations",
+        "Analytics and reporting",
+        "Increased revenue and table turnover"
+      ]
+    },
+    "goals_and_metrics": {
+      "goals": [
+        "Reduce order-to-serve time",
+        "Increase average order value",
+        "Improve guest satisfaction"
+      ],
+      "kpis": [
+        "Order to serve time",
+        "Percentage of WhatsApp orders",
+        "Tip frequency",
+        "Repeat visits"
+      ]
+    },
+    "user_roles": [
+      {
+        "role": "Guest",
+        "capabilities": "Browse menu, order (WhatsApp or waiter), receive live updates, view running and final bill, pay, tip"
+      },
+      {
+        "role": "Waiter",
+        "capabilities": "Create orders via POS, serve, mark paid (cash), receive tip notifications"
+      },
+      {
+        "role": "Chef",
+        "capabilities": "View food orders only, mark received, mark done"
+      },
+      {
+        "role": "Bartender",
+        "capabilities": "View drink orders only, mark received, mark done"
+      },
+      {
+        "role": "Manager",
+        "capabilities": "Monitor operations, view all orders, reports, staff and menu management"
+      },
+      {
+        "role": "Admin",
+        "capabilities": "Full system configuration, staff management, settings"
+      }
+    ],
+    "core_features": {
+      "guest": [
+        "QR onboarding and WhatsApp session",
+        "WhatsApp ordering and menu browsing",
+        "Live order status updates",
+        "Running and final bill",
+        "Multiple payment options (card, mobile money, cash)"
+      ],
+      "staff": [
+        "POS ordering (web and Android)",
+        "Kitchen Display System (KDS)",
+        "Bar Display System",
+        "Order status control (received, preparing, done)",
+        "Tip notifications"
+      ],
+      "management": [
+        "Live dashboard",
+        "Order tracking and analytics",
+        "Sales and staff reports",
+        "Menu and table management",
+        "Inventory monitoring"
+      ]
+    },
+    "non_functional_requirements": [
+      "WhatsApp API uptime fallback (POS continues when WhatsApp unavailable)",
+      "POS offline mode (Android) with sync when connection returns",
+      "Sub-second order sync to kitchen/bar displays",
+      "Secure payments (PCI considerations, webhook verification)",
+      "Role-based access control on API and web routes"
+    ],
+    "system_components": [
+      "WhatsApp Business API",
+      "QR → Session Token (guest sessions)",
+      "Order Management Service (core brain)",
+      "Waiter POS (web + Android)",
+      "Kitchen Display System (KDS)",
+      "Bar Display System",
+      "Manager Dashboard",
+      "Payment Gateway (Stripe + extensible)",
+      "Notification Engine"
+    ],
+    "database_schema": {
+      "core_tables": [
+        { "name": "guests", "key_columns": "id, phone_number, name, first_visit_at, last_visit_at, loyalty_points, preferences" },
+        { "name": "tables", "key_columns": "id, name, location, capacity, status" },
+        { "name": "staff", "key_columns": "id, name, email, role, pin, status" },
+        { "name": "menu_categories", "key_columns": "id, name, display_order, status" },
+        { "name": "menu_items", "key_columns": "id, category_id, name, price, prep_area, stock_quantity, unit" },
+        { "name": "guest_sessions", "key_columns": "id, guest_id, table_id, session_token, status" },
+        { "name": "orders", "key_columns": "id, order_number, guest_id, table_id, waiter_id, order_source, status, subtotal, tax, total" },
+        { "name": "order_items", "key_columns": "id, order_id, menu_item_id, quantity, unit_price, prep_status, special_instructions" },
+        { "name": "payments", "key_columns": "id, order_id, amount, method, status, transaction_id" },
+        { "name": "tips", "key_columns": "id, order_id, waiter_id, amount, method" }
+      ]
+    },
+    "api_design": {
+      "auth": ["POST /api/auth/login", "POST /api/auth/login-pin", "POST /api/auth/logout", "GET /api/auth/me"],
+      "menu": ["GET /api/menu", "GET /api/menu/items", "GET /api/menu/categories", "GET /api/menu/{id}"],
+      "orders": ["POST /api/orders", "GET /api/orders", "GET /api/orders/{id}", "POST /api/orders/{id}/items", "PATCH /api/orders/{id}/status", "POST /api/orders/{id}/serve"],
+      "order_items": ["GET /api/order-items/pending", "POST /api/order-items/{id}/received", "POST /api/order-items/{id}/done"],
+      "tables": ["GET /api/tables", "GET /api/tables/{id}", "PATCH /api/tables/{id}/status"],
+      "payments": ["POST /api/payments", "POST /api/payments/{id}/confirm", "GET /api/orders/{orderId}/bill"],
+      "tips": ["POST /api/tips", "GET /api/orders/{orderId}/tip-suggestions"],
+      "guests": ["GET /api/guests/phone/{phone}", "POST /api/guests"],
+      "webhooks": ["GET/POST /api/webhooks/whatsapp", "POST /api/webhooks/stripe"]
+    },
+    "whatsapp_templates": [
+      "welcome_message (first-time guest)",
+      "welcome_back (returning guest)",
+      "order_received",
+      "order_preparing",
+      "order_ready",
+      "running_bill",
+      "final_bill",
+      "thank_you"
+    ]
+  },
+  "user_flows": [
+    {
+      "actor": "Guest (first-time)",
+      "flow": "Scan QR → Open WhatsApp → Welcome + table + menu + assigned waiter → Order (WhatsApp or waiter) → Order confirmed → Kitchen/bar received → Preparing → Ready → Waiter serves → Running bill → Final bill → Pay (digital/cash) → Thank you + optional feedback"
+    },
+    {
+      "actor": "Guest (returning)",
+      "flow": "Open existing chat or link → Welcome back + reorder/specials → Pre-order or dine-in → Arrive (I've arrived / QR) → Same serving/billing/payment flow"
+    },
+    {
+      "actor": "Waiter",
+      "flow": "Login (web or Android POS) → Select table → Add items to order → Place order → Kitchen/bar notified → Order ready notification → Serve → Mark served → Process payment (cash/card) → Record tip"
+    },
+    {
+      "actor": "Chef",
+      "flow": "Login to Kitchen Display → View food-only order queue → Mark items Received → Mark Done → Order ready for pickup"
+    },
+    {
+      "actor": "Bartender",
+      "flow": "Login to Bar Display → View drink-only order queue → Mark Received → Mark Done"
+    },
+    {
+      "actor": "Manager",
+      "flow": "Login to Dashboard → View live orders, sales, staff → Manage menu, tables, guests, inventory → Run reports (sales, staff, inventory)"
+    }
+  ],
+  "stories": [
+    {
+      "id": 1,
+      "original_id": "SC-001",
+      "title": "Staff authentication (web and API)",
+      "description": "As a staff member, I want to log in securely (email/password or PIN) so that I can access the POS, kitchen, bar, or manager portal according to my role.",
+      "acceptance": [
+        "Login form with email and password; optional PIN login for quick waiter access",
+        "API: POST /api/auth/login returns Sanctum token; POST /api/auth/login-pin for PIN",
+        "Role-based redirect: waiter → orders/create or dashboard; chef → kitchen; bartender → bar; manager/admin → dashboard",
+        "Logout clears session and invalidates API token",
+        "Account lockout after failed attempts (configurable)",
+        "Support staff list for PIN login (GET /api/auth/staff-list)"
+      ],
+      "priority": 1,
+      "estimate_hours": 4,
+      "module": "Authentication & Authorization",
+      "epic": "EPIC-001",
+      "access_route": {
+        "route": "/login, POST /api/auth/login, POST /api/auth/login-pin",
+        "menu": "Entry point (unauthenticated → Login)"
+      }
+    },
+    {
+      "id": 2,
+      "original_id": "SC-002",
+      "title": "Role-based access control",
+      "description": "As the system, I must enforce role-based access so that waiters, chefs, bartenders, managers, and admins only access authorized features and API endpoints.",
+      "acceptance": [
+        "Middleware: api.role:waiter,manager,admin for order creation, payments, tips",
+        "Middleware: api.role:chef,bartender,manager,admin for order-items received/done",
+        "Middleware: api.role:manager,admin for order status update, cancel, menu availability, QR codes, staff PIN",
+        "Web routes protected by role:admin,manager for staff, menu, tables, guests, reports, settings",
+        "403 JSON response for API when role insufficient",
+        "Sidebar and menu show only items allowed for current role"
+      ],
+      "priority": 2,
+      "estimate_hours": 2,
+      "module": "Authentication & Authorization",
+      "epic": "EPIC-001",
+      "access_route": {
+        "route": "All protected routes",
+        "menu": "N/A (enforcement)"
+      }
+    },
+    {
+      "id": 3,
+      "original_id": "SC-003",
+      "title": "Create order (POS)",
+      "description": "As a waiter, I want to create an order from the POS (web or Android) by selecting a table and adding menu items so that the order is sent to the kitchen and bar.",
+      "acceptance": [
+        "Select table (required); optional guest lookup by phone",
+        "Add items with quantity and special instructions; validate stock availability",
+        "Order created with order_source=pos, status=pending; order_number generated (ORD-YYYYMMDD-XXXX)",
+        "Order items created with prep_status=pending; table status set to occupied",
+        "OrderCreated event dispatched; inventory deducted via listener",
+        "API: POST /api/orders with table_id, guest_id, waiter_id, items[]"
+      ],
+      "priority": 3,
+      "estimate_hours": 5,
+      "module": "Order Management",
+      "epic": "EPIC-002",
+      "access_route": {
+        "route": "/orders/create, POST /api/orders",
+        "menu": "Orders → New Order"
+      }
+    },
+    {
+      "id": 4,
+      "original_id": "SC-004",
+      "title": "Add items to existing order",
+      "description": "As a waiter, I want to add more items to an existing order so that guests can order additional food or drinks without creating a new order.",
+      "acceptance": [
+        "POST /api/orders/{id}/items with items[] (menu_item_id, quantity, special_instructions)",
+        "Stock validated; new order items created; order totals recalculated (subtotal, tax, total)",
+        "New items appear in kitchen/bar pending queue",
+        "OrderCreated or equivalent event for new items so KDS/BDS update"
+      ],
+      "priority": 4,
+      "estimate_hours": 2,
+      "module": "Order Management",
+      "epic": "EPIC-002",
+      "access_route": {
+        "route": "Order details or POS; POST /api/orders/{id}/items",
+        "menu": "Orders → Order detail"
+      }
+    },
+    {
+      "id": 5,
+      "original_id": "SC-005",
+      "title": "Order status workflow",
+      "description": "As a manager or system, I want order status to follow a valid workflow (pending → preparing → ready → delivered → paid) so that state is consistent and auditable.",
+      "acceptance": [
+        "Valid transitions enforced in OrderService/OrderWorkflowService",
+        "Order can move to 'ready' only when all order items prep_status = ready (or business rule defined)",
+        "Order 'paid' only when payment total covers order total",
+        "PATCH /api/orders/{id}/status restricted to manager/admin",
+        "OrderStatusUpdated event on change; table set to available when order paid and no other active orders"
+      ],
+      "priority": 5,
+      "estimate_hours": 3,
+      "module": "Order Management",
+      "epic": "EPIC-002",
+      "access_route": {
+        "route": "Order details; PATCH /api/orders/{id}/status",
+        "menu": "Orders list / Order detail"
+      }
+    },
+    {
+      "id": 6,
+      "original_id": "SC-006",
+      "title": "Mark order as served",
+      "description": "As a waiter, I want to mark an order as served so that the guest is notified (e.g. running bill via WhatsApp) and the workflow progresses.",
+      "acceptance": [
+        "POST /api/orders/{id}/serve allowed for waiter/manager/admin",
+        "Order status updated to delivered (or as per business rule)",
+        "Running bill can be sent to guest (WhatsApp) when implemented",
+        "Waiter sees order in 'ready for pickup' then marks served"
+      ],
+      "priority": 6,
+      "estimate_hours": 1.5,
+      "module": "Order Management",
+      "epic": "EPIC-002",
+      "access_route": {
+        "route": "Order details / Android POS; POST /api/orders/{id}/serve",
+        "menu": "Orders"
+      }
+    },
+    {
+      "id": 7,
+      "original_id": "SC-007",
+      "title": "Kitchen Display System (KDS)",
+      "description": "As a chef, I want to see a real-time queue of food orders only, with the ability to mark items as received and done, so that the kitchen can prepare orders in sequence.",
+      "acceptance": [
+        "Display shows order items where menu_item.prep_area = kitchen only",
+        "Group by order: order number, table, items with quantity and special instructions",
+        "Buttons per item: Received → Done (prep_status: pending → received → preparing → ready)",
+        "GET /api/order-items/pending filtered by prep_area for chef role",
+        "POST /api/order-items/{id}/received and /done; only chef can mark kitchen items",
+        "Real-time updates via Laravel Reverb/broadcast when new orders or status changes"
+      ],
+      "priority": 7,
+      "estimate_hours": 4,
+      "module": "Kitchen & Bar Display",
+      "epic": "EPIC-003",
+      "access_route": {
+        "route": "/kitchen",
+        "menu": "Kitchen Display (chef/manager/admin)"
+      }
+    },
+    {
+      "id": 8,
+      "original_id": "SC-008",
+      "title": "Bar Display System",
+      "description": "As a bartender, I want to see a real-time queue of drink orders only, with received/done actions, so that drinks are prepared and ready for pickup.",
+      "acceptance": [
+        "Display shows order items where menu_item.prep_area = bar only",
+        "Same workflow as KDS: Received, Done",
+        "API same as kitchen but bartender role can only mark bar items",
+        "Real-time updates; optional batch view for similar drinks"
+      ],
+      "priority": 8,
+      "estimate_hours": 3.5,
+      "module": "Kitchen & Bar Display",
+      "epic": "EPIC-003",
+      "access_route": {
+        "route": "/bar",
+        "menu": "Bar Display (bartender/manager/admin)"
+      }
+    },
+    {
+      "id": 9,
+      "original_id": "SC-009",
+      "title": "Manager dashboard",
+      "description": "As a manager, I want a dashboard with live orders, today's revenue, active tables, and key metrics so that I can monitor operations at a glance.",
+      "acceptance": [
+        "Live order count and list (status color-coded)",
+        "Today's revenue, orders count, average order value",
+        "Active tables and staff on duty (if applicable)",
+        "Recent orders widget; low stock alerts link",
+        "Route /dashboard or /manager/dashboard; role manager/admin"
+      ],
+      "priority": 9,
+      "estimate_hours": 3.5,
+      "module": "Manager Dashboard & Reports",
+      "epic": "EPIC-004",
+      "access_route": {
+        "route": "/dashboard",
+        "menu": "Dashboard"
+      }
+    },
+    {
+      "id": 10,
+      "original_id": "SC-010",
+      "title": "Sales reports",
+      "description": "As a manager, I want sales reports by date range with revenue by category and payment method so that I can analyze business performance.",
+      "acceptance": [
+        "Date range filter; summary: total revenue, orders, average order value",
+        "Revenue by category; revenue by payment method",
+        "Top selling items; optional daily chart",
+        "Export PDF/CSV",
+        "Route /reports/sales"
+      ],
+      "priority": 10,
+      "estimate_hours": 4,
+      "module": "Manager Dashboard & Reports",
+      "epic": "EPIC-004",
+      "access_route": {
+        "route": "/reports/sales",
+        "menu": "Reports → Sales"
+      }
+    },
+    {
+      "id": 11,
+      "original_id": "SC-011",
+      "title": "Menu management",
+      "description": "As a manager or admin, I want to manage menu categories and items (name, price, prep area, availability, stock) so that the menu is always correct across POS and WhatsApp.",
+      "acceptance": [
+        "CRUD for menu categories (name, display_order, status)",
+        "CRUD for menu items: category, name, description, price, prep_area (kitchen/bar), prep_time, availability, stock_quantity, unit",
+        "Toggle availability; low stock threshold",
+        "API: GET /api/menu, GET /api/menu/items, PUT /api/menu/{id}/availability (manager/admin)",
+        "Menu cached/invalidated for performance"
+      ],
+      "priority": 11,
+      "estimate_hours": 3.5,
+      "module": "Menu & Table Management",
+      "epic": "EPIC-005",
+      "access_route": {
+        "route": "/menu",
+        "menu": "Menu"
+      }
+    },
+    {
+      "id": 12,
+      "original_id": "SC-012",
+      "title": "Table management",
+      "description": "As a manager, I want to manage tables (name, location, capacity, status) and generate QR codes so that guests can start sessions and staff can assign orders.",
+      "acceptance": [
+        "CRUD for tables: name, location, capacity, status (available/occupied/reserved)",
+        "PATCH /api/tables/{id}/status for waiter to set occupied/available",
+        "QR code generation per table linking to guest order page with session token",
+        "API: GET /api/tables, GET /api/tables/{id}",
+        "Route /tables; QR codes in Table Management UI"
+      ],
+      "priority": 12,
+      "estimate_hours": 3,
+      "module": "Menu & Table Management",
+      "epic": "EPIC-005",
+      "access_route": {
+        "route": "/tables",
+        "menu": "Tables"
+      }
+    },
+    {
+      "id": 13,
+      "original_id": "SC-013",
+      "title": "Process payment",
+      "description": "As a waiter or manager, I want to process payments (cash, card, Stripe) and record tips so that orders can be closed and waiters receive tip notifications.",
+      "acceptance": [
+        "Payment form: method (cash/card/stripe), amount; validate amount vs order total",
+        "POST /api/payments creates payment; POST /api/payments/{id}/confirm for cash",
+        "Stripe: create intent (POST /api/payments/stripe/create-intent), confirm (POST /api/payments/stripe/confirm)",
+        "Order status set to paid when total covered; table freed",
+        "Tip: POST /api/tips; GET /api/orders/{orderId}/tip-suggestions",
+        "Receipt generation (PDF) for order"
+      ],
+      "priority": 13,
+      "estimate_hours": 4,
+      "module": "Payment & Tips",
+      "epic": "EPIC-006",
+      "access_route": {
+        "route": "/orders/{order}/payment, API payments/tips endpoints",
+        "menu": "Order detail → Payment"
+      }
+    },
+    {
+      "id": 14,
+      "original_id": "SC-014",
+      "title": "Stripe webhook",
+      "description": "As the system, I must handle Stripe webhooks (payment_intent.succeeded/failed) so that payment status stays in sync with the gateway.",
+      "acceptance": [
+        "POST /api/webhooks/stripe with signature verification",
+        "On success: update Payment status, optionally order to paid",
+        "On failure: update Payment status, log",
+        "Idempotent handling where possible"
+      ],
+      "priority": 14,
+      "estimate_hours": 2,
+      "module": "Payment & Tips",
+      "epic": "EPIC-006",
+      "access_route": {
+        "route": "POST /api/webhooks/stripe",
+        "menu": "N/A (webhook)"
+      }
+    },
+    {
+      "id": 15,
+      "original_id": "SC-015",
+      "title": "Guest ordering (QR / web)",
+      "description": "As a guest, I want to open the ordering page via QR or link, browse the menu, and place an order so that it goes to the same pipeline as POS orders.",
+      "acceptance": [
+        "Public route /guest/order with session_token (from QR or link)",
+        "Validate session (GuestSession active); show table and menu",
+        "Add to cart; guest phone/name for identification; create Guest if new",
+        "Place order: order_source=web, same Order/OrderItem flow; OrderCreated event",
+        "Confirmation message; kitchen/bar receive order"
+      ],
+      "priority": 15,
+      "estimate_hours": 4,
+      "module": "Guest Experience",
+      "epic": "EPIC-007",
+      "access_route": {
+        "route": "/guest/order?token=...",
+        "menu": "Entry via QR/link"
+      }
+    },
+    {
+      "id": 16,
+      "original_id": "SC-016",
+      "title": "WhatsApp webhook and message handling",
+      "description": "As the system, I must receive WhatsApp messages via webhook and handle them (welcome, menu, order, status) so that guests can order and get updates via WhatsApp.",
+      "acceptance": [
+        "GET /api/webhooks/whatsapp for verification (hub_mode, hub_verify_token)",
+        "POST /api/webhooks/whatsapp receives incoming messages; parse entry/changes/value/messages",
+        "MessageHandler processes text/button; identify guest by phone; first-time vs returning logic",
+        "Send template messages (welcome_message, welcome_back, order_received, order_ready, running_bill, final_bill, thank_you)",
+        "Create order from WhatsApp: order_source=whatsapp; same Order pipeline",
+        "StateManager/FlowManager for conversation state (NEW, MENU_BROWSING, ORDERING, etc.)"
+      ],
+      "priority": 16,
+      "estimate_hours": 6,
+      "module": "Guest Experience",
+      "epic": "EPIC-007",
+      "access_route": {
+        "route": "GET/POST /api/webhooks/whatsapp",
+        "menu": "N/A (webhook)"
+      }
+    },
+    {
+      "id": 17,
+      "original_id": "SC-017",
+      "title": "Android POS – login and menu",
+      "description": "As a waiter, I want to log in to the Android app and browse the menu (with offline support) so that I can take orders on a tablet or phone.",
+      "acceptance": [
+        "Login screen (email/password or PIN); store Sanctum token",
+        "Menu loaded from API; cached in Room for offline",
+        "Categories and items; filter by category; search",
+        "Configurable API base URL (local.properties); auth interceptor for token"
+      ],
+      "priority": 17,
+      "estimate_hours": 5,
+      "module": "Android POS",
+      "epic": "EPIC-008",
+      "access_route": {
+        "route": "Android: LoginActivity, MenuActivity",
+        "menu": "N/A (app)"
+      }
+    },
+    {
+      "id": 18,
+      "original_id": "SC-018",
+      "title": "Android POS – orders and sync",
+      "description": "As a waiter, I want to create and view orders on Android, with offline queue and background sync, so that I can work without constant connectivity.",
+      "acceptance": [
+        "Create order: select table, add items from menu, submit; POST /api/orders when online",
+        "Offline: queue order in Room; SyncWorker syncs when online; conflict resolution (e.g. last-write-wins or defined strategy)",
+        "Orders list with status filter; order details; mark served via API",
+        "WorkManager for periodic sync; sync status indicator in UI"
+      ],
+      "priority": 18,
+      "estimate_hours": 6,
+      "module": "Android POS",
+      "epic": "EPIC-008",
+      "access_route": {
+        "route": "Android: TablesActivity, OrderActivity, OrdersActivity, OrderDetailsActivity",
+        "menu": "N/A (app)"
+      }
+    },
+    {
+      "id": 19,
+      "original_id": "SC-019",
+      "title": "Inventory deduction on order",
+      "description": "As the system, I must deduct menu item stock when an order is created and alert when stock is low so that we avoid overselling and can restock in time.",
+      "acceptance": [
+        "On OrderCreated, listener deducts stock for each order item (MenuItem.stock_quantity)",
+        "Create InventoryTransaction (type sale, reference order_id)",
+        "If stock < low_stock_threshold after deduction, trigger LowStockAlert notification",
+        "Prevent order creation if quantity > stock_quantity (return clear error)"
+      ],
+      "priority": 19,
+      "estimate_hours": 2.5,
+      "module": "Inventory & Settings",
+      "epic": "EPIC-009",
+      "access_route": {
+        "route": "N/A (event listener)",
+        "menu": "N/A"
+      }
+    },
+    {
+      "id": 20,
+      "original_id": "SC-020",
+      "title": "Settings (tax, business info)",
+      "description": "As a manager, I want to configure tax rate and business info so that receipts and calculations use the correct values.",
+      "acceptance": [
+        "Settings table/model: key-value; Setting::get('tax_rate', 18) used in order totals",
+        "Settings UI: tax_rate, business name, address, phone (for receipts)",
+        "Route /settings; role manager/admin",
+        "Receipt PDF uses business info from settings"
+      ],
+      "priority": 20,
+      "estimate_hours": 2,
+      "module": "Inventory & Settings",
+      "epic": "EPIC-009",
+      "access_route": {
+        "route": "/settings",
+        "menu": "Settings"
+      }
+    },
+    {
+      "id": 21,
+      "original_id": "SC-021",
+      "title": "Real-time broadcasting",
+      "description": "As the system, I must broadcast order events (created, status updated, item ready) so that kitchen, bar, and manager views update without refresh.",
+      "acceptance": [
+        "Laravel Reverb (or Pusher) configured; channels for kitchen, bar, manager",
+        "OrderCreated, OrderStatusUpdated, OrderItemReady (or equivalent) implement ShouldBroadcast",
+        "Frontend (Livewire/Echo) subscribes to channels; UI updates on event",
+        "Channels secured by auth/role where needed"
+      ],
+      "priority": 21,
+      "estimate_hours": 3,
+      "module": "Real-time & Infrastructure",
+      "epic": "EPIC-010",
+      "access_route": {
+        "route": "N/A (broadcasting)",
+        "menu": "N/A"
+      }
+    },
+    {
+      "id": 22,
+      "original_id": "SC-022",
+      "title": "API documentation and testing",
+      "description": "As a developer or integrator, I want clear API documentation and test coverage so that the Android app and future integrations are reliable.",
+      "acceptance": [
+        "API docs available (e.g. /api/docs or Scribe/OpenAPI)",
+        "Postman collection maintained (e.g. postman/Hospitality-System-API-v1.0.0.postman_collection.json)",
+        "Feature tests for auth, orders, payments, role access, error handling",
+        "Rate limiting and validation documented"
+      ],
+      "priority": 22,
+      "estimate_hours": 3,
+      "module": "Real-time & Infrastructure",
+      "epic": "EPIC-010",
+      "access_route": {
+        "route": "/api/docs",
+        "menu": "N/A"
+      }
+    }
+  ],
+  "epics": [
+    { "id": "EPIC-001", "name": "Authentication & Authorization" },
+    { "id": "EPIC-002", "name": "Order Management" },
+    { "id": "EPIC-003", "name": "Kitchen & Bar Display" },
+    { "id": "EPIC-004", "name": "Manager Dashboard & Reports" },
+    { "id": "EPIC-005", "name": "Menu & Table Management" },
+    { "id": "EPIC-006", "name": "Payment & Tips" },
+    { "id": "EPIC-007", "name": "Guest Experience (WhatsApp, QR, Web)" },
+    { "id": "EPIC-008", "name": "Android POS" },
+    { "id": "EPIC-009", "name": "Inventory & Settings" },
+    { "id": "EPIC-010", "name": "Real-time & Infrastructure" }
+  ],
+  "total_stories": 22,
+  "total_estimate_hours": 82.5
+}

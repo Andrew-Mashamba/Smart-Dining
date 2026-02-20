@@ -35,4 +35,7 @@ interface TableDao {
 
     @Query("DELETE FROM tables")
     suspend fun deleteAllTables()
+
+    @Query("SELECT COUNT(*) FROM tables")
+    suspend fun getTableCount(): Int
 }

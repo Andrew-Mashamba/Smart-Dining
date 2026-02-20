@@ -1,5 +1,6 @@
 package com.seacliff.pos.ui.adapters
 
+import android.view.View
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -34,9 +35,11 @@ class MenuAdapter(
         fun bind(menuItem: MenuItemEntity) {
             binding.apply {
                 tvName.text = menuItem.name
-                tvDescription.text = menuItem.description ?: ""
+                val desc = menuItem.description?.trim().orEmpty()
+                tvDescription.text = desc
+                tvDescription.visibility = if (desc.isEmpty()) View.GONE else View.VISIBLE
                 tvPrice.text = "TZS ${String.format("%,.0f", menuItem.price)}"
-                tvCategory.text = menuItem.category.capitalize()
+                tvCategory.text = menuItem.category?.replaceFirstChar { it.uppercase() } ?: "Uncategorized"
                 tvPrepTime.text = "${menuItem.preparationTime} min"
 
                 // Load image

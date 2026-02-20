@@ -3,6 +3,8 @@ package com.seacliff.pos
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import com.seacliff.pos.service.AppLifecycleObserver
+import com.seacliff.pos.service.PosFirebaseMessagingService
 import com.seacliff.pos.worker.SyncManager
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
@@ -27,13 +29,19 @@ class POSApplication : Application(), Configuration.Provider {
 
         Timber.d("SeaCliff POS Application started")
 
-        // Setup periodic sync
+        // Initialize app lifecycle observer for FCM foreground/background detection
+        AppLifecycleObserver.init()
+
+        // Create notification channels
+        PosFirebaseMessagingService.createNotificationChannels(this)
+
+        // Setup periodic sync and trigger immediate sync (pulls tables, menu, staff from backend when logged in)
         syncManager.setupPeriodicSync()
+        syncManager.triggerImmediateSync()
     }
 
-    override fun getWorkManagerConfiguration(): Configuration {
-        return Configuration.Builder()
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
             .setWorkerFactory(workerFactory)
             .build()
-    }
 }

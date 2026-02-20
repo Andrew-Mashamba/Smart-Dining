@@ -41,4 +41,7 @@ interface MenuItemDao {
 
     @Query("DELETE FROM menu_items")
     suspend fun deleteAllMenuItems()
+
+    @Query("SELECT COUNT(*) FROM menu_items")
+    suspend fun getMenuItemCount(): Int
 }

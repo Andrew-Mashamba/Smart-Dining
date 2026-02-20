@@ -3,8 +3,11 @@ package com.seacliff.pos.data.repository
 import com.seacliff.pos.data.local.dao.MenuItemDao
 import com.seacliff.pos.data.local.entity.MenuItemEntity
 import com.seacliff.pos.data.remote.api.ApiService
+import com.seacliff.pos.data.remote.dto.MenuItemDto
+import com.seacliff.pos.data.remote.dto.UpdateAvailabilityRequest
 import com.seacliff.pos.util.Resource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -15,49 +18,51 @@ class MenuRepository @Inject constructor(
     private val menuItemDao: MenuItemDao
 ) {
 
+    /**
+     * Convert MenuItemDto from API to MenuItemEntity for local storage
+     */
+    private fun MenuItemDto.toEntity(): MenuItemEntity {
+        return MenuItemEntity(
+            id = this.id,
+            name = this.name,
+            description = this.description,
+            category = this.category?.name,
+            categoryId = this.category?.id,
+            price = this.price,
+            prepArea = this.prepArea,
+            imageUrl = this.imageUrl,
+            isAvailable = this.available,
+            preparationTime = this.prepTimeMinutes ?: 0,
+            isPopular = this.isPopular,
+            dietaryInfo = this.dietaryInfo,
+            createdAt = null, // Will be parsed if needed
+            updatedAt = null
+        )
+    }
+
     fun getMenuItems(forceRefresh: Boolean = false): Flow<Resource<List<MenuItemEntity>>> = flow {
         try {
             emit(Resource.Loading())
 
-            // Load from local database first
-            if (!forceRefresh) {
-                val localItems = menuItemDao.getAvailableMenuItems()
-                localItems.collect { items ->
-                    if (items.isNotEmpty()) {
-                        emit(Resource.Success(items))
-                    }
-                }
-            }
-
-            // Fetch from API
-            val response = apiService.getMenu()
-
-            if (response.isSuccessful && response.body() != null) {
-                val menuItems = response.body()!!
-
-                // Save to local database
-                menuItemDao.insertMenuItems(menuItems)
-
-                emit(Resource.Success(menuItems))
-            } else {
-                // If API fails, return cached data
-                val localItems = menuItemDao.getAllMenuItems()
-                localItems.collect { items ->
-                    emit(Resource.Success(items))
-                }
-            }
-        } catch (e: Exception) {
-            // On error, try to return cached data
+            // Try to fetch from API and store in DB (sync is also done by SyncWorker)
             try {
-                val localItems = menuItemDao.getAllMenuItems()
-                localItems.collect { items ->
-                    if (items.isNotEmpty()) {
-                        emit(Resource.Success(items))
-                    } else {
-                        emit(Resource.Error("Failed to load menu: ${e.localizedMessage}"))
-                    }
+                val response = apiService.getMenuItems(categoryId = null)
+                if (response.isSuccessful && response.body() != null) {
+                    val menuResponse = response.body()!!
+                    val menuItems = menuResponse.items.map { it.toEntity() }
+                    menuItemDao.insertMenuItems(menuItems)
                 }
-            } catch (cacheException: Exception) {
+            } catch (_: Exception) {
+                // API not available; use whatever is in DB
+            }
+
+            val localItems = menuItemDao.getAvailableMenuItems().first()
+            emit(Resource.Success(localItems))
+        } catch (e: Exception) {
+            try {
+                val localItems = menuItemDao.getAllMenuItems().first()
+                emit(Resource.Success(localItems))
+            } catch (_: Exception) {
                 emit(Resource.Error("Failed to load menu: ${e.localizedMessage}"))
             }
         }
@@ -75,7 +80,7 @@ class MenuRepository @Inject constructor(
         return try {
             val response = apiService.updateMenuItemAvailability(
                 itemId,
-                mapOf("is_available" to isAvailable)
+                UpdateAvailabilityRequest(isAvailable)
             )
 
             if (response.isSuccessful) {
@@ -86,6 +91,8 @@ class MenuRepository @Inject constructor(
                 Resource.Error("Failed to update availability")
             }
         } catch (e: Exception) {
+            // Update locally for offline support
+            menuItemDao.updateMenuItemAvailability(itemId, isAvailable)
             Resource.Error("Error: ${e.localizedMessage}")
         }
     }

@@ -38,9 +38,13 @@ class OrderListAdapter(
         fun bind(order: OrderEntity) {
             binding.apply {
                 tvOrderId.text = "Order #${order.id}"
-                tvTableId.text = "Table ID: ${order.tableId}"
-                tvTotal.text = "TZS ${String.format("%,.0f", order.totalAmount)}"
-                tvStatus.text = order.status.capitalize()
+                tvTableName.text = order.tableName?.takeIf { it.isNotBlank() } ?: "Table ${order.tableId}"
+                val waiterText = order.waiterName?.takeIf { it.isNotBlank() }?.let { "Waiter: $it" } ?: ""
+                tvWaiter.text = waiterText
+                tvWaiter.visibility = if (waiterText.isNotEmpty()) android.view.View.VISIBLE else android.view.View.GONE
+                val amount = if (order.totalAmount > 0) order.totalAmount else (order.subtotal + order.tax)
+                tvTotal.text = "TZS ${String.format("%,.0f", amount)}"
+                tvStatus.text = order.status.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
                 tvTime.text = order.createdAt?.let { dateFormat.format(it) } ?: ""
 
                 // Status color

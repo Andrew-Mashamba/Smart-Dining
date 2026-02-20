@@ -49,16 +49,51 @@
             android:exported="false"
             android:parentActivityName=".ui.activities.OrderActivity" />
 
-        <!-- WorkManager -->
+        <!-- Orders Activity -->
+        <activity
+            android:name=".ui.activities.OrdersActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.activities.MainActivity" />
+
+        <!-- Menu Activity -->
+        <activity
+            android:name=".ui.activities.MenuActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.activities.OrderActivity" />
+
+        <!-- Login Activity -->
+        <activity
+            android:name=".ui.activities.LoginActivity"
+            android:exported="false" />
+
+        <!-- Order Details Activity -->
+        <activity
+            android:name=".ui.activities.OrderDetailsActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.activities.OrdersActivity" />
+
+        <!-- Tips Activity -->
+        <activity
+            android:name=".ui.activities.TipsActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.activities.MainActivity" />
+
+        <!-- Firebase Cloud Messaging Service -->
+        <service
+            android:name=".service.PosFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- WorkManager - Using on-demand initialization via Configuration.Provider -->
+        <!-- Disable WorkManager auto-initialization -->
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
             android:exported="false"
-            tools:node="merge">
-            <meta-data
-                android:name="androidx.work.WorkManagerInitializer"
-                android:value="androidx.startup" />
-        </provider>
+            tools:node="remove" />
 
     </application>
 

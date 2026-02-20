@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
+import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayout
@@ -14,6 +15,7 @@ import com.seacliff.pos.R
 import com.seacliff.pos.databinding.ActivityOrderBinding
 import com.seacliff.pos.ui.adapters.CartAdapter
 import com.seacliff.pos.ui.adapters.MenuAdapter
+import com.seacliff.pos.ui.adapters.OrderListAdapter
 import com.seacliff.pos.ui.viewmodel.MenuViewModel
 import com.seacliff.pos.ui.viewmodel.OrderViewModel
 import com.seacliff.pos.util.Resource
@@ -28,6 +30,7 @@ class OrderActivity : AppCompatActivity() {
 
     private lateinit var menuAdapter: MenuAdapter
     private lateinit var cartAdapter: CartAdapter
+    private lateinit var existingOrdersAdapter: OrderListAdapter
 
     private var tableId: Long = 0
     private var tableName: String = ""
@@ -45,6 +48,8 @@ class OrderActivity : AppCompatActivity() {
         setupTabs()
         setupCart()
         observeViewModels()
+
+        orderViewModel.loadActiveOrdersForTable(tableId)
     }
 
     private fun setupToolbar() {
@@ -83,6 +88,16 @@ class OrderActivity : AppCompatActivity() {
         binding.rvCart.apply {
             layoutManager = LinearLayoutManager(this@OrderActivity)
             adapter = cartAdapter
+        }
+
+        existingOrdersAdapter = OrderListAdapter { order ->
+            val intent = Intent(this, OrderDetailsActivity::class.java)
+            intent.putExtra("ORDER_ID", order.id)
+            startActivity(intent)
+        }
+        binding.rvExistingOrders.apply {
+            layoutManager = LinearLayoutManager(this@OrderActivity)
+            adapter = existingOrdersAdapter
         }
     }
 
@@ -147,6 +162,11 @@ class OrderActivity : AppCompatActivity() {
             binding.tvTotal.text = "Total: TZS ${String.format("%,.0f", total)}"
         }
 
+        orderViewModel.activeOrdersForTable.observe(this) { orders ->
+            binding.sectionExistingOrders.visibility = if (orders.isEmpty()) View.GONE else View.VISIBLE
+            existingOrdersAdapter.submitList(orders)
+        }
+
         // Observe order creation
         orderViewModel.createOrderState.observe(this) { resource ->
             when (resource) {
@@ -163,7 +183,18 @@ class OrderActivity : AppCompatActivity() {
                 is Resource.Error -> {
                     binding.btnPlaceOrder.isEnabled = true
                     binding.progressOrder.visibility = View.GONE
-                    Toast.makeText(this, resource.message, Toast.LENGTH_LONG).show()
+                    val msg = resource.message ?: "Order failed"
+                    if (msg == "Session expired. Please log in again.") {
+                        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+                        startActivity(Intent(this, LoginActivity::class.java).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        })
+                        finish()
+                    } else {
+                        Snackbar.make(binding.root, msg, Snackbar.LENGTH_LONG)
+                            .setAction("Try again") { orderViewModel.createOrder(guestId = 1, tableId = tableId) }
+                            .show()
+                    }
                 }
             }
         }

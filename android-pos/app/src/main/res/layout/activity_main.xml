@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_primary"
+    tools:context=".ui.activities.MainActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/surface_white"
+        android:elevation="0dp"
+        app:titleTextColor="@color/text_primary"
+        app:subtitleTextColor="@color/text_secondary"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <!-- Header Section (40% of screen) -->
+    <LinearLayout
+        android:id="@+id/layoutHeader"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="@dimen/spacing_xl"
+        app:layout_constraintHeight_percent="0.4"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            app:cardBackgroundColor="@color/surface_white"
+            app:cardCornerRadius="@dimen/corner_radius_large"
+            app:cardElevation="@dimen/elevation_card">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/spacing_lg"
+                android:src="@mipmap/ic_launcher"
+                android:contentDescription="@string/app_name"/>
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/tvWelcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="@string/app_name"
+            android:textAppearance="@style/TextAppearance.SeaCliff.TitleLarge"/>
+
+        <TextView
+            android:id="@+id/tvSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="@string/select_action"
+            android:textAppearance="@style/TextAppearance.SeaCliff.Subtitle"/>
+    </LinearLayout>
+
+    <!-- Content Section (Scrollable) -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:paddingStart="@dimen/spacing_xxl"
+        android:paddingEnd="@dimen/spacing_xxl"
+        app:layout_constraintTop_toBottomOf="@id/layoutHeader"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/spacing_xl">
+
+            <!-- Tables Button -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/btnTables"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_lg"
+                android:layout_marginEnd="@dimen/spacing_lg"
+                android:layout_marginBottom="@dimen/spacing_md"
+                android:foreground="?attr/selectableItemBackground"
+                style="@style/Widget.SeaCliff.Card.Large">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="@dimen/button_height_standard"
+                    android:padding="@dimen/spacing_lg">
+
+                    <!-- Icon Container -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/iconContainerTables"
+                        android:layout_width="@dimen/icon_size_large"
+                        android:layout_height="@dimen/icon_size_large"
+                        app:cardBackgroundColor="@color/icon_background"
+                        app:cardCornerRadius="@dimen/corner_radius_medium"
+                        app:cardElevation="0dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_size_small"
+                            android:layout_height="@dimen/icon_size_small"
+                            android:layout_gravity="center"
+                            android:tint="@color/icon_tint_white"
+                            android:src="@android:drawable/ic_menu_view"
+                            android:contentDescription="@null"/>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Title -->
+                    <TextView
+                        android:id="@+id/tvTablesTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_lg"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="@string/tables"
+                        android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                        app:layout_constraintStart_toEndOf="@id/iconContainerTables"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/iconContainerTables"/>
+
+                    <!-- Subtitle -->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_lg"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="@string/manage_tables"
+                        android:textAppearance="@style/TextAppearance.SeaCliff.Subtitle"
+                        app:layout_constraintStart_toEndOf="@id/iconContainerTables"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvTablesTitle"
+                        app:layout_constraintBottom_toBottomOf="@id/iconContainerTables"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Orders Button -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/btnOrders"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_lg"
+                android:layout_marginEnd="@dimen/spacing_lg"
+                android:layout_marginBottom="@dimen/spacing_md"
+                android:foreground="?attr/selectableItemBackground"
+                style="@style/Widget.SeaCliff.Card.Large">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="@dimen/button_height_standard"
+                    android:padding="@dimen/spacing_lg">
+
+                    <!-- Icon Container -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/iconContainerOrders"
+                        android:layout_width="@dimen/icon_size_large"
+                        android:layout_height="@dimen/icon_size_large"
+                        app:cardBackgroundColor="@color/icon_background"
+                        app:cardCornerRadius="@dimen/corner_radius_medium"
+                        app:cardElevation="0dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_size_small"
+                            android:layout_height="@dimen/icon_size_small"
+                            android:layout_gravity="center"
+                            android:tint="@color/icon_tint_white"
+                            android:src="@android:drawable/ic_menu_sort_by_size"
+                            android:contentDescription="@null"/>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Title -->
+                    <TextView
+                        android:id="@+id/tvOrdersTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_lg"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="@string/orders"
+                        android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                        app:layout_constraintStart_toEndOf="@id/iconContainerOrders"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/iconContainerOrders"/>
+
+                    <!-- Subtitle -->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_lg"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="@string/view_all_orders"
+                        android:textAppearance="@style/TextAppearance.SeaCliff.Subtitle"
+                        app:layout_constraintStart_toEndOf="@id/iconContainerOrders"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvOrdersTitle"
+                        app:layout_constraintBottom_toBottomOf="@id/iconContainerOrders"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Menu Button -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/btnMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_lg"
+                android:layout_marginEnd="@dimen/spacing_lg"
+                android:layout_marginBottom="@dimen/spacing_md"
+                android:foreground="?attr/selectableItemBackground"
+                style="@style/Widget.SeaCliff.Card.Large">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="@dimen/button_height_standard"
+                    android:padding="@dimen/spacing_lg">
+
+                    <!-- Icon Container -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/iconContainerMenu"
+                        android:layout_width="@dimen/icon_size_large"
+                        android:layout_height="@dimen/icon_size_large"
+                        app:cardBackgroundColor="@color/icon_background"
+                        app:cardCornerRadius="@dimen/corner_radius_medium"
+                        app:cardElevation="0dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_size_small"
+                            android:layout_height="@dimen/icon_size_small"
+                            android:layout_gravity="center"
+                            android:tint="@color/icon_tint_white"
+                            android:src="@android:drawable/ic_menu_agenda"
+                            android:contentDescription="@null"/>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Title -->
+                    <TextView
+                        android:id="@+id/tvMenuTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_lg"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="@string/menu"
+                        android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                        app:layout_constraintStart_toEndOf="@id/iconContainerMenu"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/iconContainerMenu"/>
+
+                    <!-- Subtitle -->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_lg"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="@string/browse_menu_items"
+                        android:textAppearance="@style/TextAppearance.SeaCliff.Subtitle"
+                        app:layout_constraintStart_toEndOf="@id/iconContainerMenu"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvMenuTitle"
+                        app:layout_constraintBottom_toBottomOf="@id/iconContainerMenu"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Payments Button (Manager/Admin only) -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/btnPayments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_lg"
+                android:layout_marginEnd="@dimen/spacing_lg"
+                android:visibility="gone"
+                android:foreground="?attr/selectableItemBackground"
+                style="@style/Widget.SeaCliff.Card.Large">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="@dimen/button_height_standard"
+                    android:padding="@dimen/spacing_lg">
+
+                    <!-- Icon Container -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/iconContainerPayments"
+                        android:layout_width="@dimen/icon_size_large"
+                        android:layout_height="@dimen/icon_size_large"
+                        app:cardBackgroundColor="@color/icon_background"
+                        app:cardCornerRadius="@dimen/corner_radius_medium"
+                        app:cardElevation="0dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_size_small"
+                            android:layout_height="@dimen/icon_size_small"
+                            android:layout_gravity="center"
+                            android:tint="@color/icon_tint_white"
+                            android:src="@android:drawable/ic_menu_save"
+                            android:contentDescription="@null"/>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Title -->
+                    <TextView
+                        android:id="@+id/tvPaymentsTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_lg"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="@string/payments"
+                        android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                        app:layout_constraintStart_toEndOf="@id/iconContainerPayments"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/iconContainerPayments"/>
+
+                    <!-- Subtitle -->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/spacing_lg"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="@string/view_payment_history"
+                        android:textAppearance="@style/TextAppearance.SeaCliff.Subtitle"
+                        app:layout_constraintStart_toEndOf="@id/iconContainerPayments"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvPaymentsTitle"
+                        app:layout_constraintBottom_toBottomOf="@id/iconContainerPayments"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

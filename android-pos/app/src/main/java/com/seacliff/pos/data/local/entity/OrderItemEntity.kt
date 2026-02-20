@@ -1,6 +1,7 @@
 package com.seacliff.pos.data.local.entity
 
 import androidx.room.Entity
+import androidx.room.ColumnInfo
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -34,15 +35,18 @@ data class OrderItemEntity(
     @SerializedName("id")
     val id: Long = 0,
 
+    @ColumnInfo(name = "order_id")
     @SerializedName("order_id")
     val orderId: Long,
 
+    @ColumnInfo(name = "menu_item_id")
     @SerializedName("menu_item_id")
     val menuItemId: Long,
 
     @SerializedName("quantity")
     val quantity: Int,
 
+    @ColumnInfo(name = "unit_price")
     @SerializedName("unit_price")
     val unitPrice: Double,
 
@@ -55,15 +59,23 @@ data class OrderItemEntity(
     @SerializedName("notes")
     val notes: String? = null,
 
+    @ColumnInfo(name = "prepared_by")
     @SerializedName("prepared_by")
     val preparedBy: Long? = null,
 
+    @ColumnInfo(name = "prepared_at")
     @SerializedName("prepared_at")
     val preparedAt: Date? = null,
 
+    @ColumnInfo(name = "created_at")
     @SerializedName("created_at")
     val createdAt: Date? = null,
 
+    @ColumnInfo(name = "updated_at")
     @SerializedName("updated_at")
-    val updatedAt: Date? = null
+    val updatedAt: Date? = null,
+
+    // Display field for item name (from API, not a FK lookup)
+    @ColumnInfo(name = "item_name")
+    val itemName: String? = null
 )

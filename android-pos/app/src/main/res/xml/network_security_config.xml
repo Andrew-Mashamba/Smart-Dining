@@ -1,26 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!--
-        Development Configuration
-        Allows cleartext (HTTP) traffic for local development
-        WARNING: Change to false for production builds
-    -->
-    <base-config cleartextTrafficPermitted="true">
+    <base-config cleartextTrafficPermitted="false">
         <trust-anchors>
             <certificates src="system" />
+            <certificates src="user" />
         </trust-anchors>
     </base-config>
 
-    <!--
-        Production domains should use HTTPS only
-        Uncomment and configure for production
-    -->
-    <!--
     <domain-config cleartextTrafficPermitted="false">
-        <domain includeSubdomains="true">api.seacliff.com</domain>
+        <domain includeSubdomains="true">zima-uat.site</domain>
         <trust-anchors>
             <certificates src="system" />
+            <certificates src="user" />
         </trust-anchors>
     </domain-config>
-    -->
 </network-security-config>

@@ -7,101 +7,162 @@ import retrofit2.http.*
 
 interface ApiService {
 
-    // Authentication
+    // ==================== Authentication ====================
     @POST("auth/login")
     suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
+
+    @POST("auth/login-pin")
+    suspend fun loginWithPin(@Body request: PinLoginRequest): Response<LoginResponse>
+
+    @GET("auth/staff-list")
+    suspend fun getStaffForPinLogin(): Response<StaffListResponse>
 
     @POST("auth/logout")
     suspend fun logout(): Response<ApiResponse<Unit>>
 
     @GET("auth/me")
-    suspend fun getCurrentStaff(): Response<ApiResponse<StaffEntity>>
+    suspend fun getCurrentStaff(): Response<MeResponse>
 
-    // Menu
+    @POST("auth/set-pin")
+    suspend fun setPin(@Body request: SetPinRequest): Response<ApiResponse<Unit>>
+
+    // ==================== Device Tokens (FCM) ====================
+    @POST("device-tokens")
+    suspend fun registerDeviceToken(
+        @Header("Authorization") authHeader: String,
+        @Body body: Map<String, String>
+    ): Response<ApiResponse<Unit>>
+
+    @HTTP(method = "DELETE", path = "device-tokens", hasBody = true)
+    suspend fun removeDeviceToken(
+        @Header("Authorization") authHeader: String,
+        @Body body: Map<String, String>
+    ): Response<ApiResponse<Unit>>
+
+    // ==================== Menu ====================
     @GET("menu")
-    suspend fun getMenu(): Response<List<MenuItemEntity>>
+    suspend fun getMenu(): Response<MenuListResponse>
+
+    @GET("menu/items")
+    suspend fun getMenuItems(@Query("category_id") categoryId: Long? = null): Response<MenuListResponse>
 
     @GET("menu/{id}")
-    suspend fun getMenuItem(@Path("id") id: Long): Response<ApiResponse<MenuItemEntity>>
+    suspend fun getMenuItem(@Path("id") id: Long): Response<MenuItemDto>
 
     @GET("menu/categories")
-    suspend fun getMenuCategories(): Response<List<String>>
+    suspend fun getMenuCategories(): Response<MenuCategoriesResponse>
+
+    @GET("menu/popular")
+    suspend fun getPopularMenuItems(@Query("limit") limit: Int = 10): Response<MenuListResponse>
+
+    @GET("menu/search")
+    suspend fun searchMenu(@Query("query") query: String): Response<MenuSearchResponse>
 
     @PUT("menu/{id}/availability")
     suspend fun updateMenuItemAvailability(
         @Path("id") id: Long,
-        @Body availability: Map<String, Boolean>
-    ): Response<ApiResponse<MenuItemEntity>>
+        @Body request: UpdateAvailabilityRequest
+    ): Response<MenuAvailabilityResponse>
 
-    // Tables
+    // ==================== Tables ====================
     @GET("tables")
-    suspend fun getTables(): Response<List<TableEntity>>
+    suspend fun getTables(
+        @Query("status") status: String? = null,
+        @Query("location") location: String? = null
+    ): Response<TableListResponse>
 
     @GET("tables/{id}")
-    suspend fun getTable(@Path("id") id: Long): Response<ApiResponse<TableEntity>>
+    suspend fun getTable(@Path("id") id: Long): Response<TableDto>
 
-    @PUT("tables/{id}/status")
+    @PATCH("tables/{id}/status")
     suspend fun updateTableStatus(
         @Path("id") id: Long,
         @Body request: UpdateStatusRequest
-    ): Response<ApiResponse<TableEntity>>
+    ): Response<TableStatusResponse>
 
-    // Guests
+    // ==================== Guests ====================
     @GET("guests/phone/{phone}")
-    suspend fun getGuestByPhone(@Path("phone") phone: String): Response<ApiResponse<GuestEntity>>
+    suspend fun getGuestByPhone(@Path("phone") phone: String): Response<GuestDto>
 
     @POST("guests")
-    suspend fun createGuest(@Body guest: GuestEntity): Response<ApiResponse<GuestEntity>>
+    suspend fun createGuest(@Body request: CreateGuestRequest): Response<GuestCreateResponse>
 
-    // Orders
+    // ==================== Orders ====================
     @GET("orders")
-    suspend fun getOrders(): Response<List<OrderEntity>>
+    suspend fun getOrders(
+        @Query("status") status: String? = null,
+        @Query("table_id") tableId: Long? = null,
+        @Query("waiter_id") waiterId: Long? = null,
+        @Query("date") date: String? = null
+    ): Response<PaginatedOrdersResponse>
 
     @GET("orders/{id}")
-    suspend fun getOrder(@Path("id") id: Long): Response<ApiResponse<OrderEntity>>
+    suspend fun getOrder(@Path("id") id: Long): Response<OrderSummaryDetailDto>
 
     @POST("orders")
-    suspend fun createOrder(@Body request: CreateOrderRequest): Response<ApiResponse<OrderEntity>>
+    suspend fun createOrder(@Body request: CreateOrderRequest): Response<OrderActionResponse>
 
-    @PUT("orders/{id}/status")
+    @POST("orders/{id}/items")
+    suspend fun addOrderItems(
+        @Path("id") id: Long,
+        @Body request: AddOrderItemsRequest
+    ): Response<OrderActionResponse>
+
+    @PATCH("orders/{id}/status")
     suspend fun updateOrderStatus(
         @Path("id") id: Long,
         @Body request: UpdateStatusRequest
-    ): Response<ApiResponse<OrderEntity>>
+    ): Response<OrderActionResponse>
 
     @POST("orders/{id}/serve")
-    suspend fun markOrderAsServed(@Path("id") id: Long): Response<ApiResponse<OrderEntity>>
+    suspend fun markOrderAsServed(@Path("id") id: Long): Response<OrderActionResponse>
 
     @POST("orders/{id}/cancel")
-    suspend fun cancelOrder(@Path("id") id: Long): Response<ApiResponse<OrderEntity>>
+    suspend fun cancelOrder(
+        @Path("id") id: Long,
+        @Body request: CancelOrderRequest
+    ): Response<ApiResponse<Unit>>
 
-    // Order Items
+    @GET("orders/{id}/receipt")
+    suspend fun getOrderReceipt(@Path("id") id: Long): Response<okhttp3.ResponseBody>
+
+    // ==================== Order Items (Kitchen/Bar) ====================
     @GET("order-items/pending")
-    suspend fun getPendingOrderItems(): Response<List<OrderItemEntity>>
+    suspend fun getPendingOrderItems(): Response<List<OrderItemDto>>
 
     @POST("order-items/{id}/received")
-    suspend fun markOrderItemReceived(@Path("id") id: Long): Response<ApiResponse<OrderItemEntity>>
+    suspend fun markOrderItemReceived(@Path("id") id: Long): Response<OrderItemResponse>
 
     @POST("order-items/{id}/done")
-    suspend fun markOrderItemDone(@Path("id") id: Long): Response<ApiResponse<OrderItemEntity>>
+    suspend fun markOrderItemDone(@Path("id") id: Long): Response<OrderItemResponse>
 
-    // Payments
+    // ==================== Payments ====================
     @POST("payments")
-    suspend fun createPayment(@Body request: CreatePaymentRequest): Response<ApiResponse<PaymentEntity>>
+    suspend fun createPayment(@Body request: CreatePaymentRequest): Response<PaymentResponse>
+
+    @GET("payments")
+    suspend fun getPayments(@Query("order_id") orderId: Long? = null): Response<PaymentsListResponse>
 
     @GET("payments/{id}")
-    suspend fun getPayment(@Path("id") id: Long): Response<ApiResponse<PaymentEntity>>
+    suspend fun getPayment(@Path("id") id: Long): Response<PaymentDto>
 
     @POST("payments/{id}/confirm")
-    suspend fun confirmPayment(@Path("id") id: Long): Response<ApiResponse<PaymentEntity>>
+    suspend fun confirmPayment(@Path("id") id: Long): Response<PaymentResponse>
 
     @GET("orders/{orderId}/bill")
-    suspend fun getOrderBill(@Path("orderId") orderId: Long): Response<ApiResponse<Map<String, Any>>>
+    suspend fun getOrderBill(@Path("orderId") orderId: Long): Response<BillResponse>
 
-    // Tips
+    // Stripe payments
+    @POST("payments/stripe/create-intent")
+    suspend fun createStripeIntent(@Body request: StripeIntentRequest): Response<StripeIntentResponse>
+
+    @POST("payments/stripe/confirm")
+    suspend fun confirmStripePayment(@Body request: StripeConfirmRequest): Response<PaymentResponse>
+
+    // ==================== Tips ====================
     @POST("tips")
-    suspend fun createTip(@Body tip: Map<String, Any>): Response<ApiResponse<Any>>
+    suspend fun createTip(@Body request: CreateTipRequest): Response<TipResponse>
 
     @GET("orders/{orderId}/tip-suggestions")
-    suspend fun getTipSuggestions(@Path("orderId") orderId: Long): Response<ApiResponse<Map<String, Any>>>
+    suspend fun getTipSuggestions(@Path("orderId") orderId: Long): Response<TipSuggestionsResponse>
 }

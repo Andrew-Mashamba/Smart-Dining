@@ -42,6 +42,9 @@ interface OrderDao {
     @Query("UPDATE orders SET status = :status WHERE id = :orderId")
     suspend fun updateOrderStatus(orderId: Long, status: String)
 
+    @Query("UPDATE orders SET served_at = :servedAt WHERE id = :orderId")
+    suspend fun updateServedAt(orderId: Long, servedAt: Long)
+
     @Query("UPDATE orders SET isSynced = 1 WHERE id = :orderId")
     suspend fun markOrderAsSynced(orderId: Long)
 

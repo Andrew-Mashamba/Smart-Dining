@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tablet-specific dimensions (7" tablets) -->
+    <dimen name="grid_columns">3</dimen>
+    <dimen name="card_width">300dp</dimen>
+    <dimen name="spacing_xl">32dp</dimen>
+</resources>
