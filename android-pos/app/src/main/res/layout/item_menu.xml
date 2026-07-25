@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="3"
                 android:ellipsize="end"
-                android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                android:textAppearance="@style/TextAppearance.POS.Title"
                 android:lineSpacingMultiplier="1.15"
                 tools:text="Chicken Wings with BBQ Sauce"/>
 
@@ -56,7 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_xs"
-                android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                android:textAppearance="@style/TextAppearance.POS.Title"
                 tools:text="TZS 15,000"/>
 
             <!-- Description: 2 lines max to save space -->
@@ -67,7 +67,7 @@
                 android:layout_marginTop="@dimen/spacing_xs"
                 android:maxLines="2"
                 android:ellipsize="end"
-                android:textAppearance="@style/TextAppearance.SeaCliff.Caption"
+                android:textAppearance="@style/TextAppearance.POS.Caption"
                 android:visibility="gone"
                 tools:text="Crispy chicken wings with BBQ sauce"
                 tools:visibility="visible"/>
@@ -87,7 +87,7 @@
                     android:layout_weight="1"
                     android:maxLines="1"
                     android:ellipsize="end"
-                    android:textAppearance="@style/TextAppearance.SeaCliff.Caption"
+                    android:textAppearance="@style/TextAppearance.POS.Caption"
                     tools:text="Appetizers"/>
 
                 <TextView
@@ -96,7 +96,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/spacing_sm"
                     android:maxLines="1"
-                    android:textAppearance="@style/TextAppearance.SeaCliff.Caption"
+                    android:textAppearance="@style/TextAppearance.POS.Caption"
                     tools:text="15 min"/>
             </LinearLayout>
 
@@ -107,7 +107,7 @@
                 android:layout_marginTop="@dimen/spacing_xs"
                 android:maxLines="1"
                 android:visibility="gone"
-                android:textAppearance="@style/TextAppearance.SeaCliff.Caption"
+                android:textAppearance="@style/TextAppearance.POS.Caption"
                 tools:text="Available"
                 tools:visibility="gone"/>
         </LinearLayout>

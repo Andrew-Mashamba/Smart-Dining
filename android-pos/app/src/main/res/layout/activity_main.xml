@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_primary"
+    android:fitsSystemWindows="true"
     tools:context=".ui.activities.MainActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
@@ -52,7 +53,7 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:text="@string/app_name"
-            android:textAppearance="@style/TextAppearance.SeaCliff.TitleLarge"/>
+            android:textAppearance="@style/TextAppearance.POS.TitleLarge"/>
 
         <TextView
             android:id="@+id/tvSubtitle"
@@ -62,7 +63,7 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:text="@string/select_action"
-            android:textAppearance="@style/TextAppearance.SeaCliff.Subtitle"/>
+            android:textAppearance="@style/TextAppearance.POS.Subtitle"/>
     </LinearLayout>
 
     <!-- Content Section (Scrollable) -->
@@ -91,7 +92,7 @@
                 android:layout_marginEnd="@dimen/spacing_lg"
                 android:layout_marginBottom="@dimen/spacing_md"
                 android:foreground="?attr/selectableItemBackground"
-                style="@style/Widget.SeaCliff.Card.Large">
+                style="@style/Widget.POS.Card.Large">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -129,7 +130,7 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:text="@string/tables"
-                        android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                        android:textAppearance="@style/TextAppearance.POS.Title"
                         app:layout_constraintStart_toEndOf="@id/iconContainerTables"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/iconContainerTables"/>
@@ -142,7 +143,7 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:text="@string/manage_tables"
-                        android:textAppearance="@style/TextAppearance.SeaCliff.Subtitle"
+                        android:textAppearance="@style/TextAppearance.POS.Subtitle"
                         app:layout_constraintStart_toEndOf="@id/iconContainerTables"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvTablesTitle"
@@ -159,7 +160,7 @@
                 android:layout_marginEnd="@dimen/spacing_lg"
                 android:layout_marginBottom="@dimen/spacing_md"
                 android:foreground="?attr/selectableItemBackground"
-                style="@style/Widget.SeaCliff.Card.Large">
+                style="@style/Widget.POS.Card.Large">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -197,7 +198,7 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:text="@string/orders"
-                        android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                        android:textAppearance="@style/TextAppearance.POS.Title"
                         app:layout_constraintStart_toEndOf="@id/iconContainerOrders"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/iconContainerOrders"/>
@@ -210,7 +211,7 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:text="@string/view_all_orders"
-                        android:textAppearance="@style/TextAppearance.SeaCliff.Subtitle"
+                        android:textAppearance="@style/TextAppearance.POS.Subtitle"
                         app:layout_constraintStart_toEndOf="@id/iconContainerOrders"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvOrdersTitle"
@@ -227,7 +228,7 @@
                 android:layout_marginEnd="@dimen/spacing_lg"
                 android:layout_marginBottom="@dimen/spacing_md"
                 android:foreground="?attr/selectableItemBackground"
-                style="@style/Widget.SeaCliff.Card.Large">
+                style="@style/Widget.POS.Card.Large">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -265,7 +266,7 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:text="@string/menu"
-                        android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                        android:textAppearance="@style/TextAppearance.POS.Title"
                         app:layout_constraintStart_toEndOf="@id/iconContainerMenu"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/iconContainerMenu"/>
@@ -278,7 +279,7 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:text="@string/browse_menu_items"
-                        android:textAppearance="@style/TextAppearance.SeaCliff.Subtitle"
+                        android:textAppearance="@style/TextAppearance.POS.Subtitle"
                         app:layout_constraintStart_toEndOf="@id/iconContainerMenu"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvMenuTitle"
@@ -295,7 +296,7 @@
                 android:layout_marginEnd="@dimen/spacing_lg"
                 android:visibility="gone"
                 android:foreground="?attr/selectableItemBackground"
-                style="@style/Widget.SeaCliff.Card.Large">
+                style="@style/Widget.POS.Card.Large">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -333,7 +334,7 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:text="@string/payments"
-                        android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                        android:textAppearance="@style/TextAppearance.POS.Title"
                         app:layout_constraintStart_toEndOf="@id/iconContainerPayments"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@id/iconContainerPayments"/>
@@ -346,7 +347,7 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:text="@string/view_payment_history"
-                        android:textAppearance="@style/TextAppearance.SeaCliff.Subtitle"
+                        android:textAppearance="@style/TextAppearance.POS.Subtitle"
                         app:layout_constraintStart_toEndOf="@id/iconContainerPayments"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvPaymentsTitle"

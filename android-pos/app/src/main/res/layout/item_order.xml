@@ -34,7 +34,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="1"
                     android:ellipsize="end"
-                    android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                    android:textAppearance="@style/TextAppearance.POS.Title"
                     tools:text="Order #123"/>
 
                 <TextView
@@ -44,7 +44,7 @@
                     android:layout_marginTop="@dimen/spacing_xs"
                     android:maxLines="1"
                     android:ellipsize="end"
-                    android:textAppearance="@style/TextAppearance.SeaCliff.Body"
+                    android:textAppearance="@style/TextAppearance.POS.Body"
                     tools:text="Table OT001"/>
 
                 <TextView
@@ -54,7 +54,7 @@
                     android:layout_marginTop="@dimen/spacing_xs"
                     android:maxLines="1"
                     android:ellipsize="end"
-                    android:textAppearance="@style/TextAppearance.SeaCliff.Body"
+                    android:textAppearance="@style/TextAppearance.POS.Body"
                     tools:text="Waiter: POS Test Waiter"/>
 
                 <TextView
@@ -64,7 +64,7 @@
                     android:layout_marginTop="@dimen/spacing_xs"
                     android:maxLines="1"
                     android:ellipsize="end"
-                    android:textAppearance="@style/TextAppearance.SeaCliff.Caption"
+                    android:textAppearance="@style/TextAppearance.POS.Caption"
                     tools:text="10:30 AM"/>
             </LinearLayout>
 
@@ -94,7 +94,7 @@
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:ellipsize="end"
-                        android:textAppearance="@style/TextAppearance.SeaCliff.LabelLarge"
+                        android:textAppearance="@style/TextAppearance.POS.LabelLarge"
                         tools:text="Pending"/>
 
                     <ImageView
@@ -116,7 +116,7 @@
                     android:layout_marginTop="@dimen/spacing_sm"
                     android:maxLines="1"
                     android:ellipsize="end"
-                    android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                    android:textAppearance="@style/TextAppearance.POS.Title"
                     tools:text="TZS 45,990"/>
             </LinearLayout>
         </LinearLayout>
@@ -128,7 +128,7 @@
             android:layout_marginTop="@dimen/spacing_sm"
             android:maxLines="1"
             android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.SeaCliff.Caption"
+            android:textAppearance="@style/TextAppearance.POS.Caption"
             tools:text="3 items"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

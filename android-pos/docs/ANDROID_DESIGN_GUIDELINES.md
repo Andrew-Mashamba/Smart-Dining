@@ -1,6 +1,6 @@
-# SeaCliff POS - Android Design Guidelines
+# POS POS - Android Design Guidelines
 
-> **Note:** This document is the **single source of truth** for SeaCliff POS UI components. All screens, layouts, and features MUST follow these guidelines.
+> **Note:** This document is the **single source of truth** for POS POS UI components. All screens, layouts, and features MUST follow these guidelines.
 
 ## Quick Reference
 
@@ -26,7 +26,7 @@
 
 ## Minimalist Design Principles
 
-This document outlines the core design principles and guidelines for the SeaCliff POS Android application, focusing on minimalist aesthetics and optimal user experience for tablet and mobile devices.
+This document outlines the core design principles and guidelines for the POS POS Android application, focusing on minimalist aesthetics and optimal user experience for tablet and mobile devices.
 
 ---
 
@@ -269,31 +269,31 @@ A well-organized layout enhances usability and maintains visual clarity on table
 <!-- res/values/styles.xml -->
 <resources>
     <!-- Text Appearance Styles -->
-    <style name="TextAppearance.SeaCliff.Heading" parent="TextAppearance.MaterialComponents.Headline6">
+    <style name="TextAppearance.POS.Heading" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">20sp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
-    <style name="TextAppearance.SeaCliff.Title" parent="TextAppearance.MaterialComponents.Subtitle1">
+    <style name="TextAppearance.POS.Title" parent="TextAppearance.MaterialComponents.Subtitle1">
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">15sp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
-    <style name="TextAppearance.SeaCliff.Subtitle" parent="TextAppearance.MaterialComponents.Subtitle2">
+    <style name="TextAppearance.POS.Subtitle" parent="TextAppearance.MaterialComponents.Subtitle2">
         <item name="android:textColor">@color/text_secondary</item>
         <item name="android:textSize">11sp</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
 
-    <style name="TextAppearance.SeaCliff.Body" parent="TextAppearance.MaterialComponents.Body1">
+    <style name="TextAppearance.POS.Body" parent="TextAppearance.MaterialComponents.Body1">
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">13sp</item>
         <item name="android:fontFamily">sans-serif</item>
     </style>
 
-    <style name="TextAppearance.SeaCliff.Caption" parent="TextAppearance.MaterialComponents.Caption">
+    <style name="TextAppearance.POS.Caption" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:textColor">@color/text_secondary</item>
         <item name="android:textSize">12sp</item>
         <item name="android:fontFamily">sans-serif</item>
@@ -348,7 +348,7 @@ Buttons are primary interaction points and must be both functional and aesthetic
 **Standard Button Style:**
 ```xml
 <!-- res/values/styles.xml -->
-<style name="Widget.SeaCliff.Button" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+<style name="Widget.POS.Button" parent="Widget.MaterialComponents.Button.UnelevatedButton">
     <item name="android:background">@drawable/bg_button_white</item>
     <item name="android:textColor">@color/text_primary</item>
     <item name="android:textSize">15sp</item>
@@ -437,7 +437,7 @@ Buttons are primary interaction points and must be both functional and aesthetic
             android:layout_marginStart="@dimen/spacing_lg"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+            android:textAppearance="@style/TextAppearance.POS.Title"
             app:layout_constraintStart_toEndOf="@id/iconContainer"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/iconContainer"
@@ -450,7 +450,7 @@ Buttons are primary interaction points and must be both functional and aesthetic
             android:layout_marginStart="@dimen/spacing_lg"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.SeaCliff.Subtitle"
+            android:textAppearance="@style/TextAppearance.POS.Subtitle"
             app:layout_constraintStart_toEndOf="@id/iconContainer"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTitle"
@@ -526,7 +526,7 @@ Informational section with icon + content. White background, 16dp radius, border
             <FrameLayout android:layout_width="48dp" android:layout_height="48dp" android:background="@drawable/bg_icon_rounded_square">
                 <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_tips" android:tint="@color/icon_tint_white"/>
             </FrameLayout>
-            <TextView android:layout_marginStart="12dp" android:textAppearance="@style/TextAppearance.SeaCliff.TitleMedium" android:text="Section Title"/>
+            <TextView android:layout_marginStart="12dp" android:textAppearance="@style/TextAppearance.POS.TitleMedium" android:text="Section Title"/>
         </LinearLayout>
         <View android:layout_height="12dp"/>
         <!-- Content items -->
@@ -561,8 +561,8 @@ White card, 12dp radius, border + shadow. Row: leading 48×48dp container with b
     <LinearLayout android:orientation="horizontal" android:padding="16dp" android:background="?attr/selectableItemBackground">
         <FrameLayout android:layout_width="48dp" android:layout_height="48dp" android:background="@drawable/bg_icon_light_rounded"/>
         <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_marginStart="12dp" android:orientation="vertical">
-            <TextView android:textAppearance="@style/TextAppearance.SeaCliff.Title" android:text="Title"/>
-            <TextView android:layout_marginTop="2dp" android:textAppearance="@style/TextAppearance.SeaCliff.Subtitle" android:text="Subtitle"/>
+            <TextView android:textAppearance="@style/TextAppearance.POS.Title" android:text="Title"/>
+            <TextView android:layout_marginTop="2dp" android:textAppearance="@style/TextAppearance.POS.Subtitle" android:text="Subtitle"/>
         </LinearLayout>
         <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_chevron_right" android:tint="@color/text_tertiary"/>
     </LinearLayout>
@@ -579,7 +579,7 @@ Padding 8dp horizontal, 4dp vertical. Background primary at 8% opacity (`@color/
     app:chipBackgroundColor="@color/overlay_chip"
     app:chipCornerRadius="12dp"
     app:chipMinHeight="28dp"
-    android:textAppearance="@style/TextAppearance.SeaCliff.LabelLarge"/>
+    android:textAppearance="@style/TextAppearance.POS.LabelLarge"/>
 ```
 
 ### 4.7 List Tile Card
@@ -750,7 +750,7 @@ class TableAdapter : ListAdapter<Table, TableViewHolder>(TableDiffCallback()) {
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="@string/dashboard"
-    android:textAppearance="@style/TextAppearance.SeaCliff.Heading"
+    android:textAppearance="@style/TextAppearance.POS.Heading"
     android:accessibilityHeading="true"
     android:importantForAccessibility="yes"/>
 
@@ -1255,13 +1255,13 @@ The minimalist design approach achieves several critical goals for POS operation
 
 ### Section Header
 
-**Simple section title:** Padding from LTRB 20, 24, 20, 16. Use `TextAppearance.SeaCliff.Heading` or titleLarge (20sp bold).
+**Simple section title:** Padding from LTRB 20, 24, 20, 16. Use `TextAppearance.POS.Heading` or titleLarge (20sp bold).
 
 **Section with header row (title + action):** Padding 20/16/16/12. Row: icon 20dp, 8dp gap, title (titleMedium), Spacer, "See All" TextButton.
 
 ```xml
 <LinearLayout android:orientation="horizontal" android:paddingStart="20dp" android:paddingTop="24dp" android:paddingEnd="20dp" android:paddingBottom="16dp">
-    <TextView android:textAppearance="@style/TextAppearance.SeaCliff.Heading" android:text="Section Title"/>
+    <TextView android:textAppearance="@style/TextAppearance.POS.Heading" android:text="Section Title"/>
 </LinearLayout>
 ```
 
@@ -1322,7 +1322,7 @@ The minimalist design approach achieves several critical goals for POS operation
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_lg"
             android:text="@string/welcome"
-            android:textAppearance="@style/TextAppearance.SeaCliff.Heading"/>
+            android:textAppearance="@style/TextAppearance.POS.Heading"/>
 
         <!-- Subtitle -->
         <TextView
@@ -1330,7 +1330,7 @@ The minimalist design approach achieves several critical goals for POS operation
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_sm"
             android:text="@string/select_action"
-            android:textAppearance="@style/TextAppearance.SeaCliff.Subtitle"/>
+            android:textAppearance="@style/TextAppearance.POS.Subtitle"/>
     </LinearLayout>
 
     <!-- Content Section (Scrollable) -->
@@ -1410,7 +1410,7 @@ The minimalist design approach achieves several critical goals for POS operation
             android:layout_marginStart="@dimen/spacing_lg"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+            android:textAppearance="@style/TextAppearance.POS.Title"
             app:layout_constraintStart_toEndOf="@id/iconContainer"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/iconContainer"
@@ -1424,7 +1424,7 @@ The minimalist design approach achieves several critical goals for POS operation
             android:layout_marginStart="@dimen/spacing_lg"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.SeaCliff.Subtitle"
+            android:textAppearance="@style/TextAppearance.POS.Subtitle"
             app:layout_constraintStart_toEndOf="@id/iconContainer"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTitle"
@@ -1476,7 +1476,7 @@ The minimalist design approach achieves several critical goals for POS operation
             android:layout_marginStart="@dimen/spacing_md"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+            android:textAppearance="@style/TextAppearance.POS.Title"
             app:layout_constraintStart_toEndOf="@id/ivTableIcon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/ivTableIcon"
@@ -1490,7 +1490,7 @@ The minimalist design approach achieves several critical goals for POS operation
             android:layout_marginStart="@dimen/spacing_md"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.SeaCliff.Caption"
+            android:textAppearance="@style/TextAppearance.POS.Caption"
             app:layout_constraintStart_toEndOf="@id/ivTableIcon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTableName"
@@ -1502,7 +1502,7 @@ The minimalist design approach achieves several critical goals for POS operation
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_sm"
-            android:textAppearance="@style/TextAppearance.SeaCliff.Caption"
+            android:textAppearance="@style/TextAppearance.POS.Caption"
             app:chipBackgroundColor="@color/text_tertiary"
             app:chipStrokeWidth="0dp"
             app:layout_constraintStart_toStartOf="parent"

@@ -6,13 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_primary"
+    android:fitsSystemWindows="true"
     tools:context=".ui.activities.MenuActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/surface_white"
-        android:elevation="0dp">
+        android:elevation="0dp"
+        android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
@@ -87,7 +89,7 @@
                     android:ellipsize="end"
                     android:gravity="center"
                     android:text="@string/no_menu_items"
-                    android:textAppearance="@style/TextAppearance.SeaCliff.Body"
+                    android:textAppearance="@style/TextAppearance.POS.Body"
                     android:textColor="@color/text_secondary"/>
             </LinearLayout>
 

@@ -44,11 +44,11 @@
 - [ ] Text: primary `#1A1A1A`, secondary `#666666`, tertiary `#999999`
 
 ### Typography
-- [ ] Page title: `TextAppearance.SeaCliff.Heading` or `TitleLarge` (20sp)
-- [ ] Section headers: `TextAppearance.SeaCliff.TitleMedium` (16sp)
-- [ ] Card/button title: `TextAppearance.SeaCliff.Title` (15sp)
-- [ ] Subtitle / secondary: `TextAppearance.SeaCliff.Subtitle` or `LabelSmall` (11sp)
-- [ ] Body: `TextAppearance.SeaCliff.Body` or `BodyLarge` (14sp)
+- [ ] Page title: `TextAppearance.POS.Heading` or `TitleLarge` (20sp)
+- [ ] Section headers: `TextAppearance.POS.TitleMedium` (16sp)
+- [ ] Card/button title: `TextAppearance.POS.Title` (15sp)
+- [ ] Subtitle / secondary: `TextAppearance.POS.Subtitle` or `LabelSmall` (11sp)
+- [ ] Body: `TextAppearance.POS.Body` or `BodyLarge` (14sp)
 - [ ] All dynamic text: `maxLines` + `ellipsize="end"`
 
 ### Spacing

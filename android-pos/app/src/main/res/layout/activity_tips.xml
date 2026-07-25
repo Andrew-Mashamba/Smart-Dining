@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_primary"
+    android:fitsSystemWindows="true"
     tools:context=".ui.activities.TipsActivity">
 
     <!-- Toolbar -->
@@ -35,7 +36,7 @@
 
             <!-- Today's Tips Summary Card -->
             <androidx.cardview.widget.CardView
-                style="@style/Widget.SeaCliff.Card.Large"
+                style="@style/Widget.POS.Card.Large"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/spacing_lg">
@@ -51,14 +52,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Today's Tips"
-                        android:textAppearance="@style/TextAppearance.SeaCliff.Subtitle"
+                        android:textAppearance="@style/TextAppearance.POS.Subtitle"
                         android:layout_marginBottom="@dimen/spacing_sm"/>
 
                     <TextView
                         android:id="@+id/tvTodayTotal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextAppearance.SeaCliff.Heading"
+                        android:textAppearance="@style/TextAppearance.POS.Heading"
                         android:textSize="32sp"
                         tools:text="TZS 45,000"/>
 
@@ -67,7 +68,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/spacing_sm"
-                        android:textAppearance="@style/TextAppearance.SeaCliff.Caption"
+                        android:textAppearance="@style/TextAppearance.POS.Caption"
                         tools:text="From 12 orders"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -117,7 +118,7 @@
 
                 <!-- Average Tip Card -->
                 <androidx.cardview.widget.CardView
-                    style="@style/Widget.SeaCliff.Card"
+                    style="@style/Widget.POS.Card"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -134,21 +135,21 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Average"
-                            android:textAppearance="@style/TextAppearance.SeaCliff.Caption"/>
+                            android:textAppearance="@style/TextAppearance.POS.Caption"/>
 
                         <TextView
                             android:id="@+id/tvAverageTip"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/spacing_sm"
-                            android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                            android:textAppearance="@style/TextAppearance.POS.Title"
                             tools:text="TZS 3,750"/>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
                 <!-- Highest Tip Card -->
                 <androidx.cardview.widget.CardView
-                    style="@style/Widget.SeaCliff.Card"
+                    style="@style/Widget.POS.Card"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -165,14 +166,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Highest"
-                            android:textAppearance="@style/TextAppearance.SeaCliff.Caption"/>
+                            android:textAppearance="@style/TextAppearance.POS.Caption"/>
 
                         <TextView
                             android:id="@+id/tvHighestTip"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/spacing_sm"
-                            android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                            android:textAppearance="@style/TextAppearance.POS.Title"
                             tools:text="TZS 10,000"/>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
@@ -180,7 +181,7 @@
 
             <!-- Recent Tips Card -->
             <androidx.cardview.widget.CardView
-                style="@style/Widget.SeaCliff.Card"
+                style="@style/Widget.POS.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -194,7 +195,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Recent Tips"
-                        android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                        android:textAppearance="@style/TextAppearance.POS.Title"
                         android:layout_marginBottom="@dimen/spacing_md"/>
 
                     <!-- RecyclerView for tip history -->
@@ -220,7 +221,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="No tips received yet"
-                            android:textAppearance="@style/TextAppearance.SeaCliff.Body"
+                            android:textAppearance="@style/TextAppearance.POS.Body"
                             android:textColor="@color/text_secondary"/>
 
                         <TextView
@@ -228,7 +229,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/spacing_sm"
                             android:text="Keep providing excellent service!"
-                            android:textAppearance="@style/TextAppearance.SeaCliff.Caption"/>
+                            android:textAppearance="@style/TextAppearance.POS.Caption"/>
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

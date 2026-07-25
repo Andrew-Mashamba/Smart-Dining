@@ -1,8 +1,8 @@
-#App Design Guidelines
+# VICOBA App Design Guidelines
 
 ## Minimalist Design Principles
 
-This document outlines the core design principles and guidelines for the POS mobile application, focusing on minimalist aesthetics and optimal user experience.
+This document outlines the core design principles and guidelines for the VICOBA mobile application, focusing on minimalist aesthetics and optimal user experience.
 
 ---
 

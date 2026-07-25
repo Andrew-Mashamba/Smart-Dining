@@ -1,6 +1,6 @@
-# SeaCliff POS - Android Application
+# POS POS - Android Application
 
-Native Android point-of-sale application for Sea Cliff restaurant, built with modern Android architecture components and offline-first design.
+Native Android point-of-sale application for POS restaurant, built with modern Android architecture components and offline-first design.
 
 ## Features
 
@@ -369,7 +369,7 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md)
 
 ## License
 
-Proprietary - Sea Cliff Restaurant Management System
+Proprietary - POS Restaurant Management System
 
 ## Support
 

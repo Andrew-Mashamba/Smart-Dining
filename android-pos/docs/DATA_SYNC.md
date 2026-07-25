@@ -49,7 +49,7 @@ To pick up new data from the backend (e.g. new tables, menu changes):
    On launch (when already logged in), the app triggers an immediate sync. So fully closing and reopening the app will run a sync and refresh all reference data.
 
 4. **Clear app data (nuclear)**  
-   Settings → Apps → SeaCliff POS → Storage → **Clear data**. Next login will sync everything from scratch. Use only if the DB is stuck or corrupted.
+   Settings → Apps → POS POS → Storage → **Clear data**. Next login will sync everything from scratch. Use only if the DB is stuck or corrupted.
 
 **Summary:** For new tables/nomenclature, use **pull-to-refresh on the Tables screen** or **log out and log in again** (or restart the app).
 

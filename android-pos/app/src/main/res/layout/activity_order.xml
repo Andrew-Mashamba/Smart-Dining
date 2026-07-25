@@ -6,13 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_primary"
+    android:fitsSystemWindows="true"
     tools:context=".ui.activities.OrderActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/surface_white"
-        android:elevation="0dp">
+        android:elevation="0dp"
+        android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
@@ -60,7 +62,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/active_orders_for_table"
-                    android:textAppearance="@style/TextAppearance.SeaCliff.LabelLarge"
+                    android:textAppearance="@style/TextAppearance.POS.LabelLarge"
                     android:textColor="@color/text_secondary"/>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -107,7 +109,7 @@
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:text="@string/cart"
-                android:textAppearance="@style/TextAppearance.SeaCliff.Title"/>
+                android:textAppearance="@style/TextAppearance.POS.Title"/>
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -129,7 +131,7 @@
                     android:maxLines="1"
                     android:ellipsize="end"
                     android:text="@string/cart_empty"
-                    android:textAppearance="@style/TextAppearance.SeaCliff.Body"
+                    android:textAppearance="@style/TextAppearance.POS.Body"
                     android:textColor="@color/text_secondary"
                     android:visibility="gone"
                     tools:visibility="visible"/>
@@ -162,7 +164,7 @@
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:ellipsize="end"
-                        android:textAppearance="@style/TextAppearance.SeaCliff.Body"
+                        android:textAppearance="@style/TextAppearance.POS.Body"
                         tools:text="Subtotal: TZS 0"/>
 
                     <TextView
@@ -172,7 +174,7 @@
                         android:layout_marginTop="@dimen/spacing_xs"
                         android:maxLines="1"
                         android:ellipsize="end"
-                        android:textAppearance="@style/TextAppearance.SeaCliff.Body"
+                        android:textAppearance="@style/TextAppearance.POS.Body"
                         tools:text="Tax: TZS 0"/>
 
                     <TextView
@@ -182,12 +184,12 @@
                         android:layout_marginTop="@dimen/spacing_sm"
                         android:maxLines="1"
                         android:ellipsize="end"
-                        android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                        android:textAppearance="@style/TextAppearance.POS.Title"
                         tools:text="Total: TZS 0"/>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnPlaceOrder"
-                        style="@style/Widget.SeaCliff.Button"
+                        style="@style/Widget.POS.Button"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/spacing_sm"

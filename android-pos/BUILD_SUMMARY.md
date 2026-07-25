@@ -2,7 +2,7 @@
 
 ## ✅ Build and Deployment Complete
 
-The SeaCliff POS Android app has been successfully built and deployed to the emulator!
+The POS POS Android app has been successfully built and deployed to the emulator!
 
 ---
 

@@ -2,7 +2,7 @@
 
 ## Document Overview
 
-This document translates the waiter's user journeys (from system documentation) into a detailed Android implementation plan for the SeaCliff POS application.
+This document translates the waiter's user journeys (from system documentation) into a detailed Android implementation plan for the POS POS application.
 
 **Target Users:** Waiters/Waitstaff
 **Platform:** Native Android (Kotlin)

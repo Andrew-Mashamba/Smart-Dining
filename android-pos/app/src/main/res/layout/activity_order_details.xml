@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_primary"
+    android:fitsSystemWindows="true"
     tools:context=".ui.activities.OrderDetailsActivity">
 
     <!-- Toolbar -->
@@ -35,7 +36,7 @@
 
             <!-- Order Info Card -->
             <androidx.cardview.widget.CardView
-                style="@style/Widget.SeaCliff.Card"
+                style="@style/Widget.POS.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/spacing_lg">
@@ -50,7 +51,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Order Information"
-                        android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                        android:textAppearance="@style/TextAppearance.POS.Title"
                         android:layout_marginBottom="@dimen/spacing_md"/>
 
                     <!-- Order ID -->
@@ -65,13 +66,13 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Order ID"
-                            android:textAppearance="@style/TextAppearance.SeaCliff.Body"/>
+                            android:textAppearance="@style/TextAppearance.POS.Body"/>
 
                         <TextView
                             android:id="@+id/tvOrderId"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextAppearance.SeaCliff.Body"
+                            android:textAppearance="@style/TextAppearance.POS.Body"
                             tools:text="#12345"/>
                     </LinearLayout>
 
@@ -87,13 +88,13 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Table"
-                            android:textAppearance="@style/TextAppearance.SeaCliff.Body"/>
+                            android:textAppearance="@style/TextAppearance.POS.Body"/>
 
                         <TextView
                             android:id="@+id/tvTableName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextAppearance.SeaCliff.Body"
+                            android:textAppearance="@style/TextAppearance.POS.Body"
                             tools:text="Table 5"/>
                     </LinearLayout>
 
@@ -109,13 +110,13 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Status"
-                            android:textAppearance="@style/TextAppearance.SeaCliff.Body"/>
+                            android:textAppearance="@style/TextAppearance.POS.Body"/>
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/chipStatus"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextAppearance.SeaCliff.Caption"
+                            android:textAppearance="@style/TextAppearance.POS.Caption"
                             app:chipBackgroundColor="@color/status_pending"
                             app:chipStrokeWidth="0dp"
                             tools:text="Pending"/>
@@ -132,13 +133,13 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Created"
-                            android:textAppearance="@style/TextAppearance.SeaCliff.Body"/>
+                            android:textAppearance="@style/TextAppearance.POS.Body"/>
 
                         <TextView
                             android:id="@+id/tvCreatedTime"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextAppearance.SeaCliff.Caption"
+                            android:textAppearance="@style/TextAppearance.POS.Caption"
                             tools:text="10:30 AM"/>
                     </LinearLayout>
                 </LinearLayout>
@@ -146,7 +147,7 @@
 
             <!-- Order Items Card -->
             <androidx.cardview.widget.CardView
-                style="@style/Widget.SeaCliff.Card"
+                style="@style/Widget.POS.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/spacing_lg">
@@ -161,7 +162,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Order Items"
-                        android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                        android:textAppearance="@style/TextAppearance.POS.Title"
                         android:layout_marginBottom="@dimen/spacing_md"/>
 
                     <!-- RecyclerView for order items -->
@@ -191,13 +192,13 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Total"
-                            android:textAppearance="@style/TextAppearance.SeaCliff.Title"/>
+                            android:textAppearance="@style/TextAppearance.POS.Title"/>
 
                         <TextView
                             android:id="@+id/tvTotalAmount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                            android:textAppearance="@style/TextAppearance.POS.Title"
                             tools:text="TZS 53,100"/>
                     </LinearLayout>
                 </LinearLayout>
@@ -206,7 +207,7 @@
             <!-- Order Notes Card (if any) -->
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardNotes"
-                style="@style/Widget.SeaCliff.Card"
+                style="@style/Widget.POS.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone">
@@ -221,14 +222,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Special Notes"
-                        android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                        android:textAppearance="@style/TextAppearance.POS.Title"
                         android:layout_marginBottom="@dimen/spacing_sm"/>
 
                     <TextView
                         android:id="@+id/tvNotes"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextAppearance.SeaCliff.Body"
+                        android:textAppearance="@style/TextAppearance.POS.Body"
                         tools:text="No spicy food, extra sauce"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -254,7 +255,7 @@
             android:layout_weight="1"
             android:layout_marginEnd="@dimen/spacing_sm"
             android:text="Mark Served"
-            android:textAppearance="@style/TextAppearance.SeaCliff.Body"
+            android:textAppearance="@style/TextAppearance.POS.Body"
             android:textColor="@color/icon_tint_white"
             app:backgroundTint="@color/icon_background"
             app:cornerRadius="@dimen/corner_radius_large"/>
@@ -265,7 +266,7 @@
             android:layout_height="@dimen/button_height_standard"
             android:layout_weight="1"
             android:text="Generate Bill"
-            android:textAppearance="@style/TextAppearance.SeaCliff.Body"
+            android:textAppearance="@style/TextAppearance.POS.Body"
             android:textColor="@color/text_primary"
             app:backgroundTint="@color/surface_white"
             app:strokeColor="@color/divider"

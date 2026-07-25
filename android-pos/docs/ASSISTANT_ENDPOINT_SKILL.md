@@ -1,6 +1,6 @@
 # Skill: Talking to the Backend via the Assistant Endpoint
 
-**Backend:** Smart-Dining AI Assistant (SeaCliff POS / restaurant management).
+**Backend:** Smart-Dining AI Assistant (POS POS / restaurant management).
 
 **Assistant reminder:** When you need backend support (new endpoint, fields, validation, response shape, etc.), **call this endpoint** using the **Backend Assistant Protocol** so responses are faster and unambiguous. Use `./scripts/ask_backend.sh --type <type> --context <context> "your ask"` when possible. See [BACKEND_ASSISTANT_PROTOCOL.md](BACKEND_ASSISTANT_PROTOCOL.md) for request/response format, types, and templates.
 

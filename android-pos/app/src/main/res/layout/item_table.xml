@@ -38,7 +38,7 @@
                 android:layout_weight="1"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:textAppearance="@style/TextAppearance.SeaCliff.Title"
+                android:textAppearance="@style/TextAppearance.POS.Title"
                 tools:text="Table 5"/>
         </LinearLayout>
 
@@ -49,7 +49,7 @@
             android:layout_marginTop="@dimen/spacing_xs"
             android:maxLines="1"
             android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.SeaCliff.Caption"
+            android:textAppearance="@style/TextAppearance.POS.Caption"
             tools:text="4 seats"/>
 
         <TextView
@@ -59,7 +59,7 @@
             android:layout_marginTop="@dimen/spacing_xs"
             android:maxLines="1"
             android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.SeaCliff.Caption"
+            android:textAppearance="@style/TextAppearance.POS.Caption"
             tools:text="Main Hall"/>
 
         <TextView
@@ -69,7 +69,7 @@
             android:layout_marginTop="@dimen/spacing_sm"
             android:maxLines="1"
             android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.SeaCliff.Caption"
+            android:textAppearance="@style/TextAppearance.POS.Caption"
             tools:text="Available"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

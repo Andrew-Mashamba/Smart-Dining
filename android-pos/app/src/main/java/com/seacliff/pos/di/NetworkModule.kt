@@ -11,9 +11,12 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Dns
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import timber.log.Timber
+import java.net.InetAddress
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
@@ -54,7 +57,30 @@ object NetworkModule {
             }
         }
 
+        // Custom DNS resolver with logging and IPv4 preference
+        val dns = object : Dns {
+            override fun lookup(hostname: String): List<InetAddress> {
+                Timber.d("DNS lookup for: $hostname")
+                return try {
+                    val addresses = InetAddress.getAllByName(hostname).toList()
+                    // Prefer IPv4 addresses
+                    val sortedAddresses = addresses.sortedBy {
+                        if (it.address.size == 4) 0 else 1
+                    }
+                    Timber.d("DNS resolved $hostname to: ${sortedAddresses.map { it.hostAddress }}")
+                    if (sortedAddresses.isEmpty()) {
+                        throw java.net.UnknownHostException("No addresses found for $hostname")
+                    }
+                    sortedAddresses
+                } catch (e: Exception) {
+                    Timber.e(e, "DNS lookup failed for $hostname")
+                    throw e
+                }
+            }
+        }
+
         return OkHttpClient.Builder()
+            .dns(dns)
             .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
             .connectTimeout(BuildConfig.API_TIMEOUT.toLong(), TimeUnit.SECONDS)
